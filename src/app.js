@@ -2742,6 +2742,12 @@ document.addEventListener('keydown', e => {
   if (isTyping) return;
 
   const isSpace = e.code === 'Space' || e.key === ' ' || e.keyCode === 32;
+  if (isSpace) {
+    e.preventDefault();
+    if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
+      document.activeElement.blur();
+    }
+  }
 
   // Grammar quiz keyboard shortcuts
   if (GQ.lessonId && !GQ.complete && GQ.questions.length) {
@@ -2757,7 +2763,7 @@ document.addEventListener('keydown', e => {
   if (PP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (PP.idx >= PP.queue.length) return;
-    if (isSpace) { e.preventDefault(); patternPracticeReveal(); return; }
+    if (isSpace) { patternPracticeReveal(); return; }
     if (e.code === 'ArrowRight') { e.preventDefault(); patternPracticeNext(); return; }
     if (e.code === 'ArrowLeft') { e.preventDefault(); patternPracticePrev(); return; }
     return;
@@ -2767,7 +2773,7 @@ document.addEventListener('keydown', e => {
   if (VP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (VP.idx >= VP.queue.length) return;
-    if (isSpace) { e.preventDefault(); vocabPracticeReveal(); return; }
+    if (isSpace) { vocabPracticeReveal(); return; }
     if (e.code === 'ArrowRight') { e.preventDefault(); vocabPracticeNext(); return; }
     if (VP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
@@ -2781,7 +2787,7 @@ document.addEventListener('keydown', e => {
   if (FP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (FP.idx >= FP.queue.length) return;
-    if (isSpace) { e.preventDefault(); frequencyPracticeReveal(); return; }
+    if (isSpace) { frequencyPracticeReveal(); return; }
     if (e.code === 'ArrowRight') { e.preventDefault(); frequencyPracticeNext(); return; }
     if (FP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
@@ -2795,7 +2801,7 @@ document.addEventListener('keydown', e => {
   if (P.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (P.idx >= P.queue.length) return;
-    if (isSpace) { e.preventDefault(); practiceReveal(); return; }
+    if (isSpace) { practiceReveal(); return; }
     if (e.code === 'ArrowRight') { e.preventDefault(); practiceNext(); return; }
     if (e.code === 'ArrowLeft') { e.preventDefault(); practicePrev(); return; }
     return;
@@ -2818,7 +2824,6 @@ document.addEventListener('keydown', e => {
       });
     }
     if (cardEl && cardEl.id) {
-      e.preventDefault();
       const rawId = cardEl.id;
       if (rawId.startsWith('vc-')) toggleVocabReveal(rawId.replace('vc-', ''));
       else if (rawId.startsWith('sc-')) toggleReveal(rawId.replace('sc-', ''));
