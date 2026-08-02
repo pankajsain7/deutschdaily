@@ -2738,32 +2738,36 @@ function patternPracticePrev() {
 // ─── KEYBOARD SHORTCUTS ───────────────────────
 document.addEventListener('keydown', e => {
   const tag = document.activeElement ? document.activeElement.tagName : '';
-  const isTyping = tag === 'INPUT' || tag === 'TEXTAREA';
+  const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable);
+  if (isTyping) return;
+
+  const isSpace = e.code === 'Space' || e.key === ' ' || e.keyCode === 32;
+
   // Grammar quiz keyboard shortcuts
   if (GQ.lessonId && !GQ.complete && GQ.questions.length) {
-    if (!isTyping) {
-      const question = GQ.questions[GQ.index];
-      if (GQ.selected === null && question && ['1', '2', '3', '4'].includes(e.key)) {
-        const idx = Number(e.key) - 1;
-        if (idx < question.options.length) { e.preventDefault(); answerGrammarExercise(idx); return; }
-      }
-      if (GQ.selected !== null && (e.key === 'Enter' || e.code === 'ArrowRight')) { e.preventDefault(); nextGrammarExercise(); return; }
+    const question = GQ.questions[GQ.index];
+    if (GQ.selected === null && ['1', '2', '3', '4'].includes(e.key)) {
+      const idx = Number(e.key) - 1;
+      if (idx < question.options.length) { e.preventDefault(); answerGrammarExercise(idx); return; }
     }
+    if (GQ.selected !== null && (e.key === 'Enter' || e.code === 'ArrowRight')) { e.preventDefault(); nextGrammarExercise(); return; }
   }
+
   // Pattern practice keyboard shortcuts
   if (PP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (PP.idx >= PP.queue.length) return;
-    if (!isTyping && e.code === 'Space') { e.preventDefault(); patternPracticeReveal(); return; }
+    if (isSpace) { e.preventDefault(); patternPracticeReveal(); return; }
     if (e.code === 'ArrowRight') { e.preventDefault(); patternPracticeNext(); return; }
     if (e.code === 'ArrowLeft') { e.preventDefault(); patternPracticePrev(); return; }
     return;
   }
+
   // Vocab practice keyboard shortcuts
   if (VP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (VP.idx >= VP.queue.length) return;
-    if (!isTyping && e.code === 'Space') { e.preventDefault(); vocabPracticeReveal(); return; }
+    if (isSpace) { e.preventDefault(); vocabPracticeReveal(); return; }
     if (e.code === 'ArrowRight') { e.preventDefault(); vocabPracticeNext(); return; }
     if (VP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
@@ -2772,11 +2776,12 @@ document.addEventListener('keydown', e => {
     }
     return;
   }
+
   // Frequency practice keyboard shortcuts
   if (FP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (FP.idx >= FP.queue.length) return;
-    if (!isTyping && e.code === 'Space') { e.preventDefault(); frequencyPracticeReveal(); return; }
+    if (isSpace) { e.preventDefault(); frequencyPracticeReveal(); return; }
     if (e.code === 'ArrowRight') { e.preventDefault(); frequencyPracticeNext(); return; }
     if (FP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
@@ -2785,13 +2790,41 @@ document.addEventListener('keydown', e => {
     }
     return;
   }
+
   // Sentence practice keyboard shortcuts
-  if (!P.active) return;
-  if (e.key === 'Escape') { closePractice(); return; }
-  if (P.idx >= P.queue.length) return;
-  if (!isTyping && e.code === 'Space') { e.preventDefault(); practiceReveal(); return; }
-  if (e.code === 'ArrowRight') { e.preventDefault(); practiceNext(); return; }
-  if (e.code === 'ArrowLeft') { e.preventDefault(); practicePrev(); return; }
+  if (P.active) {
+    if (e.key === 'Escape') { closePractice(); return; }
+    if (P.idx >= P.queue.length) return;
+    if (isSpace) { e.preventDefault(); practiceReveal(); return; }
+    if (e.code === 'ArrowRight') { e.preventDefault(); practiceNext(); return; }
+    if (e.code === 'ArrowLeft') { e.preventDefault(); practicePrev(); return; }
+    return;
+  }
+
+  // Main feed flashcard keyboard shortcuts (Space toggles reveal / hide)
+  if (isSpace) {
+    const focused = document.activeElement;
+    let cardEl = focused ? focused.closest('.vc, .sc, .fc') : null;
+    if (!cardEl) {
+      const cards = Array.from(document.querySelectorAll('.vc, .sc, .fc'));
+      let minDistance = Infinity;
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const dist = Math.abs(rect.top - 80);
+        if (rect.bottom > 80 && dist < minDistance) {
+          minDistance = dist;
+          cardEl = card;
+        }
+      });
+    }
+    if (cardEl && cardEl.id) {
+      e.preventDefault();
+      const rawId = cardEl.id;
+      if (rawId.startsWith('vc-')) toggleVocabReveal(rawId.replace('vc-', ''));
+      else if (rawId.startsWith('sc-')) toggleReveal(rawId.replace('sc-', ''));
+      else if (rawId.startsWith('fc-')) toggleFreqReveal(rawId.replace('fc-', ''));
+    }
+  }
 });
 
 function showAppToast(message, ok = true) {
