@@ -2742,12 +2742,6 @@ document.addEventListener('keydown', e => {
   if (isTyping) return;
 
   const isSpace = e.code === 'Space' || e.key === ' ' || e.keyCode === 32;
-  if (isSpace) {
-    e.preventDefault();
-    if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
-      document.activeElement.blur();
-    }
-  }
 
   // Grammar quiz keyboard shortcuts
   if (GQ.lessonId && !GQ.complete && GQ.questions.length) {
@@ -2764,6 +2758,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closePractice(); return; }
     if (PP.idx >= PP.queue.length) return;
     if (isSpace) {
+      e.preventDefault();
       if (!PP.revealed) patternPracticeReveal();
       else patternPracticeNext();
       return;
@@ -2778,6 +2773,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closePractice(); return; }
     if (VP.idx >= VP.queue.length) return;
     if (isSpace) {
+      e.preventDefault();
       if (!VP.revealed) vocabPracticeReveal();
       else vocabPracticeAnswer('good');
       return;
@@ -2796,6 +2792,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closePractice(); return; }
     if (FP.idx >= FP.queue.length) return;
     if (isSpace) {
+      e.preventDefault();
       if (!FP.revealed) frequencyPracticeReveal();
       else frequencyPracticeAnswer('good');
       return;
@@ -2814,13 +2811,14 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closePractice(); return; }
     if (P.idx >= P.queue.length) return;
     if (isSpace) {
+      e.preventDefault();
       if (!P.revealed) {
         practiceReveal();
       } else {
         const currentCard = P.queue[P.idx];
         const attemptKey = String(P.idx);
         if (currentCard && !P.answered[attemptKey]) {
-          recordGotAndNext();
+          practiceAnswer(true);
         } else {
           practiceNext();
         }
@@ -2834,31 +2832,30 @@ document.addEventListener('keydown', e => {
 
   // Main feed flashcard keyboard shortcuts (1st Space reveals, 2nd Space switches to next card)
   if (isSpace) {
+    e.preventDefault();
+    if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
+      document.activeElement.blur();
+    }
     const cards = Array.from(document.querySelectorAll('.vc, .sc, .fc'));
     if (!cards.length) return;
 
-    let currentIndex = -1;
+    let targetIdx = -1;
     const focused = document.activeElement;
     if (focused) {
       const cardEl = focused.closest('.vc, .sc, .fc');
-      if (cardEl) currentIndex = cards.indexOf(cardEl);
+      if (cardEl) targetIdx = cards.indexOf(cardEl);
     }
 
-    if (currentIndex === -1) {
-      let minDistance = Infinity;
-      cards.forEach((card, idx) => {
+    if (targetIdx === -1) {
+      targetIdx = cards.findIndex(card => {
         const rect = card.getBoundingClientRect();
-        const dist = Math.abs(rect.top - 120);
-        if (rect.bottom > 120 && dist < minDistance) {
-          minDistance = dist;
-          currentIndex = idx;
-        }
+        return rect.bottom > 100 && rect.top < window.innerHeight;
       });
     }
 
-    if (currentIndex === -1) currentIndex = 0;
+    if (targetIdx === -1) targetIdx = 0;
 
-    const currentCardEl = cards[currentIndex];
+    const currentCardEl = cards[targetIdx];
     if (!currentCardEl || !currentCardEl.id) return;
 
     const rawId = currentCardEl.id;
