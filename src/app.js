@@ -543,7 +543,7 @@ function renderVocabCard(card, i) {
 </div>
 <button class="vocab-term reveal-btn" onclick="toggleVocabReveal('${card.id}')" aria-expanded="false" type="button" lang="de">${esc(vocabDisplay(card))}</button>
 <div class="vocab-meta">${esc(vocabMetaLabel(card))}</div>
-<div class="reveal-hint" id="vhn-${card.id}">👆 Tap to reveal meaning and example</div>
+<div class="reveal-hint" id="vhn-${card.id}" onclick="toggleVocabReveal('${card.id}')" style="cursor:pointer">👆 Tap to reveal meaning and example</div>
 <button class="vocab-en hid reveal-btn" id="ven-${card.id}" onclick="toggleVocabReveal('${card.id}')" aria-hidden="true" hidden type="button">${esc(card.en)}</button>
 <div class="vocab-details" id="vrd-${card.id}" style="display:none">
   ${card.plural ? `<div class="vocab-detail-row"><strong>Plural</strong><span lang="de">${esc(card.plural)}</span></div>` : ''}
@@ -1101,7 +1101,7 @@ function renderSentenceCard(s, i, showTopic) {
 </div>
 <button class="sentence-de reveal-btn" onclick="toggleReveal('${s.id}')" aria-expanded="false" type="button" lang="de">${esc(s.de)}</button>
 <div class="sentence-ph"><span class="ph-lbl">🔊</span>${esc(s.ph)}</div>
-<div class="reveal-hint" id="hn-${s.id}">👆 Tap to reveal translation</div>
+<div class="reveal-hint" id="hn-${s.id}" onclick="toggleReveal('${s.id}')" style="cursor:pointer">👆 Tap to reveal translation</div>
 <button class="sentence-en hid reveal-btn" id="en-${s.id}" onclick="toggleReveal('${s.id}')" aria-hidden="true" hidden type="button">${esc(s.en)}</button>
 ${renderRevealDetails(s)}
 <div class="card-actions">
@@ -2741,7 +2741,7 @@ document.addEventListener('keydown', e => {
   const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable);
   if (isTyping) return;
 
-  const isSpace = e.code === 'Space' || e.key === ' ' || e.keyCode === 32;
+  const isSpace = e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar' || e.keyCode === 32;
 
   // Grammar quiz keyboard shortcuts
   if (GQ.lessonId && !GQ.complete && GQ.questions.length) {
@@ -2833,9 +2833,13 @@ document.addEventListener('keydown', e => {
   // Main feed flashcard keyboard shortcuts (1st Space reveals, 2nd Space switches to next card)
   if (isSpace) {
     e.preventDefault();
-    if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
-      document.activeElement.blur();
+    const activeEl = document.activeElement;
+    let cardEl = activeEl ? activeEl.closest('.vc, .sc, .fc') : null;
+
+    if (activeEl && activeEl.tagName === 'BUTTON') {
+      activeEl.blur();
     }
+
     const cards = Array.from(document.querySelectorAll('.vc, .sc, .fc'));
     if (!cards.length) return;
 
