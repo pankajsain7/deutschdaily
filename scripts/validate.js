@@ -10,7 +10,6 @@ const expectedScripts = [
   'src/content.js',
   'src/learning.js',
   'src/vocab.js',
-  'src/grammar.js',
   'src/frequency-dictionary-data.js',
   'src/storage.js',
   'src/app.js'
@@ -53,6 +52,7 @@ record(/href="src\/styles\.css(?:\?[^"]*)?"/.test(html), 'DEDaily.html missing s
 record(/rel="icon" href="src\/assets\/logo\.svg" type="image\/svg\+xml"/.test(html), 'DEDaily.html missing SVG favicon');
 record(fs.existsSync(path.join(root, 'src/assets/logo.svg')), 'src/assets/logo.svg missing');
 record(fs.existsSync(path.join(root, 'api/tts.js')), 'api/tts.js missing');
+record(fs.existsSync(path.join(root, 'deutsch-a1-b1-kursplan.html')), 'deutsch-a1-b1-kursplan.html missing');
 
 try {
   const vercelConfig = JSON.parse(read('vercel.json'));
@@ -71,16 +71,15 @@ const source = [
   read('src/content.js'),
   read('src/learning.js'),
   read('src/vocab.js'),
-  read('src/grammar.js'),
   read('src/frequency-dictionary-data.js'),
-  'globalThis.__dd = { TOPICS, PAT_CATS, PATTERNS, PATTERN_BY_ID, SENTENCE_SEEDS, SENTENCES, VOCAB_TOPICS, VOCAB_SOURCE_REFS, VOCAB_CARDS, GRAMMAR_MODULES, GRAMMAR_LESSONS, FREQUENCY_DICTIONARY };'
+  'globalThis.__dd = { TOPICS, PAT_CATS, PATTERNS, PATTERN_BY_ID, SENTENCE_SEEDS, SENTENCES, VOCAB_TOPICS, VOCAB_SOURCE_REFS, VOCAB_CARDS, FREQUENCY_DICTIONARY };'
 ].join('\n');
 
 const sandbox = { console };
 vm.createContext(sandbox);
 vm.runInContext(source, sandbox, { filename: 'validate-content.vm.js' });
 
-const { TOPICS, PAT_CATS, PATTERNS, SENTENCE_SEEDS, SENTENCES, VOCAB_TOPICS, VOCAB_SOURCE_REFS, VOCAB_CARDS, GRAMMAR_MODULES, GRAMMAR_LESSONS, FREQUENCY_DICTIONARY } = sandbox.__dd;
+const { TOPICS, PAT_CATS, PATTERNS, SENTENCE_SEEDS, SENTENCES, VOCAB_TOPICS, VOCAB_SOURCE_REFS, VOCAB_CARDS, FREQUENCY_DICTIONARY } = sandbox.__dd;
 const topicIds = new Set(TOPICS.map(t => t.id));
 const catIds = new Set(PAT_CATS.map(c => c.id));
 const allPatternIds = new Set(PATTERNS.map(p => p.id));
@@ -92,17 +91,12 @@ const germanSentences = new Map();
 const vocabTopicIds = new Set(VOCAB_TOPICS.map(t => t.id));
 const vocabSourceIds = new Set(Object.keys(VOCAB_SOURCE_REFS));
 const vocabIds = new Set();
-const grammarModuleIds = new Set();
-const grammarLessonIds = new Set();
-const grammarLessonTitles = new Set();
 
 record(SENTENCES.length === 200, `expected 200 sentences, found ${SENTENCES.length}`);
 record(SENTENCE_SEEDS.length === 200, `expected 200 sentence seeds, found ${SENTENCE_SEEDS.length}`);
 record(activePatterns.length === 50, `expected 50 active patterns, found ${activePatterns.length}`);
 record(VOCAB_CARDS.length === 500, `expected 500 vocab cards, found ${VOCAB_CARDS.length}`);
 record(VOCAB_TOPICS.length === 12, `expected 12 vocab topics, found ${VOCAB_TOPICS.length}`);
-record(GRAMMAR_MODULES.length === 3, `expected 3 grammar modules, found ${GRAMMAR_MODULES.length}`);
-record(GRAMMAR_LESSONS.length === 48, `expected 48 grammar lessons, found ${GRAMMAR_LESSONS.length}`);
 
 for (const [topicId, expected] of Object.entries(topicTargets)) {
   const actual = SENTENCES.filter(s => s.t === topicId).length;
@@ -201,38 +195,6 @@ for (const card of VOCAB_CARDS) {
   }
 }
 
-const expectedGrammarModules = ['a1', 'a2', 'b1'];
-const expectedGrammarLessonCounts = { a1: 13, a2: 17, b1: 18 };
-record(JSON.stringify(GRAMMAR_MODULES.map(m => m.id)) === JSON.stringify(expectedGrammarModules), 'grammar modules must run A1, A2, B1 in order');
-for (const module of GRAMMAR_MODULES) {
-  if (grammarModuleIds.has(module.id)) errors.push(`duplicate grammar module id ${module.id}`);
-  grammarModuleIds.add(module.id);
-  for (const key of ['id', 'level', 'title', 'subtitle', 'outcome']) {
-    record(Boolean(module[key]), `${module.id} missing ${key}`);
-  }
-  record(Array.isArray(module.lessons) && module.lessons.length === expectedGrammarLessonCounts[module.id], `${module.id} must have ${expectedGrammarLessonCounts[module.id]} lessons`);
-  for (const lesson of module.lessons || []) {
-    if (grammarLessonIds.has(lesson.id)) errors.push(`duplicate grammar lesson id ${lesson.id}`);
-    grammarLessonIds.add(lesson.id);
-    const normalizedTitle = uniqueNormalized(lesson.title);
-    if (grammarLessonTitles.has(normalizedTitle)) errors.push(`duplicate grammar lesson title ${lesson.title}`);
-    grammarLessonTitles.add(normalizedTitle);
-    for (const key of ['id', 'title', 'focus', 'explanation', 'tip']) {
-      record(Boolean(lesson[key]), `${lesson.id} missing ${key}`);
-    }
-    record(String(lesson.explanation || '').length >= 100, `${lesson.id} explanation too short`);
-    record(Array.isArray(lesson.rules) && lesson.rules.length >= 3, `${lesson.id} needs at least 3 rules`);
-    record(Array.isArray(lesson.examples) && lesson.examples.length >= 3, `${lesson.id} needs at least 3 examples`);
-    record(Array.isArray(lesson.mistakes) && lesson.mistakes.length >= 2, `${lesson.id} needs at least 2 common mistakes`);
-    record(Array.isArray(lesson.practice) && lesson.practice.length >= 2, `${lesson.id} needs at least 2 practice tasks`);
-    for (const [index, example] of (lesson.examples || []).entries()) {
-      record(Boolean(example && example.de && example.en), `${lesson.id} example ${index + 1} missing de/en`);
-    }
-    record(new Set((lesson.examples || []).map(example => uniqueNormalized(example.de))).size === lesson.examples.length, `${lesson.id} needs unique German examples for exercises`);
-    record(new Set((lesson.examples || []).map(example => uniqueNormalized(example.en))).size === lesson.examples.length, `${lesson.id} needs unique English examples for exercises`);
-  }
-}
-
 // ─── Frequency Dictionary ─────────────────────
 record(Array.isArray(FREQUENCY_DICTIONARY), 'FREQUENCY_DICTIONARY must be an array');
 record(FREQUENCY_DICTIONARY.length === 2525, `FREQUENCY_DICTIONARY expected 2525 entries, found ${FREQUENCY_DICTIONARY.length}`);
@@ -326,9 +288,6 @@ const sourceText = [
   read('src/styles/enhancements.css'),
 ].join('\n');
 const sentenceSourceText = read('src/content.js');
-const grammarSourceText = read('src/grammar.js');
-record(!/\bsource(?:Url|Refs)\b/.test(grammarSourceText), 'grammar source metadata remains');
-record(!/https?:\/\//.test(grammarSourceText), 'grammar source contains external links');
 const legacyLevelClass = '.l' + 'B' + '1';
 record(!sourceText.includes(legacyLevelClass), 'legacy level style remains');
 const oldRevealCopy = new RegExp('Learn' + ' more', 'i');
@@ -357,8 +316,6 @@ const report = {
   topics: TOPICS.length,
   activePatterns: activePatterns.length,
   vocabCards: VOCAB_CARDS.length,
-  grammarModules: GRAMMAR_MODULES.length,
-  grammarLessons: GRAMMAR_LESSONS.length,
   formalInformal: formalInformal.length,
   topicCounts,
   vocabTopicCounts,

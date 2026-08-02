@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', vocabPage: 1, grammarModuleId: 'a1', grammarLessonId: null, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: 'today', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', vocabPage: 1, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
@@ -13,7 +13,7 @@ function findMatchingPattern(sentence) {
   if (explicit) return explicit;
   return null;
 }
-const VALID_VIEWS = new Set(['today', 'browse', 'vocab', 'grammar', 'frequency', 'patterns', 'saved', 'progress', 'history-day']);
+const VALID_VIEWS = new Set(['today', 'browse', 'vocab', 'kursplan', 'frequency', 'patterns', 'saved', 'progress', 'history-day']);
 const VALID_PROGRESS_TABS = new Set(['overview', 'activity']);
 const VALID_FILTERS = new Set(['all', 'unlearned', 'learned', 'favorites']);
 const VALID_VOCAB_FILTERS = new Set(['all', 'new', 'due', 'learned', 'saved']);
@@ -23,18 +23,6 @@ const VALID_PATTERN_FILTERS = new Set(['learning', 'due', 'understood', 'all']);
 const VALID_LIBRARY_TABS = new Set(['saved', 'learned']);
 const TOPIC_IDS = new Set(TOPICS.map(t => t.id));
 const VOCAB_TOPIC_IDS = new Set(VOCAB_TOPICS.map(t => t.id));
-const GRAMMAR_MODULE_IDS = new Set(GRAMMAR_MODULES.map(m => m.id));
-const GRAMMAR_LESSON_BY_ID = Object.fromEntries(GRAMMAR_LESSONS.map(lesson => [lesson.id, lesson]));
-const GRAMMAR_LESSON_IDS = new Set(GRAMMAR_LESSONS.map(lesson => lesson.id));
-const DEFAULT_GRAMMAR_MODULE_ID = GRAMMAR_MODULES[0] ? GRAMMAR_MODULES[0].id : 'a1';
-const GRAMMAR_MODULE_ALIASES = {
-  'a1.1': 'a1',
-  'a1.2': 'a1',
-  'a2.1': 'a2',
-  'a2.2': 'a2',
-  'b1.1': 'b1',
-  'b1.2': 'b1',
-};
 
 function normalizeViewName(view) {
   const raw = String(view || 'today');
@@ -51,19 +39,9 @@ function normalizePatternFilter(value) {
   if (raw === 'new') return 'learning';
   return VALID_PATTERN_FILTERS.has(raw) ? raw : 'learning';
 }
-function normalizeGrammarModuleId(value) {
-  const raw = String(value || '').toLowerCase();
-  if (GRAMMAR_MODULE_IDS.has(raw)) return raw;
-  return GRAMMAR_MODULE_ALIASES[raw] || DEFAULT_GRAMMAR_MODULE_ID;
-}
-function normalizeGrammarLessonId(moduleId, value) {
-  const module = GRAMMAR_MODULE_BY_ID[normalizeGrammarModuleId(moduleId)] || GRAMMAR_MODULES[0];
-  const lessonId = String(value || '');
-  if (GRAMMAR_LESSON_IDS.has(lessonId) && GRAMMAR_LESSON_BY_ID[lessonId].moduleId === module.id) return lessonId;
-  return module.lessons[0] ? module.lessons[0].id : null;
-}
+
 function stateFromUrl(href) {
-  const fallback = { view: 'today', topicId: null, filter: 'all', query: '', libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', grammarModuleId: DEFAULT_GRAMMAR_MODULE_ID, grammarLessonId: null, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: 'today', topicId: null, filter: 'all', query: '', libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -74,8 +52,6 @@ function stateFromUrl(href) {
   const viewParam = params.get('view');
   const view = normalizeViewName(viewParam || 'today');
   const topic = params.get('topic');
-  const module = params.get('module');
-  const lesson = params.get('lesson');
   const filter = params.get('filter');
   const range = params.get('range');
   const tab = params.get('tab');
@@ -93,10 +69,6 @@ function stateFromUrl(href) {
     fallback.view = 'frequency';
     fallback.freqFilter = VALID_FREQ_FILTERS.has(filter) ? filter : 'all';
     fallback.freqRange = VALID_FREQ_RANGES.has(range) ? range : 'all';
-  } else if (view === 'grammar') {
-    fallback.view = 'grammar';
-    fallback.grammarModuleId = normalizeGrammarModuleId(module);
-    fallback.grammarLessonId = normalizeGrammarLessonId(fallback.grammarModuleId, lesson);
   } else if (view === 'patterns') {
     fallback.view = 'patterns';
     fallback.patFilter = normalizePatternFilter(filter);
@@ -130,12 +102,6 @@ function urlFromState(state = V) {
   } else if (view === 'frequency') {
     if (state.freqFilter && state.freqFilter !== 'all') params.set('filter', state.freqFilter);
     if (state.freqRange && state.freqRange !== 'all') params.set('range', state.freqRange);
-  } else if (view === 'grammar') {
-    const moduleId = normalizeGrammarModuleId(state.grammarModuleId);
-    if (moduleId !== DEFAULT_GRAMMAR_MODULE_ID) params.set('module', moduleId);
-    const lessonId = normalizeGrammarLessonId(moduleId, state.grammarLessonId);
-    const firstLessonId = GRAMMAR_MODULE_BY_ID[moduleId] && GRAMMAR_MODULE_BY_ID[moduleId].lessons[0] ? GRAMMAR_MODULE_BY_ID[moduleId].lessons[0].id : null;
-    if (lessonId && lessonId !== firstLessonId) params.set('lesson', lessonId);
   } else if (view === 'patterns') {
     params.set('filter', normalizePatternFilter(state.patFilter));
   } else if (view === 'saved') {
@@ -161,8 +127,6 @@ function applyUrlState(href) {
   V.vocabFilter = next.vocabFilter;
   V.freqFilter = next.freqFilter;
   V.freqRange = next.freqRange;
-  V.grammarModuleId = next.grammarModuleId;
-  V.grammarLessonId = next.grammarLessonId;
   V.historyDay = next.historyDay;
   V.progressTab = next.progressTab;
 }
@@ -184,8 +148,6 @@ function nav(view, extra) {
   V.view = nextView;
   V.topicId = nextView === 'browse' && extra && TOPIC_IDS.has(extra) ? extra : null;
   V.vocabTopicId = nextView === 'vocab' && extra && VOCAB_TOPIC_IDS.has(extra) ? extra : null;
-  V.grammarModuleId = nextView === 'grammar' ? normalizeGrammarModuleId(extra || V.grammarModuleId) : V.grammarModuleId || DEFAULT_GRAMMAR_MODULE_ID;
-  V.grammarLessonId = nextView === 'grammar' ? normalizeGrammarLessonId(V.grammarModuleId, null) : V.grammarLessonId;
   V.filter = 'all';
   V.vocabFilter = 'all';
   V.freqFilter = 'all';
@@ -226,17 +188,19 @@ function render() {
   updateHeader();
   updateNavBtns();
   const root = document.getElementById('root');
+  // Kursplan needs full-width layout without the default max-width constraint
+  root.classList.toggle('kursplan-active', V.view === 'kursplan');
   if (V.view === 'today') root.innerHTML = renderToday();
   else if (V.view === 'browse' && V.topicId) root.innerHTML = renderTopic();
   else if (V.view === 'browse') root.innerHTML = renderBrowse();
   else if (V.view === 'vocab') root.innerHTML = renderVocab();
   else if (V.view === 'frequency') root.innerHTML = renderFrequency();
-  else if (V.view === 'grammar') root.innerHTML = renderGrammar();
+  else if (V.view === 'kursplan') root.innerHTML = renderKursplan();
   else if (V.view === 'patterns') root.innerHTML = renderPatterns();
   else if (V.view === 'saved') root.innerHTML = renderSaved();
   else if (V.view === 'progress') root.innerHTML = renderProgress();
   else if (V.view === 'history-day') root.innerHTML = renderHistoryDay();
-  root.querySelectorAll('.sc,.pc,.vc,.grammar-card').forEach((el, i) => el.style.animationDelay = i * 25 + 'ms');
+  root.querySelectorAll('.sc,.pc,.vc').forEach((el, i) => el.style.animationDelay = i * 25 + 'ms');
 }
 
 function updateHeader() {
@@ -246,7 +210,7 @@ function updateHeader() {
   document.getElementById('stk-n').textContent = DB.streak;
 }
 function updateNavBtns() {
-  ['today', 'browse', 'grammar', 'patterns'].forEach(v => {
+  ['today', 'browse', 'kursplan', 'patterns'].forEach(v => {
     const el = document.getElementById('nb-' + v);
     if (el) el.className = 'nb' + (V.view === v ? ' on' : '');
     const mel = document.getElementById('mnb-' + v);
@@ -268,6 +232,24 @@ function updateNavBtns() {
   if (mProgBtn) mProgBtn.className = 'mnb' + (progressActive ? ' on' : '');
   const sc = document.getElementById('sb-learned-count');
   if (sc) sc.textContent = DB.learned.size;
+}
+
+// ─── KURSPLAN ─────────────────────────────────
+function renderKursplan() {
+  return `<div style="display:flex; flex-direction:column; height:calc(100vh - 60px); padding-top:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; flex-shrink:0;">
+      <div>
+        <h2 class="page-title" style="margin:0">A1 → B1 Kursplan</h2>
+        <p class="page-sub" style="margin:4px 0 0 0">48 Units · 600 Unterrichtseinheiten · BAMF Integrationskurs & telc/Goethe Standard</p>
+      </div>
+      <a href="deutsch-a1-b1-kursplan.html" target="_blank" rel="noopener" class="btn-sec" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600;">
+        Open Standalone ↗
+      </a>
+    </div>
+    <div class="kursplan-frame-wrapper" style="flex:1 1 0; min-height:0; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); border:1px solid var(--border, #E5E7EB); background:#fff;">
+      <iframe src="deutsch-a1-b1-kursplan.html" title="Deutsch A1 bis B1 Kursplan" style="width:100%; height:100%; border:none; display:block;" loading="lazy"></iframe>
+    </div>
+  </div>`;
 }
 
 // ─── TODAY ───────────────────────────────────
@@ -729,327 +711,6 @@ function refreshFreqQueue() {
   DB.freqDailyQueue = [];
   ensureFreqDailyQueue();
   render();
-}
-
-// ─── GRAMMAR ─────────────────────────────────
-let GQ = { lessonId: null, questions: [], index: 0, selected: null, correct: 0, complete: false };
-
-function grammarSearchText(lesson, module) {
-  return [
-    module.level,
-    lesson.title, lesson.focus, lesson.explanation, lesson.tip,
-    ...(lesson.rules || []),
-    ...(lesson.mistakes || []),
-    ...(lesson.practice || []),
-    ...(lesson.examples || []).flatMap(example => [example.de, example.en]),
-  ].filter(Boolean).join(' ').toLowerCase();
-}
-
-function grammarScorePercent(lessonId) {
-  const score = DB.grammarScores[lessonId];
-  return score && score.total ? Math.round(score.correct / score.total * 100) : 0;
-}
-
-function grammarLessonStatus(lessonId) {
-  const score = DB.grammarScores[lessonId];
-  if (score && score.total && score.correct / score.total >= 0.8) return 'mastered';
-  if (DB.grammarStudied.has(lessonId)) return 'studied';
-  if (score && score.total) return 'practicing';
-  return 'new';
-}
-
-function grammarStatusLabel(status) {
-  return status === 'mastered' ? 'Mastered' : status === 'studied' ? 'Studied' : status === 'practicing' ? 'Practicing' : 'New';
-}
-
-function grammarModuleStats(module) {
-  const studied = module.lessons.filter(lesson => DB.grammarStudied.has(lesson.id)).length;
-  const mastered = module.lessons.filter(lesson => grammarLessonStatus(lesson.id) === 'mastered').length;
-  return {
-    studied,
-    mastered,
-    total: module.lessons.length,
-    percent: module.lessons.length ? Math.round(studied / module.lessons.length * 100) : 0,
-  };
-}
-
-function setGrammarModule(moduleId) {
-  V.grammarModuleId = normalizeGrammarModuleId(moduleId);
-  V.grammarLessonId = normalizeGrammarLessonId(V.grammarModuleId, null);
-  V.query = '';
-  GQ = { lessonId: null, questions: [], index: 0, selected: null, correct: 0, complete: false };
-  commitState({ scroll: true });
-}
-
-function setGrammarLesson(lessonId) {
-  const lesson = GRAMMAR_LESSON_BY_ID[lessonId];
-  if (!lesson) return;
-  V.grammarModuleId = lesson.moduleId;
-  V.grammarLessonId = lesson.id;
-  V.query = '';
-  GQ = { lessonId: null, questions: [], index: 0, selected: null, correct: 0, complete: false };
-  commitState();
-  setTimeout(() => {
-    const detail = document.getElementById('grammar-lesson-detail');
-    if (detail && typeof detail.scrollIntoView === 'function') detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 0);
-}
-
-function toggleGrammarStudied(lessonId) {
-  setGrammarStudied(lessonId, !DB.grammarStudied.has(lessonId));
-  render();
-}
-
-function grammarExerciseOptions(correct, pool, offset) {
-  const distractors = [...new Set(pool.filter(value => value && value !== correct))];
-  const chosen = [];
-  for (let i = 0; i < distractors.length && chosen.length < 3; i++) {
-    chosen.push(distractors[(i + offset) % distractors.length]);
-  }
-  const options = [correct, ...chosen];
-  const rotation = options.length ? offset % options.length : 0;
-  return [...options.slice(rotation), ...options.slice(0, rotation)];
-}
-
-function grammarQuizOptions(item, index) {
-  const options = [item.a, ...(item.d || [])];
-  const rotation = options.length ? (index + 1) % options.length : 0;
-  return [...options.slice(rotation), ...options.slice(0, rotation)];
-}
-
-function grammarQuestionCount(lesson) {
-  return (lesson.quiz && lesson.quiz.length) ? lesson.quiz.length : (lesson.examples || []).length * 2;
-}
-
-function grammarExercisesForLesson(lesson) {
-  if (lesson.quiz && lesson.quiz.length) {
-    return lesson.quiz.map((item, index) => ({
-      prompt: item.q,
-      options: grammarQuizOptions(item, index),
-      answer: item.a,
-      lang: 'de',
-    }));
-  }
-  const module = GRAMMAR_MODULE_BY_ID[lesson.moduleId];
-  const moduleExamples = module.lessons.flatMap(item => item.examples || []);
-  return (lesson.examples || []).flatMap((example, index) => [
-    {
-      prompt: `Choose the German sentence for: ${example.en}`,
-      options: grammarExerciseOptions(example.de, moduleExamples.map(item => item.de), index + 1),
-      answer: example.de,
-      lang: 'de',
-    },
-    {
-      prompt: `Choose the meaning of: ${example.de}`,
-      options: grammarExerciseOptions(example.en, moduleExamples.map(item => item.en), index + 2),
-      answer: example.en,
-    },
-  ]);
-}
-
-function startGrammarExercises(lessonId) {
-  const lesson = GRAMMAR_LESSON_BY_ID[lessonId];
-  if (!lesson) return;
-  GQ = { lessonId, questions: grammarExercisesForLesson(lesson), index: 0, selected: null, correct: 0, complete: false };
-  render();
-  setTimeout(() => {
-    const panel = document.getElementById('grammar-exercise-panel');
-    if (panel && typeof panel.scrollIntoView === 'function') panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 0);
-}
-
-function answerGrammarExercise(optionIndex) {
-  if (GQ.complete || GQ.selected !== null) return;
-  const question = GQ.questions[GQ.index];
-  if (!question || optionIndex < 0 || optionIndex >= question.options.length) return;
-  GQ.selected = optionIndex;
-  if (question.options[optionIndex] === question.answer) GQ.correct++;
-  render();
-}
-
-function nextGrammarExercise() {
-  if (GQ.selected === null || GQ.complete) return;
-  if (GQ.index >= GQ.questions.length - 1) {
-    GQ.complete = true;
-    recordGrammarScore(GQ.lessonId, GQ.correct, GQ.questions.length);
-  } else {
-    GQ.index++;
-    GQ.selected = null;
-  }
-  render();
-}
-
-function renderGrammarIndexItem(lesson, module, index, selected) {
-  const status = grammarLessonStatus(lesson.id);
-  const score = grammarScorePercent(lesson.id);
-  return `<button class="grammar-index-item${selected ? ' on' : ''}" onclick="setGrammarLesson('${lesson.id}')" type="button">
-  <span class="grammar-index-number">${String(index + 1).padStart(2, '0')}</span>
-  <span class="grammar-index-copy">
-    <strong>${esc(lesson.title)}</strong>
-    <span>${esc(lesson.focus)}</span>
-  </span>
-  <span class="grammar-index-status ${status}">${status === 'mastered' ? `${score}%` : grammarStatusLabel(status)}</span>
-</button>`;
-}
-
-function renderGrammarExercisePanel(lesson) {
-  const score = DB.grammarScores[lesson.id];
-  const questionCount = grammarQuestionCount(lesson);
-  if (GQ.lessonId !== lesson.id) {
-    return `<section class="grammar-exercise-panel" id="grammar-exercise-panel">
-  <div>
-    <div class="grammar-box-title">Quick check</div>
-    <h3>${questionCount} practice questions</h3>
-    <p>Fill the gaps and choose the correct forms to lock in this topic.</p>
-  </div>
-  <div class="grammar-exercise-actions">
-    ${score ? `<span class="grammar-best-score">Best ${grammarScorePercent(lesson.id)}%</span>` : ''}
-    <button class="grammar-primary-btn" onclick="startGrammarExercises('${lesson.id}')" type="button">${score ? 'Practice again' : 'Start exercises'}</button>
-  </div>
-</section>`;
-  }
-  if (GQ.complete) {
-    const percent = GQ.questions.length ? Math.round(GQ.correct / GQ.questions.length * 100) : 0;
-    return `<section class="grammar-exercise-panel complete" id="grammar-exercise-panel">
-  <div>
-    <div class="grammar-box-title">Quick check complete</div>
-    <h3>${GQ.correct} / ${GQ.questions.length} correct</h3>
-    <p>${percent >= 80 ? 'This topic is now marked mastered.' : 'Review the rules and examples, then try once more.'}</p>
-  </div>
-  <div class="grammar-exercise-actions">
-    <span class="grammar-best-score">${percent}%</span>
-    <button class="grammar-primary-btn" onclick="startGrammarExercises('${lesson.id}')" type="button">Practice again</button>
-  </div>
-</section>`;
-  }
-  const question = GQ.questions[GQ.index];
-  const answered = GQ.selected !== null;
-  return `<section class="grammar-exercise-panel active" id="grammar-exercise-panel">
-  <div class="grammar-quiz-progress">
-    <span>Question ${GQ.index + 1} of ${GQ.questions.length}</span>
-    <strong>${GQ.correct} correct</strong>
-  </div>
-  <div class="grammar-quiz-bar"><span style="width:${Math.round((GQ.index + (answered ? 1 : 0)) / GQ.questions.length * 100)}%"></span></div>
-  <h3 class="grammar-quiz-prompt">${esc(question.prompt)}</h3>
-  <div class="grammar-quiz-options">
-    ${question.options.map((option, index) => {
-      const isCorrect = option === question.answer;
-      const isSelected = GQ.selected === index;
-      const state = answered ? isCorrect ? ' correct' : isSelected ? ' wrong' : ' muted' : '';
-      const mark = answered ? (isCorrect ? '<span class="grammar-quiz-mark" aria-hidden="true">\u2713</span>' : (isSelected ? '<span class="grammar-quiz-mark" aria-hidden="true">\u2717</span>' : '')) : '';
-      return `<button class="grammar-quiz-option${state}" onclick="answerGrammarExercise(${index})" ${answered ? 'disabled' : ''}${question.lang ? ` lang="${question.lang}"` : ''} type="button"><span class="grammar-quiz-key" aria-hidden="true">${index + 1}</span>${esc(option)}${mark}</button>`;
-    }).join('')}
-  </div>
-  ${answered ? `<div class="grammar-quiz-feedback ${question.options[GQ.selected] === question.answer ? 'correct' : 'wrong'}" role="status">
-    ${question.options[GQ.selected] === question.answer ? '\u2713 Correct.' : `\u2717 Correct answer: ${esc(question.answer)}`}
-  </div>
-  <button class="grammar-primary-btn grammar-next-question" onclick="nextGrammarExercise()" type="button">${GQ.index >= GQ.questions.length - 1 ? 'Finish' : 'Next question'}</button>` : ''}
-</section>`;
-}
-
-function renderGrammar() {
-  const selected = GRAMMAR_MODULE_BY_ID[V.grammarModuleId] || GRAMMAR_MODULES[0];
-  const selectedLessonId = normalizeGrammarLessonId(selected.id, V.grammarLessonId);
-  V.grammarLessonId = selectedLessonId;
-  const selectedLesson = GRAMMAR_LESSON_BY_ID[selectedLessonId];
-  const q = V.query.trim().toLowerCase();
-  const rows = q
-    ? GRAMMAR_LESSONS
-      .map(lesson => ({ lesson, module: GRAMMAR_MODULE_BY_ID[lesson.moduleId] }))
-      .filter(row => row.module && grammarSearchText(row.lesson, row.module).includes(q))
-    : selected.lessons.map(lesson => ({ lesson, module: selected }));
-  const moduleCards = GRAMMAR_MODULES.map(module => {
-    const stats = grammarModuleStats(module);
-    const on = module.id === selected.id && !q;
-    return `<button class="grammar-module-chip${on ? ' on' : ''}" onclick="setGrammarModule('${module.id}')" aria-pressed="${on}" type="button">
-  <span class="grammar-module-chip-top"><strong>${esc(module.level)}</strong><em>${stats.studied}/${stats.total}</em></span>
-  <span>${esc(module.title)}</span>
-  <span class="grammar-module-progress"><i style="width:${stats.percent}%"></i></span>
-</button>`;
-  }).join('');
-  const selectedStats = grammarModuleStats(selected);
-  return `<div style="padding-top:14px">
-<div class="grammar-page-heading">
-  <div>
-    <h2 class="page-title">Grammar</h2>
-    <p class="page-sub">Complete A1-B1 curriculum with focused lessons, progress tracking, and exercises.</p>
-  </div>
-  <div class="grammar-total-progress">
-    <strong>${DB.grammarStudied.size}/${GRAMMAR_LESSONS.length}</strong>
-    <span>topics studied</span>
-  </div>
-</div>
-
-<div class="grammar-module-row">${moduleCards}</div>
-
-<section class="grammar-index-panel">
-  <div class="grammar-index-head">
-    <div>
-      <div class="grammar-hero-label">${q ? 'Search results' : `${esc(selected.level)} curriculum index`}</div>
-      <h3>${q ? `${rows.length} matching topics` : `${selected.lessons.length} topics · ${selectedStats.mastered} mastered`}</h3>
-      ${q ? '' : `<p>${esc(selected.subtitle)}</p>`}
-    </div>
-    ${q ? '' : `<div class="grammar-level-progress"><strong>${selectedStats.percent}%</strong><span>studied</span></div>`}
-  </div>
-  <div class="search-wrap grammar-search"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search all grammar topics..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
-  <div class="grammar-index-list">
-    ${rows.length ? rows.map((row, index) => renderGrammarIndexItem(row.lesson, row.module, index, !q && row.lesson.id === selectedLessonId)).join('') : `<div class="empty-state"><div class="empty-icon">🔍</div>No grammar topic matches.</div>`}
-  </div>
-</section>
-
-${q ? '' : renderGrammarLesson(selectedLesson, selected)}
-  </div>`;
-}
-
-function renderGrammarLesson(lesson, module) {
-  const examples = (lesson.examples || []).map((example, i) => `<div class="grammar-example">
-  <button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(example.de)},'gr-${lesson.id}-${i}')" title="Listen" type="button">🔊</button>
-  <div><strong lang="de">${esc(example.de)}</strong><span>${esc(example.en)}</span></div>
-</div>`).join('');
-  const lessonIndex = module.lessons.findIndex(item => item.id === lesson.id);
-  const previous = module.lessons[lessonIndex - 1];
-  const next = module.lessons[lessonIndex + 1];
-  const status = grammarLessonStatus(lesson.id);
-  return `<section class="grammar-lesson-detail" id="grammar-lesson-detail">
-<div class="grammar-card-top">
-  <div>
-    <div class="grammar-level-tag">${esc(module.level)} · Topic ${lessonIndex + 1} of ${module.lessons.length}</div>
-    <h2>${esc(lesson.title)}</h2>
-    <span class="grammar-focus">${esc(lesson.focus)}</span>
-  </div>
-  <button class="grammar-study-btn ${DB.grammarStudied.has(lesson.id) ? 'done' : ''}" onclick="toggleGrammarStudied('${lesson.id}')" type="button">
-    ${DB.grammarStudied.has(lesson.id) ? `${ICO.check} Studied` : 'Mark studied'}
-  </button>
-</div>
-<p class="grammar-explanation">${esc(lesson.explanation)}</p>
-<div class="grammar-grid">
-  <div class="grammar-box">
-    <div class="grammar-box-title">Rules</div>
-    ${(lesson.rules || []).map(rule => `<div class="grammar-rule">${esc(rule)}</div>`).join('')}
-  </div>
-  <div class="grammar-box">
-    <div class="grammar-box-title">Examples</div>
-    ${examples}
-  </div>
-</div>
-<div class="grammar-note"><strong>Remember</strong><span>${esc(lesson.tip)}</span></div>
-<div class="grammar-grid">
-  <div class="grammar-box warn">
-    <div class="grammar-box-title">Common mistakes</div>
-    ${(lesson.mistakes || []).map(item => `<div class="grammar-rule">${esc(item)}</div>`).join('')}
-  </div>
-  <div class="grammar-box practice">
-    <div class="grammar-box-title">Practice</div>
-    ${(lesson.practice || []).map(item => `<div class="grammar-rule">${esc(item)}</div>`).join('')}
-  </div>
-</div>
-${renderGrammarExercisePanel(lesson)}
-<div class="grammar-lesson-nav">
-  ${previous ? `<button onclick="setGrammarLesson('${previous.id}')" type="button"><span>Previous</span><strong>${esc(previous.title)}</strong></button>` : '<span></span>'}
-  ${next ? `<button class="next" onclick="setGrammarLesson('${next.id}')" type="button"><span>Next</span><strong>${esc(next.title)}</strong></button>` : '<span></span>'}
-</div>
-<div class="grammar-status-line">Status: <strong>${grammarStatusLabel(status)}</strong>${DB.grammarScores[lesson.id] ? ` · Best exercise score: ${grammarScorePercent(lesson.id)}%` : ''}</div>
-  </section>`;
 }
 
 function esc(v) {

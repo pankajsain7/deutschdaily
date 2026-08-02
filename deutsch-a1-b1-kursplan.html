@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deutsch A1 → B1 — Kursplan</title>
+<meta name="description" content="A complete German curriculum from A1 to B1: 48 units, 600 Unterrichtseinheiten, built to the BAMF Integrationskurs module structure and telc/Goethe exam specifications.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Deutsch A1 → B1 — Kursplan
+   Palette: the der/die/das gender-colour mnemonic used in German
+   classrooms (blue / red / green), promoted to the interface's
+   semantic system. Blue = structure. Red = traps. Green = checks.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+  --paper:      #FFFFFF;
+  --surface:    #FAFAFA;
+  --surface-2:  #F3F4F6;
+  --ink:        #111827;
+  --ink-2:      #374151;
+  --ink-3:      #6B7280;
+  --rule:       #E5E7EB;
+  --rule-soft:  #F3F4F6;
+
+  --der:  #1D4E8F;
+  --die:  #A93129;
+  --das:  #1B6E4C;
+
+  --der-bg: #E7EDF6;
+  --die-bg: #F7E9E7;
+  --das-bg: #E5F0EA;
+
+  --display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --ui:      "Barlow", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --body:    "Literata", Georgia, "Times New Roman", serif;
+  --mono:    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --sidebar: 274px;
+  --measure: 45rem;
+  --wide:    60rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.66;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--der); color: #fff; }
+
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--der); }
+:focus-visible { outline: 2px solid var(--der); outline-offset: 3px; }
+
+/* ---------- layout ---------------------------------------- */
+
+.shell { display: flex; align-items: flex-start; }
+
+.rail {
+  position: sticky; top: 0;
+  width: var(--sidebar); flex: 0 0 var(--sidebar);
+  height: 100vh; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--surface-2);
+  border-right: 1px solid var(--rule);
+  padding: 22px 0 60px;
+}
+
+.main {
+  flex: 1 1 auto; min-width: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--rule);
+}
+
+.pad { padding: 0 clamp(20px, 5vw, 76px); }
+
+.doc { max-width: var(--measure); padding-bottom: 140px; }
+
+/* ---------- masthead -------------------------------------- */
+
+.masthead {
+  border-bottom: 1px solid var(--ink);
+  padding-top: clamp(34px, 6vw, 64px);
+  padding-bottom: clamp(28px, 4vw, 44px);
+}
+
+.eyebrow {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .17em; text-transform: uppercase; color: var(--ink-2);
+  margin: 0 0 22px;
+}
+.eyebrow span { color: var(--ink-3); }
+
+.masthead h1 {
+  font-family: var(--display); font-weight: 700;
+  font-size: clamp(2.5rem, 7.4vw, 5rem);
+  line-height: .9; letter-spacing: -.015em;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+.masthead h1 .arrow { color: var(--der); font-weight: 500; }
+
+.standfirst {
+  max-width: 40rem; margin: 0 0 32px;
+  font-size: 1.06rem; color: var(--ink-2); line-height: 1.6;
+}
+.standfirst strong { color: var(--ink); font-weight: 600; }
+
+/* compound-word device: German builds words from parts */
+
+.compound {
+  display: flex; flex-wrap: wrap; align-items: flex-end;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  margin: 0 0 14px;
+}
+.compound .seg {
+  padding: 14px 18px 12px; position: relative;
+  border-left: 1px solid var(--rule);
+  opacity: 0; transform: translateY(9px);
+  animation: rise .62s cubic-bezier(.2,.7,.3,1) forwards;
+}
+.compound .seg:first-child { border-left: 0; padding-left: 0; }
+.compound .seg:nth-child(2) { animation-delay: .12s; }
+.compound .seg:nth-child(3) { animation-delay: .24s; }
+.compound .w {
+  display: block; font-family: var(--display); font-weight: 600;
+  font-size: clamp(1.5rem, 4.6vw, 2.7rem); line-height: 1; letter-spacing: -.005em;
+}
+.compound .seg:last-child .w { color: var(--die); }
+.compound .g {
+  display: block; margin-top: 9px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+@keyframes rise { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .compound .seg { animation: none; opacity: 1; transform: none; }
+}
+
+.compound-note {
+  font-size: .875rem; color: var(--ink-2); max-width: 40rem; margin: 0 0 40px;
+}
+.compound-note em { font-style: normal; color: var(--die); }
+.compound-note b { font-weight: 600; font-family: var(--display); font-size: 1.06em; letter-spacing: .01em; }
+.k-der { color: var(--der); } .k-die { color: var(--die); } .k-das { color: var(--das); }
+
+/* inline gender keys inside the standfirst note */
+
+.legend {
+  display: flex; flex-wrap: wrap; gap: 0;
+  border: 1px solid var(--rule); margin: 0 0 8px;
+}
+.legend div {
+  flex: 1 1 150px; padding: 12px 14px 13px;
+  border-left: 1px solid var(--rule);
+}
+.legend div:first-child { border-left: 0; }
+.legend b {
+  display: block; font-family: var(--display); font-weight: 700;
+  font-size: 1.3rem; text-transform: uppercase; letter-spacing: .01em;
+}
+.legend span {
+  display: block; margin-top: 2px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.legend .l-der b { color: var(--der); }
+.legend .l-die b { color: var(--die); }
+.legend .l-das b { color: var(--das); }
+.legend-note {
+  font-size: .8125rem; color: var(--ink-3); margin: 0 0 44px;
+  font-family: var(--ui);
+}
+
+/* ---------- the module ladder ----------------------------- */
+
+.ladder-block { margin: 0 0 4px; }
+.ladder-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-3);
+  border-bottom: 1px solid var(--ink); padding-bottom: 8px; margin-bottom: 0;
+}
+
+.ladder { display: flex; list-style: none; margin: 0; padding: 0; }
+.ladder li { flex: 1 1 0; border-right: 1px solid var(--rule); min-width: 0; }
+.ladder li:last-child { border-right: 0; }
+.ladder a {
+  display: block; text-decoration: none; padding: 0 0 12px;
+  height: 100%;
+}
+.ladder .bar {
+  height: 96px; display: flex; align-items: flex-end;
+  border-bottom: 1px solid var(--rule);
+}
+.ladder .fill {
+  width: 100%; background: var(--der); opacity: .20;
+  transition: opacity .2s ease;
+  transform-origin: bottom; animation: grow .8s cubic-bezier(.2,.75,.3,1) both;
+}
+.ladder li:nth-child(2) .fill { animation-delay: .06s; }
+.ladder li:nth-child(3) .fill { animation-delay: .12s; }
+.ladder li:nth-child(4) .fill { animation-delay: .18s; }
+.ladder li:nth-child(5) .fill { animation-delay: .24s; opacity: .74; }
+.ladder li:nth-child(6) .fill { animation-delay: .30s; opacity: .74; }
+.ladder a:hover .fill { opacity: .92; }
+.bands { display: flex; margin: 0; }
+.bands span {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-3);
+  padding: 7px 0 6px; border-bottom: 1px solid var(--rule);
+}
+.bands .a { flex: 4 1 0; }
+.bands .b { flex: 2 1 0; padding-left: 9px; border-left: 1px solid var(--rule); color: var(--der); }
+@keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .ladder .fill { animation: none; } }
+
+.ladder .code {
+  display: block; margin-top: 10px; padding-left: 9px;
+  font-family: var(--display); font-weight: 700; font-size: 1.22rem;
+  text-transform: uppercase; letter-spacing: .01em; color: var(--ink);
+}
+.ladder .voc {
+  display: block; padding-left: 9px; margin-top: 1px;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.ladder li:first-child .code, .ladder li:first-child .voc { padding-left: 0; }
+.ladder a:hover .code { color: var(--der); }
+
+.ladder-foot {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-3);
+  border-top: 1px solid var(--rule); padding-top: 8px; margin-bottom: 6px;
+}
+
+/* ---------- sidebar --------------------------------------- */
+
+.rail-brand {
+  padding: 0 20px 16px; border-bottom: 1px solid var(--rule); margin-bottom: 14px;
+}
+.rail-brand a { text-decoration: none; display: block; }
+.rail-brand .t {
+  font-family: var(--display); font-weight: 700; font-size: 1.45rem;
+  text-transform: uppercase; line-height: 1; letter-spacing: .005em;
+}
+.rail-brand .s {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-3); margin-top: 6px; display: block;
+}
+
+.filter-wrap { padding: 0 20px 14px; }
+.filter {
+  width: 100%; padding: 8px 10px; background: var(--surface);
+  border: 1px solid var(--rule); color: var(--ink);
+  font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+  border-radius: 0;
+}
+.filter::placeholder { color: var(--ink-3); letter-spacing: .1em; text-transform: uppercase; font-size: 10px; }
+
+nav.toc { padding: 0 12px; }
+nav.toc ul { list-style: none; margin: 0; padding: 0; }
+
+.grp > button {
+  width: 100%; display: flex; align-items: baseline; gap: 9px;
+  background: none; border: 0; cursor: pointer; text-align: left;
+  padding: 7px 8px; color: var(--ink); font-family: var(--ui);
+  font-size: 13.5px; font-weight: 500; line-height: 1.3;
+  border-radius: 0;
+}
+.grp > button:hover { background: var(--der-bg); }
+.grp > button .chip {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .06em;
+  color: var(--ink-3); border: 1px solid var(--rule); padding: 1px 4px;
+  flex: 0 0 auto;
+}
+.grp > button .lbl { flex: 1 1 auto; }
+.grp[data-open="true"] > button { color: var(--der); font-weight: 600; }
+.grp.is-current > button .chip { border-color: var(--der); color: var(--der); }
+
+.grp ul { display: none; margin: 0 0 8px; padding: 2px 0 4px 8px; border-left: 1px solid var(--rule); margin-left: 9px; }
+.grp[data-open="true"] ul { display: block; }
+.grp li a {
+  display: block; padding: 4px 8px; text-decoration: none;
+  font-family: var(--ui); font-size: 12.5px; line-height: 1.35;
+  color: var(--ink-2);
+}
+.grp li a:hover { color: var(--der); background: var(--der-bg); }
+.grp li a.active { color: var(--der); font-weight: 600; background: var(--der-bg); box-shadow: inset 2px 0 0 var(--der); }
+
+.rail-foot {
+  margin-top: 22px; padding: 14px 20px 0; border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-3); line-height: 1.9;
+}
+.rail-foot button {
+  background: none; border: 1px solid var(--rule); color: var(--ink-2);
+  font: inherit; padding: 5px 9px; cursor: pointer; margin-top: 8px;
+}
+.rail-foot button:hover { border-color: var(--der); color: var(--der); }
+
+/* ---------- mobile bar ------------------------------------ */
+
+.mbar { display: none; }
+
+@media (max-width: 1000px) {
+  .rail {
+    position: fixed; z-index: 60; left: 0; top: 0; bottom: 0;
+    transform: translateX(-100%); transition: transform .28s ease;
+    box-shadow: 0 0 0 100vmax rgba(0,0,0,0); pointer-events: auto;
+  }
+  body.nav-open .rail { transform: none; }
+  body.nav-open::after {
+    content: ""; position: fixed; inset: 0; background: rgba(10,12,10,.42); z-index: 50;
+  }
+  .main { border-right: 0; }
+  .mbar {
+    display: flex; position: sticky; top: 0; z-index: 40;
+    align-items: center; gap: 12px;
+    background: var(--surface-2); border-bottom: 1px solid var(--rule);
+    padding: 9px 16px;
+  }
+  .mbar button {
+    background: none; border: 1px solid var(--rule); color: var(--ink);
+    font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+    text-transform: uppercase; padding: 6px 10px; cursor: pointer;
+  }
+  .mbar .now {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+}
+
+/* ---------- document typography --------------------------- */
+
+.doc h1 {
+  font-family: var(--display); font-weight: 700; text-transform: uppercase;
+  font-size: clamp(2rem, 4.6vw, 3.15rem); line-height: .95; letter-spacing: -.008em;
+  margin: 96px 0 6px; padding-top: 26px; border-top: 2px solid var(--ink);
+  scroll-margin-top: 24px;
+}
+.doc h1:first-child { margin-top: 40px; }
+.doc > h2:first-child { margin-top: 30px; border-top: 0; padding-top: 0; }
+.doc h1 .lvl-tag {
+  display: block; font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--der);
+  margin-bottom: 12px;
+}
+
+.doc h2 {
+  font-family: var(--display); font-weight: 600; text-transform: uppercase;
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem); line-height: 1.08; letter-spacing: .005em;
+  margin: 58px 0 14px; padding-top: 16px; border-top: 1px solid var(--rule);
+  scroll-margin-top: 24px;
+}
+
+.doc h3 {
+  font-family: var(--ui); font-weight: 600;
+  font-size: 1.09rem; line-height: 1.32; letter-spacing: -.002em;
+  margin: 46px 0 12px; position: relative; scroll-margin-top: 24px;
+}
+.doc h3 .unit-no {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .04em; color: var(--ink-3);
+  display: block; margin-bottom: 5px;
+}
+@media (min-width: 1240px) {
+  .doc h3 .unit-no {
+    position: absolute; left: -5.6rem; top: .34em; width: 4.6rem;
+    text-align: right; margin: 0;
+  }
+}
+.doc h3 .unit-no.is-current { color: var(--der); }
+
+.doc h4 {
+  font-family: var(--ui); font-weight: 600; font-size: .95rem;
+  margin: 30px 0 8px;
+}
+
+.doc p { margin: 0 0 1.05em; }
+.doc strong { font-weight: 600; }
+.doc em { font-style: italic; }
+.doc > p:first-of-type { }
+
+.doc ul, .doc ol { margin: 0 0 1.15em; padding-left: 1.35em; }
+.doc li { margin-bottom: .38em; }
+.doc li::marker { color: var(--ink-3); }
+
+.doc hr {
+  border: 0; border-top: 1px solid var(--rule-soft);
+  margin: 46px 0;
+}
+
+.doc code {
+  font-family: var(--mono); font-size: .84em;
+  background: var(--surface-2); border: 1px solid var(--rule-soft);
+  padding: .08em .34em;
+}
+
+/* ---------- tables ---------------------------------------- */
+
+.tablewrap {
+  width: min(var(--wide), calc(100vw - 2 * clamp(20px, 5vw, 76px)));
+  overflow-x: auto; margin: 26px 0 30px;
+  border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink);
+}
+.doc table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--ui); font-size: .875rem; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.doc th {
+  text-align: left; vertical-align: bottom;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2);
+  padding: 11px 14px 9px; border-bottom: 1px solid var(--ink);
+  white-space: nowrap;
+}
+.doc td {
+  padding: 11px 14px; vertical-align: top;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.doc tbody tr:last-child td { border-bottom: 0; }
+.doc td:first-child, .doc th:first-child { padding-left: 0; }
+.doc td:last-child, .doc th:last-child { padding-right: 0; }
+.doc td strong { font-weight: 600; }
+.doc table em { color: var(--ink-2); }
+
+/* gender columns pick up the der/die/das colours */
+.doc th.g-m { color: var(--der);  box-shadow: inset 0 -3px 0 var(--der); }
+.doc th.g-f { color: var(--die);  box-shadow: inset 0 -3px 0 var(--die); }
+.doc th.g-n { color: var(--das);  box-shadow: inset 0 -3px 0 var(--das); }
+.doc th.g-p { color: var(--ink-2); box-shadow: inset 0 -3px 0 var(--ink-3); }
+
+/* ---------- callouts -------------------------------------- */
+
+.note {
+  margin: 22px 0; padding: 2px 0 2px 18px;
+  border-left: 3px solid var(--rule);
+  background: transparent;
+  font-size: .96rem;
+}
+.note.n-die { padding: 14px 18px; }
+.note > ul, .note > ol { margin: .8em 0 .2em; }
+.note > .note-label {
+  display: block; font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .13em; text-transform: uppercase; margin-bottom: 6px;
+}
+.note p { margin: 0; }
+.note.n-der { border-left-color: var(--der); background: transparent; }
+.note.n-der > .note-label { color: var(--der); }
+.note.n-die { border-left-color: var(--die); background: var(--die-bg); }
+.note.n-die > .note-label { color: var(--die); }
+.note.n-das { border-left-color: var(--das); background: transparent; }
+.note.n-das > .note-label { color: var(--das); }
+
+/* ---------- checklists ------------------------------------ */
+
+ul.checklist { list-style: none; padding-left: 0; margin: 20px 0 26px; }
+ul.checklist li {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 9px 2px; border-bottom: 1px solid var(--rule-soft);
+  font-size: .95rem; margin: 0;
+}
+ul.checklist li:first-child { border-top: 1px solid var(--rule-soft); }
+ul.checklist input[type=checkbox] {
+  appearance: none; -webkit-appearance: none;
+  flex: 0 0 auto; width: 17px; height: 17px; margin: 3px 0 0;
+  border: 1.5px solid var(--ink-3); background: transparent; cursor: pointer;
+  position: relative; border-radius: 0;
+}
+ul.checklist input[type=checkbox]:hover { border-color: var(--das); }
+ul.checklist input[type=checkbox]:checked { background: var(--das); border-color: var(--das); }
+ul.checklist input[type=checkbox]:checked::after {
+  content: ""; position: absolute; left: 5px; top: 1px;
+  width: 4px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}
+ul.checklist input[type=checkbox]:checked + span { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--rule); }
+ul.checklist span { flex: 1 1 auto; }
+
+/* ---------- footer ---------------------------------------- */
+
+.docfoot {
+  border-top: 1px solid var(--ink); margin-top: 90px; padding: 22px 0 90px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--ink-3); line-height: 2;
+}
+
+/* ---------- print ----------------------------------------- */
+
+@media print {
+  :root { --paper: #fff; --surface: #fff; --surface-2: #fff; --ink: #000; --ink-2: #333; --ink-3: #666; --rule: #bbb; --rule-soft: #ddd; }
+  .rail, .mbar, .filter-wrap, .rail-foot, .ladder-block, .compound, .compound-note, .legend, .legend-note { display: none !important; }
+  .shell { display: block; }
+  .main { border: 0; }
+  .doc { max-width: none; }
+  .doc h1 { break-after: avoid; margin-top: 34px; }
+  .doc h2, .doc h3 { break-after: avoid; }
+  .tablewrap { break-inside: avoid; width: 100%; }
+  .note { break-inside: avoid; }
+  body { font-size: 10.5pt; }
+}
+
+/* ---------- run-in grammar marker -------------------------- */
+
+.g-marker {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--der);
+  border: 1px solid var(--der); padding: 2px 6px 1px; margin-right: 9px;
+  display: inline-block; vertical-align: 2px;
+}
+
+/* ---------- CEFR exit descriptor --------------------------- */
+
+.exitdesc {
+  border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--rule);
+  padding: 15px 0 16px; margin: 24px 0 34px;
+}
+.exitdesc-label {
+  display: block; font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 8px;
+}
+.exitdesc p { margin: 0; font-size: 1.06rem; line-height: 1.55; }
+
+/* checkbox progress readout */
+ul.checklist { position: relative; }
+ul.checklist::after {
+  content: attr(data-done); position: absolute; right: 0; top: -22px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--das);
+}
+
+/* narrow screens: the vocabulary labels stop being legible */
+@media (max-width: 560px) {
+  .ladder .voc { display: none; }
+  .ladder .code { font-size: 1.02rem; padding-left: 5px; }
+  .ladder .bar { height: 62px; }
+  .compound .g { font-size: 9px; }
+}
+
+/* ---------- embedded-in-iframe mode ----------------------- */
+/* When loaded inside DeutschDaily's iframe, hide the kursplan's
+   own sidebar/mobile-bar so only the content scrolls.          */
+
+body.is-embedded .rail,
+body.is-embedded .mbar { display: none !important; }
+body.is-embedded .shell { display: block; }
+body.is-embedded .main { border-right: 0; }
+body.is-embedded .masthead { padding-top: clamp(20px, 3vw, 32px); }
+body.is-embedded .doc { max-width: none; padding-bottom: 60px; }
+body.is-embedded .pad { padding: 0 clamp(16px, 3vw, 40px); }
+
+</style>
+<script>
+  // Detect if we're inside an iframe and add the embedded class
+  if (window.self !== window.top) {
+    document.documentElement.classList.add('is-embedded');
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('is-embedded');
+    });
+  }
+</script>
+</head>
+<body>
+
+<div class="shell">
+
+<aside class="rail" id="rail">
+  <div class="rail-brand">
+    <a href="#top">
+      <span class="t">Deutsch<br>A1&nbsp;→&nbsp;B1</span>
+      <span class="s">Kursplan · 48 Units</span>
+    </a>
+  </div>
+  <div class="filter-wrap">
+    <input class="filter" type="search" placeholder="Filter units" aria-label="Filter the contents">
+  </div>
+  <nav class="toc" aria-label="Contents">
+<div class="grp" data-open="true"><button type="button" aria-expanded="true"><span class="chip">00</span><span class="lbl">Before you start</span></button><ul><li><a href="#0-read-this-before-the-syllabus">0. Read this before the syllabus</a></li><li><a href="#1-the-exam-landscape-pick-your-target-before-lesson-1">1. The exam landscape — pick your target before Lesson 1</a></li><li><a href="#2-level-architecture">2. Level architecture</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">A1.1</span><span class="lbl">First contact</span></button><ul><li><a href="#unit-1-sounds-greetings-the-alphabet">Unit 1 — Sounds, greetings, the alphabet</a></li><li><a href="#unit-2-verb-position-and-the-present-tense">Unit 2 — Verb position and the present tense</a></li><li><a href="#unit-3-gender-articles-plurals">Unit 3 — Gender, articles, plurals</a></li><li><a href="#unit-4-akkusativ-and-negation">Unit 4 — Akkusativ and negation</a></li><li><a href="#unit-5-numbers-time-dates">Unit 5 — Numbers, time, dates</a></li><li><a href="#unit-6-stem-changing-verbs-possessives">Unit 6 — Stem-changing verbs, possessives</a></li><li><a href="#unit-7-separable-verbs-modals-imperative">Unit 7 — Separable verbs, modals, imperative</a></li><li><a href="#unit-8-consolidation-and-a1-1-checkpoint">Unit 8 — Consolidation and A1.1 checkpoint</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">A1.2</span><span class="lbl">Completing the A1 picture</span></button><ul><li><a href="#unit-9-dativ">Unit 9 — Dativ</a></li><li><a href="#unit-10-prepositions-i">Unit 10 — Prepositions I</a></li><li><a href="#unit-11-wechselprapositionen">Unit 11 — Wechselpräpositionen</a></li><li><a href="#unit-1213-perfekt">Unit 12–13 — Perfekt</a></li><li><a href="#unit-14-word-order-tekamolo-and-connectors">Unit 14 — Word order: TeKaMoLo and connectors</a></li><li><a href="#unit-15-practical-a1-language">Unit 15 — Practical A1 language</a></li><li><a href="#unit-16-a1-checkpoint-and-exam-contact">Unit 16 — A1 checkpoint and exam contact</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">A2.1</span><span class="lbl">Building sentences that connect</span></button><ul><li><a href="#unit-17-nebensatze-the-verb-final-clause">Unit 17 — Nebensätze: the verb-final clause</a></li><li><a href="#unit-18-reflexive-verbs">Unit 18 — Reflexive verbs</a></li><li><a href="#unit-19-position-and-movement-verbs">Unit 19 — Position and movement verbs</a></li><li><a href="#unit-20-comparison">Unit 20 — Comparison</a></li><li><a href="#unit-21-directional-and-modal-detail">Unit 21 — Directional and modal detail</a></li><li><a href="#unit-22-themes-and-functions">Unit 22 — Themes and functions</a></li><li><a href="#unit-2324-consolidation-and-a2-1-checkpoint">Unit 23–24 — Consolidation and A2.1 checkpoint</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">A2.2</span><span class="lbl">Precision and politeness</span></button><ul><li><a href="#unit-2527-adjektivdeklination">Unit 25–27 — Adjektivdeklination</a></li><li><a href="#unit-28-konjunktiv-ii-gegenwart">Unit 28 — Konjunktiv II (Gegenwart)</a></li><li><a href="#unit-29-prateritum-for-reading">Unit 29 — Präteritum for reading</a></li><li><a href="#unit-30-temporal-and-concessive-clauses">Unit 30 — Temporal and concessive clauses</a></li><li><a href="#unit-31-relative-clauses-nom-akk">Unit 31 — Relative clauses (Nom / Akk)</a></li><li><a href="#unit-32-a2-checkpoint-and-exam-contact">Unit 32 — A2 checkpoint and exam contact</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">B1.1</span><span class="lbl">From surviving to explaining</span></button><ul><li><a href="#unit-33-verbs-with-fixed-prepositions-da-wo-compounds">Unit 33 — Verbs with fixed prepositions + da-/wo- compounds</a></li><li><a href="#unit-34-relative-clauses-complete">Unit 34 — Relative clauses, complete</a></li><li><a href="#unit-35-passive-voice">Unit 35 — Passive voice</a></li><li><a href="#unit-36-purpose-and-the-infinitive-with-zu">Unit 36 — Purpose, and the infinitive with zu</a></li><li><a href="#unit-37-genitiv-and-n-deklination">Unit 37 — Genitiv and n-Deklination</a></li><li><a href="#unit-38-adjective-extensions">Unit 38 — Adjective extensions</a></li><li><a href="#unit-39-themes-for-b1-1">Unit 39 — Themes for B1.1</a></li><li><a href="#unit-40-b1-1-checkpoint">Unit 40 — B1.1 checkpoint</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">B1.2</span><span class="lbl">Independent user</span></button><ul><li><a href="#unit-41-konjunktiv-ii-complete">Unit 41 — Konjunktiv II, complete</a></li><li><a href="#unit-42-plusquamperfekt-and-nachdem">Unit 42 — Plusquamperfekt and nachdem</a></li><li><a href="#unit-43-two-part-connectors-and-text-cohesion">Unit 43 — Two-part connectors and text cohesion</a></li><li><a href="#unit-44-nominalisierung-verbalisierung">Unit 44 — Nominalisierung ↔ Verbalisierung</a></li><li><a href="#unit-45-passive-alternatives-and-futur-i">Unit 45 — Passive alternatives and Futur I</a></li><li><a href="#unit-46-indirekte-rede-receptive">Unit 46 — Indirekte Rede (receptive)</a></li><li><a href="#unit-47-themes-and-register-for-b1-2">Unit 47 — Themes and register for B1.2</a></li><li><a href="#unit-48-b1-checkpoint">Unit 48 — B1 checkpoint</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">II</span><span class="lbl">Grammar: the &quot;why&quot;, not just the &quot;what&quot;</span></button><ul><li><a href="#1-why-cases-exist-at-all">1. Why cases exist at all</a></li><li><a href="#2-why-the-verb-goes-to-position-2-and-to-the-end">2. Why the verb goes to position 2 — and to the end</a></li><li><a href="#3-why-dativ-and-akkusativ-split-the-way-they-do">3. Why Dativ and Akkusativ split the way they do</a></li><li><a href="#4-why-adjective-endings-work-the-way-they-do">4. Why adjective endings work the way they do</a></li><li><a href="#5-why-german-has-separable-verbs">5. Why German has separable verbs</a></li><li><a href="#6-why-modal-particles-matter-more-than-they-look">6. Why modal particles matter more than they look</a></li><li><a href="#7-why-perfekt-beats-prateritum-in-speech">7. Why Perfekt beats Präteritum in speech</a></li><li><a href="#8-why-compound-nouns-are-your-best-friend">8. Why compound nouns are your best friend</a></li><li><a href="#9-why-word-order-for-pronouns-and-negation-is-fixed">9. Why word order for pronouns and negation is fixed</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">III</span><span class="lbl">Method</span></button><ul><li><a href="#the-weekly-template-10-h-week-version">The weekly template (10 h/week version)</a></li><li><a href="#techniques-that-outperform-re-reading">Techniques that outperform re-reading</a></li><li><a href="#vocabulary-policy">Vocabulary policy</a></li><li><a href="#what-to-do-about-the-plateau">What to do about the plateau</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">IV</span><span class="lbl">Materials</span></button><ul><li><a href="#textbooks">Textbooks</a></li><li><a href="#free-resources">Free resources</a></li><li><a href="#speaking-practice-in-order-of-cost-effectiveness">Speaking practice, in order of cost-effectiveness</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">V</span><span class="lbl">The final 8 weeks before the exam</span></button><ul><li><a href="#telc-b1-written-strategy">telc B1 written strategy</a></li><li><a href="#speaking-strategy-both-exams">Speaking strategy (both exams)</a></li></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">VI</span><span class="lbl">Where sources disagree, and what to follow</span></button><ul></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">App. A</span><span class="lbl">The 12 errors that will follow you to B2 if not fixed early</span></button><ul></ul></div>
+<div class="grp" data-open="false"><button type="button" aria-expanded="false"><span class="chip">App. B</span><span class="lbl">Master checkpoint schedule</span></button><ul></ul></div>
+  </nav>
+  <div class="rail-foot">
+    600 UE · 450 Std.<br>
+    Ziel: telc Deutsch B1
+    <button type="button" data-expand>Expand all</button>
+  </div>
+</aside>
+
+<main class="main">
+
+  <div class="mbar">
+    <button type="button" aria-label="Open contents">Contents</button>
+    <span class="now">Before you start</span>
+  </div>
+
+  <div class="pad" id="top">
+
+    <header class="masthead">
+      <p class="eyebrow">Kursplan Deutsch <span>/</span> CEFR A1&thinsp;→&thinsp;B1 <span>/</span> telc · Goethe · BAMF <span>/</span> Stand Juli 2026</p>
+
+      <h1>Deutsch A1 <span class="arrow">→</span> B1</h1>
+
+      <p class="standfirst">A complete curriculum from absolute beginner to independent user: <strong>six modules, 48 units, 600 Unterrichtseinheiten</strong>. Built to the BAMF Integrationskurs module structure, CEFR descriptors and the published telc and Goethe exam specifications.</p>
+
+      <div class="compound" role="img" aria-label="Krankenversicherungskarte, split into its three parts">
+        <span class="seg"><span class="w">Kranken</span><span class="g">sick</span></span>
+        <span class="seg"><span class="w">versicherungs</span><span class="g">insurance</span></span>
+        <span class="seg"><span class="w">karte</span><span class="g">card &middot; decides the gender</span></span>
+      </div>
+      <p class="compound-note">German builds long words out of short parts, and the last part decides the gender: <em>die&nbsp;Karte → die&nbsp;Krankenversicherungskarte</em>. This page is assembled the same way, and it borrows the colours German classrooms use for the three genders &mdash; <b class="k-der">der</b> for structure and grammar, <b class="k-die">die</b> for traps, <b class="k-das">das</b> for checkpoints.</p>
+
+      <div class="ladder-block">
+        <div class="ladder-head"><span>The six modules</span><span>Bar height = cumulative active vocabulary</span></div>
+        <div class="bands"><span class="a">Basic user · A</span><span class="b">Independent user · B</span></div>
+        <ol class="ladder"><li><a href="#a1-1-first-contact-100-ue" title="First contact"><span class="bar"><span class="fill" style="height:15%"></span></span><span class="code">A1.1</span><span class="voc">350 Wörter</span></a></li><li><a href="#a1-2-completing-the-a1-picture-100-ue" title="Completing A1"><span class="bar"><span class="fill" style="height:27%"></span></span><span class="code">A1.2</span><span class="voc">650 Wörter</span></a></li><li><a href="#a2-1-building-sentences-that-connect-100-ue" title="Connecting"><span class="bar"><span class="fill" style="height:40%"></span></span><span class="code">A2.1</span><span class="voc">950 Wörter</span></a></li><li><a href="#a2-2-precision-and-politeness-100-ue" title="Precision"><span class="bar"><span class="fill" style="height:54%"></span></span><span class="code">A2.2</span><span class="voc">1300 Wörter</span></a></li><li><a href="#b1-1-from-surviving-to-explaining-100-ue" title="Explaining"><span class="bar"><span class="fill" style="height:75%"></span></span><span class="code">B1.1</span><span class="voc">1800 Wörter</span></a></li><li><a href="#b1-2-independent-user-100-ue" title="Independent"><span class="bar"><span class="fill" style="height:100%"></span></span><span class="code">B1.2</span><span class="voc">2400 Wörter</span></a></li></ol>
+        <div class="ladder-foot"><span>0 UE</span><span>100 UE each · 45 min</span><span>600 UE / 450 Std.</span></div>
+      </div>
+    </header>
+
+    <article class="doc">
+<h2 id="0-read-this-before-the-syllabus">0. Read this before the syllabus</h2>
+<h3 id="0-1-the-thing-that-actually-decides-whether-you-reach-b1"><span class="unit-no">0.1</span>The thing that actually decides whether you reach B1</h3>
+<p>Curriculum is not the bottleneck for 95% of learners. <strong>Speaking hours with a human who corrects you</strong> is the bottleneck. Every German school in Stuttgart teaches roughly the sequence below — the ones whose students pass are the ones who make students talk for 40% of class time.</p>
+<p>If your weekly plan contains zero hours of unscripted speaking, this document will not save you. Budget it first, then fill the rest.</p>
+<h3 id="0-2-hours-honestly"><span class="unit-no">0.2</span>Hours, honestly</h3>
+<p>The BAMF Integrationskurs is <strong>600 Unterrichtseinheiten (UE) of language + 100 UE Orientierungskurs</strong>. One UE = 45 minutes. That is 6 modules × 100 UE — which maps exactly onto A1.1 / A1.2 / A2.1 / A2.2 / B1.1 / B1.2.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Class UE</th>
+<th>Class hours</th>
+<th>+ Homework/self-study</th>
+<th>Realistic total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1.1</td>
+<td>100</td>
+<td>75 h</td>
+<td>40–50 h</td>
+<td>~120 h</td>
+</tr>
+<tr>
+<td>A1.2</td>
+<td>100</td>
+<td>75 h</td>
+<td>40–50 h</td>
+<td>~120 h</td>
+</tr>
+<tr>
+<td>A2.1</td>
+<td>100</td>
+<td>75 h</td>
+<td>50–60 h</td>
+<td>~130 h</td>
+</tr>
+<tr>
+<td>A2.2</td>
+<td>100</td>
+<td>75 h</td>
+<td>50–60 h</td>
+<td>~130 h</td>
+</tr>
+<tr>
+<td>B1.1</td>
+<td>100</td>
+<td>75 h</td>
+<td>60–75 h</td>
+<td>~145 h</td>
+</tr>
+<tr>
+<td>B1.2</td>
+<td>100</td>
+<td>75 h</td>
+<td>60–75 h</td>
+<td>~145 h</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>600</strong></td>
+<td><strong>450 h</strong></td>
+<td><strong>~300–370 h</strong></td>
+<td><strong>750–800 h</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Pure self-study without a teacher does <strong>not</strong> go faster. It goes ~30% slower, because nobody corrects your output and errors fossilise. Plan 800–1000 h if you are self-teaching.</p>
+<p>At 10 h/week that is roughly <strong>18 months</strong> to a solid B1. At 5 h/week, three years. At 20 h/week (intensive course), 5–7 months. Pick your number honestly and don't move it later.</p>
+<h3 id="0-4-how-to-use-this-document"><span class="unit-no">0.4</span>How to use this document</h3>
+<p>Each sub-level is written as <strong>8 teaching units</strong> (≈12 UE each) plus a revision checkpoint. That mirrors how Schritte plus Neu, Menschen and Netzwerk neu chunk a 100-UE module. Work through them in order. Do not skip ahead to "interesting" grammar — German is unusually unforgiving about gaps, because case endings compound. A hole in Dativ at A1.2 becomes a hole in adjective endings at A2.2 and a hole in relative clauses at B1.1.</p>
+<hr/>
+<h2 id="1-the-exam-landscape-pick-your-target-before-lesson-1">1. The exam landscape — pick your target before Lesson 1</h2>
+<p>Your target exam changes what you drill in the final 8 weeks. It does <strong>not</strong> change the syllabus below. Choose now anyway, because it determines which practice materials you buy.</p>
+<h3 id="1-3-dtz-deutsch-test-fur-zuwanderer"><span class="unit-no">1.3</span>DTZ — Deutsch-Test für Zuwanderer</h3>
+<p>The exit exam of the Integrationskurs. A2/B1-scaled: you receive a result <strong>per skill</strong>, each graded A2 or B1. Written ~100 min (Hören ~25, Lesen ~45, Schreiben 30); oral ~16 min in pairs (self-presentation → talk about a picture/topic → plan something together). Only relevant if you get onto an Integrationskurs.</p>
+<hr/>
+<h2 id="2-level-architecture">2. Level architecture</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Vocabulary (cumulative, active)</th>
+<th>Core capability at exit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1.1</td>
+<td>~350</td>
+<td>Introduce yourself, ask/answer basic personal questions, numbers, time, shopping basics</td>
+</tr>
+<tr>
+<td>A1.2</td>
+<td>~650</td>
+<td>Handle routine transactions, talk about the past, give and follow simple directions</td>
+</tr>
+<tr>
+<td>A2.1</td>
+<td>~950</td>
+<td>Describe experiences, give reasons, handle most everyday service encounters</td>
+</tr>
+<tr>
+<td>A2.2</td>
+<td>~1300</td>
+<td>Describe things and people with detail, make polite requests, handle appointments and problems</td>
+</tr>
+<tr>
+<td>B1.1</td>
+<td>~1800</td>
+<td>Explain, justify an opinion, handle unexpected situations, understand main points of clear standard speech</td>
+</tr>
+<tr>
+<td>B1.2</td>
+<td>~2400</td>
+<td>Argue a position, write structured formal correspondence, follow work/study discussions</td>
+</tr>
+</tbody>
+</table></div>
+<p>Those vocabulary figures match the published Goethe/ÖSD word lists (A1 ≈ 650, A2 ≈ 1300, B1 ≈ 2400 cumulative). Treat them as floors, not ceilings. Passive vocabulary should be roughly double.</p>
+<div class="note n-das"><span class="note-label">Non-negotiable rule from day one</span><p>every noun is learned as <strong>article + noun + plural</strong>. <code>der Tisch, die Tische</code> — never <code>Tisch</code>. Retrofitting gender onto 800 nouns at B1 is a nightmare that ruins your adjective endings. Doing it correctly at A1 costs nothing.</p></div>
+<hr/>
+<h1 data-code="A1.1" id="a1-1-first-contact-100-ue"><span class="lvl-tag">Modul A1.1 · 100 Unterrichtseinheiten</span>First contact</h1>
+<div class="exitdesc"><span class="exitdesc-label">Exit descriptor (CEFR A1, partial)</span><p>You can introduce yourself and others, ask and answer questions about personal details, and interact simply if the other person speaks slowly and clearly.</p></div>
+<h3 id="unit-1-sounds-greetings-the-alphabet"><span class="unit-no">Unit 1</span>Sounds, greetings, the alphabet</h3>
+<p><strong>Pronunciation (do this properly now; it does not get easier later)</strong></p>
+<ul>
+<li>Umlauts ä / ö / ü — ö and ü have no English equivalent. Physical trick: say "eh" then round your lips → ö. Say "ee" then round → ü. Practise minimal pairs: <em>Mutter/Mütter, schon/schön, Bruder/Brüder</em>.</li>
+<li><code>ch</code> has two sounds: <em>ich-Laut</em> after e, i, ä, ö, ü, and consonants (<em>ich, mich, Milch, Bücher</em>), and <em>ach-Laut</em> after a, o, u, au (<em>Buch, machen, auch</em>). Getting this wrong is the single most audible foreign accent marker.</li>
+<li><code>w</code> = English v (<em>Wasser</em>). <code>v</code> = f (<em>Vater</em>). <code>z</code> = ts (<em>Zeit</em>). <code>s</code> before vowel = z (<em>Sonne</em>). <code>sch</code> = sh. <code>sp-/st-</code> at word start = shp/sht (<em>Sprache, Straße</em>).</li>
+<li><code>ei</code> = "eye" (<em>mein</em>), <code>ie</code> = "ee" (<em>Liebe</em>). Rule of thumb: pronounce the <strong>second</strong> letter's name.</li>
+<li><strong>Auslautverhärtung</strong> — final b/d/g devoice to p/t/k: <em>Tag</em> → "Tak", <em>Hund</em> → "Hunt", <em>halb</em> → "halp".</li>
+<li>Word stress falls on the <strong>stem</strong>, not on prefixes: <em>verSTEHen</em>, <em>beKOMmen</em>, but separable prefixes take stress: <em>ANrufen, AUFstehen</em>.</li>
+</ul>
+<p><strong>Language:</strong> Guten Morgen/Tag/Abend, Hallo, Tschüss, Auf Wiedersehen. <em>Wie heißen Sie? Ich heiße… Wie geht's?</em> Alphabet + spelling your name (<em>Wie schreibt man das?</em>). Numbers 0–20.</p>
+<div class="note n-der"><span class="note-label">Why it matters</span><p>you will spell your name to German officials and on the phone constantly. Drill it until automatic.</p></div>
+<h3 id="unit-2-verb-position-and-the-present-tense"><span class="unit-no">Unit 2</span>Verb position and the present tense</h3>
+<p><strong><span class="g-marker">Grammar</span> the single most important structural fact in German.</strong></p>
+<p>German is a <strong>V2 language</strong>: in a main clause, the conjugated verb sits in <strong>position 2</strong>, always, no matter what comes first.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Position 1</th>
+<th>Position 2 (verb)</th>
+<th>Rest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ich</td>
+<td><strong>wohne</strong></td>
+<td>in Stuttgart.</td>
+</tr>
+<tr>
+<td>In Stuttgart</td>
+<td><strong>wohne</strong></td>
+<td>ich.</td>
+</tr>
+<tr>
+<td>Heute</td>
+<td><strong>arbeite</strong></td>
+<td>ich zu Hause.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Position 1 is a <em>slot</em>, not "the subject". Anything can go there — but only <strong>one</strong> element. Once you fill it with something else, the subject moves behind the verb. This is called <strong>Inversion</strong>, and it is not optional politeness; it's structural.</p>
+<p>Three sentence types, distinguished only by verb position:</p>
+<ul>
+<li><strong>Aussagesatz</strong> — verb position 2: <em>Du kommst aus Indien.</em></li>
+<li><strong>Ja/Nein-Frage</strong> — verb position 1: <em>Kommst du aus Indien?</em></li>
+<li><strong>W-Frage</strong> — W-word position 1, verb position 2: <em>Woher kommst du?</em></li>
+</ul>
+<p><strong>Präsens, regular:</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>wohnen</th>
+<th>arbeit<strong>e</strong>n (stem ends -t/-d)</th>
+<th>heiß<strong>en</strong> (stem ends -s/-ß/-z)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ich</td>
+<td>wohn<strong>e</strong></td>
+<td>arbeit<strong>e</strong></td>
+<td>heiß<strong>e</strong></td>
+</tr>
+<tr>
+<td>du</td>
+<td>wohn<strong>st</strong></td>
+<td>arbeit<strong>est</strong></td>
+<td>heiß<strong>t</strong></td>
+</tr>
+<tr>
+<td>er/sie/es</td>
+<td>wohn<strong>t</strong></td>
+<td>arbeit<strong>et</strong></td>
+<td>heiß<strong>t</strong></td>
+</tr>
+<tr>
+<td>wir</td>
+<td>wohn<strong>en</strong></td>
+<td>arbeit<strong>en</strong></td>
+<td>heiß<strong>en</strong></td>
+</tr>
+<tr>
+<td>ihr</td>
+<td>wohn<strong>t</strong></td>
+<td>arbeit<strong>et</strong></td>
+<td>heiß<strong>t</strong></td>
+</tr>
+<tr>
+<td>sie/Sie</td>
+<td>wohn<strong>en</strong></td>
+<td>arbeit<strong>en</strong></td>
+<td>heiß<strong>en</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The extra <strong>-e-</strong> in <em>arbeitest/arbeitet</em> exists purely so the ending is pronounceable. Same logic for <em>findest, öffnest, rechnet</em>.</p>
+<p><strong>sein</strong> and <strong>haben</strong> — memorise as chants, they appear in every second sentence:
+<em>bin, bist, ist, sind, seid, sind</em> — <em>habe, hast, hat, haben, habt, haben</em></p>
+<div class="note n-die"><span class="note-label">Common mistake</span><p>German has <strong>no present continuous</strong>. <em>I am working</em> = <strong>Ich arbeite</strong>. Not <em>Ich bin arbeiten</em>. If you need to stress "right now", add <strong>gerade</strong>: <em>Ich arbeite gerade.</em></p></div>
+<p><strong>Vocabulary:</strong> countries, nationalities, languages, jobs. <em>Ich bin Ingenieur</em> — <strong>no article with professions</strong> (unlike English "I am an engineer").</p>
+<div class="note n-das"><span class="note-label">Speaking task</span><p>90-second self-introduction, recorded. Re-record weekly through all of A1; it is your progress meter.</p></div>
+<h3 id="unit-3-gender-articles-plurals"><span class="unit-no">Unit 3</span>Gender, articles, plurals</h3>
+<p><strong><span class="g-marker">Grammar</span></strong> der / die / das and ein / eine / ein (Nominativ).</p>
+<p>There is no reliable rule for gender, but there are strong tendencies worth exploiting:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Usually <strong>der</strong></th>
+<th>Usually <strong>die</strong></th>
+<th>Usually <strong>das</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>male persons, days, months, seasons</td>
+<td>female persons, most -e nouns</td>
+<td>diminutives -chen, -lein</td>
+</tr>
+<tr>
+<td>weather (<em>der Regen, der Wind</em>)</td>
+<td><strong>-ung, -heit, -keit, -schaft, -tion, -tät, -ik, -ei, -ur</strong></td>
+<td><strong>-chen, -lein, -ment, -um, -ma</strong></td>
+</tr>
+<tr>
+<td>-er (agent nouns: <em>der Lehrer</em>), -ling, -ismus</td>
+<td>numbers as nouns (<em>die Eins</em>)</td>
+<td>infinitives as nouns (<em>das Essen</em>), colours, letters</td>
+</tr>
+<tr>
+<td>alcohol (<em>der Wein</em>) — except <em>das Bier</em></td>
+<td>most flowers and trees</td>
+<td>metals (<em>das Gold</em>)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The <strong>-ung / -heit / -keit / -schaft / -tion</strong> group is near-100% reliable and covers hundreds of words. Learn that block first.</p>
+<p><strong>Plural</strong> — five patterns, no shortcut:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Example</th>
+<th>Typical for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>-e</strong> (± Umlaut)</td>
+<td>der Tisch → die Tisch<strong>e</strong>; der Stuhl → die St<strong>ü</strong>hl<strong>e</strong></td>
+<td>many masculine</td>
+</tr>
+<tr>
+<td><strong>-(e)n</strong></td>
+<td>die Frau → die Frau<strong>en</strong>; die Lampe → die Lampe<strong>n</strong></td>
+<td>~90% of feminine</td>
+</tr>
+<tr>
+<td><strong>-er</strong> (± Umlaut)</td>
+<td>das Kind → die Kind<strong>er</strong>; das Buch → die B<strong>ü</strong>ch<strong>er</strong></td>
+<td>many neuter, some masc.</td>
+</tr>
+<tr>
+<td><strong>-s</strong></td>
+<td>das Auto → die Auto<strong>s</strong></td>
+<td>loanwords, abbreviations</td>
+</tr>
+<tr>
+<td><strong>–</strong> (± Umlaut)</td>
+<td>der Lehrer → die Lehrer; der Vater → die V<strong>ä</strong>ter</td>
+<td>masc./neut. in -er, -el, -en</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>All plurals take <code>die</code> in the Nominativ.</strong> That one fact simplifies a lot.</p>
+<div class="note n-der"><span class="note-label">Memory aid</span><p>build a colour system and keep it for years — blue = der, red = die, green = das. Use it in your notes, your Anki cards, your highlighter. Visual coding beats rote lists.</p></div>
+<h3 id="unit-4-akkusativ-and-negation"><span class="unit-no">Unit 4</span>Akkusativ and negation</h3>
+<p><strong><span class="g-marker">Grammar</span> the accusative case.</strong> This is where German diverges from English permanently, so understand the <em>why</em>.</p>
+<p>English fixes meaning by word order: "The dog bites the man" ≠ "The man bites the dog". German marks meaning by <strong>case endings</strong>, which frees up word order for emphasis. <em>Den Mann beißt der Hund</em> still means the dog does the biting — because <em>den</em> marks the man as the object.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th class="g-m">maskulin</th>
+<th class="g-f">feminin</th>
+<th class="g-n">neutral</th>
+<th class="g-p">Plural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nominativ</strong></td>
+<td>der / ein</td>
+<td>die / eine</td>
+<td>das / ein</td>
+<td>die / –</td>
+</tr>
+<tr>
+<td><strong>Akkusativ</strong></td>
+<td><strong>den / einen</strong></td>
+<td>die / eine</td>
+<td>das / ein</td>
+<td>die / –</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Only masculine changes.</strong> That is the whole lesson. Say it out loud: <em>der → den, ein → einen</em>. Everything else is identical to the nominative.</p>
+<p>Personal pronouns follow the same logic: <em>ich→mich, du→dich, er→ihn, sie→sie, es→es, wir→uns, ihr→euch, sie/Sie→sie/Sie</em>.</p>
+<p><strong>Negation — nicht vs. kein.</strong> This trips up nearly every learner:</p>
+<ul>
+<li><strong>kein</strong> negates a noun that has <em>ein</em> or no article: <em>Ich habe </em><em>kein</em><em> Auto. Ich trinke </em><em>keinen</em><em> Kaffee.</em> It declines exactly like <em>ein</em>, but also exists in the plural (<em>keine Kinder</em>).</li>
+<li><strong>nicht</strong> negates everything else — verbs, adjectives, adverbs, and nouns with a definite article or possessive: <em>Ich arbeite </em><em>nicht</em><em>. Das ist </em><em>nicht</em><em> mein Auto. Der Film ist </em><em>nicht</em><em> gut.</em></li>
+</ul>
+<p><strong>Position of nicht:</strong> at the end of the clause if it negates the whole sentence; <strong>directly before</strong> the element it negates otherwise.
+<em>Ich komme heute </em><em>nicht</em><em>.</em> (I'm not coming today.)
+<em>Ich komme </em><em>nicht</em><em> heute, sondern morgen.</em> (Not today — tomorrow.)</p>
+<p><strong>Vocabulary:</strong> food and drink, shopping, quantities, prices. <em>Was kostet…? Ich hätte gern…</em> (introduce as a fixed phrase; the Konjunktiv II behind it comes at A2.2).</p>
+<h3 id="unit-5-numbers-time-dates"><span class="unit-no">Unit 5</span>Numbers, time, dates</h3>
+<p><strong>Language:</strong> numbers to 1,000,000. German reads two-digit numbers backwards — <em>einundzwanzig</em> = "one-and-twenty". This will slow your listening for months; drill number dictation daily for two weeks.</p>
+<p><strong>Uhrzeit — two systems, both needed:</strong></p>
+<ul>
+<li><strong>Informal:</strong> <em>Viertel nach drei, halb vier, zwanzig vor fünf.</em> <strong>Trap: <code>halb vier</code> = 3:30, not 4:30.</strong> German counts <em>toward</em> the coming hour. Half-way to four.</li>
+<li><strong>Formal (24h, used in announcements, timetables, appointments):</strong> <em>fünfzehn Uhr dreißig.</em></li>
+</ul>
+<p><strong>Prepositions of time:</strong> <em>um</em> (clock time), <em>am</em> (days, parts of day — <em>am Montag, am Abend</em>, but <strong>in der Nacht</strong>), <em>im</em> (months, seasons — <em>im Juli, im Sommer</em>), <em>von…bis</em>, <em>ab</em>, <em>seit</em>.</p>
+<p><strong>Dates:</strong> <em>Heute ist der 26. Juli.</em> / <em>Am 26. Juli.</em> Ordinals: -t- to 19, -st- from 20 (<em>der erste, der dritte, der siebte, der zwanzigste</em>).</p>
+<h3 id="unit-6-stem-changing-verbs-possessives"><span class="unit-no">Unit 6</span>Stem-changing verbs, possessives</h3>
+<p><strong><span class="g-marker">Grammar</span> vowel-changing (strong) verbs.</strong> Only in <strong>du</strong> and <strong>er/sie/es</strong>:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Verbs</th>
+<th>du / er-form</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a → ä</td>
+<td>fahren, schlafen, tragen, fallen, halten, waschen</td>
+<td>du f<strong>ä</strong>hrst, er f<strong>ä</strong>hrt</td>
+</tr>
+<tr>
+<td>e → i</td>
+<td>sprechen, essen, geben, helfen, treffen, nehmen</td>
+<td>du spr<strong>i</strong>chst; du n<strong>i</strong>mmst, er n<strong>i</strong>mmt</td>
+</tr>
+<tr>
+<td>e → ie</td>
+<td>sehen, lesen, empfehlen, stehlen</td>
+<td>du s<strong>ie</strong>hst, er l<strong>ie</strong>st</td>
+</tr>
+</tbody>
+</table></div>
+<p>Irregular and high-frequency: <em>nehmen → du nimmst, er nimmt</em>. <em>wissen → ich weiß, du weißt, er weiß</em>.</p>
+<p><strong>Possessivartikel:</strong> mein, dein, sein, ihr, unser, euer, ihr/Ihr. They decline <strong>exactly like ein/kein</strong>. <em>Das ist mein Bruder. Ich sehe meinen Bruder.</em></p>
+<div class="note n-die"><span class="note-label">Trap</span><p><em>ihr</em> means both "her" and "their"; <em>Ihr</em> (capitalised) means "your (formal)". Context and capitalisation are your only clues in writing.</p></div>
+<p><strong>Vocabulary:</strong> family, home, furniture, rooms.</p>
+<h3 id="unit-7-separable-verbs-modals-imperative"><span class="unit-no">Unit 7</span>Separable verbs, modals, imperative</h3>
+<p><strong><span class="g-marker">Grammar</span> trennbare Verben.</strong> In a main clause the prefix detaches and goes to the <strong>end</strong>:
+<em>Ich </em><em>stehe</em><em> um sieben Uhr </em><em>auf</em><em>.</em> / <em>Der Zug </em><em>kommt</em><em> um 9 Uhr </em><em>an</em><em>.</em></p>
+<p>This creates the <strong>Satzklammer (sentence bracket)</strong> — conjugated verb in position 2, the rest of the verb at the end. This bracket is the master pattern of German syntax; it reappears with modals, Perfekt, passive and future. Recognise it now and half of B1 word order becomes obvious later.</p>
+<p>Separable prefixes (stressed): <em>an-, auf-, aus-, ein-, mit-, nach-, vor-, zu-, ab-, zurück-, weg-, hin-, her-, fern-</em>.
+Inseparable prefixes (unstressed, never detach): <em>be-, ge-, er-, ver-, zer-, ent-, emp-, miss-</em>.
+Pronunciation tells you which: <strong>ÚMziehen</strong> (to move house, separable) vs <strong>umGÉBen</strong> (to surround, inseparable).</p>
+<p><strong>Modalverben:</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>können</th>
+<th>müssen</th>
+<th>wollen</th>
+<th>dürfen</th>
+<th>sollen</th>
+<th>möchten</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ich</td>
+<td>kann</td>
+<td>muss</td>
+<td>will</td>
+<td>darf</td>
+<td>soll</td>
+<td>möchte</td>
+</tr>
+<tr>
+<td>du</td>
+<td>kannst</td>
+<td>musst</td>
+<td>willst</td>
+<td>darfst</td>
+<td>sollst</td>
+<td>möchtest</td>
+</tr>
+<tr>
+<td>er</td>
+<td>kann</td>
+<td>muss</td>
+<td>will</td>
+<td>darf</td>
+<td>soll</td>
+<td>möchte</td>
+</tr>
+<tr>
+<td>wir</td>
+<td>können</td>
+<td>müssen</td>
+<td>wollen</td>
+<td>dürfen</td>
+<td>sollen</td>
+<td>möchten</td>
+</tr>
+</tbody>
+</table></div>
+<p>Note <strong>no ending in ich and er/sie/es</strong> — that's the signature of the modal group.</p>
+<p>Structure: modal in position 2, <strong>infinitive at the end</strong>. <em>Ich </em><em>kann</em><em> heute nicht </em><em>kommen</em><em>.</em> — the Satzklammer again.</p>
+<p><strong>Meaning distinctions that matter:</strong></p>
+<ul>
+<li><strong>müssen</strong> = necessity. <strong>nicht müssen</strong> = don't have to. <strong>nicht dürfen</strong> = must not / forbidden. <em>Du musst nicht kommen</em> (you needn't) vs <em>Du darfst nicht kommen</em> (you're not allowed). English speakers confuse these constantly and it changes the meaning completely.</li>
+<li><strong>wollen</strong> is blunter than English "want". For requests use <strong>möchten</strong> or <em>Ich hätte gern</em>.</li>
+<li><strong>sollen</strong> = someone else says you should. <em>Der Arzt sagt, ich soll mehr schlafen.</em></li>
+</ul>
+<p><strong>Imperativ:</strong></p>
+<ul>
+<li>Sie: <em>Kommen Sie!</em> (verb + Sie)</li>
+<li>du: <em>Komm!</em> (stem, drop -st; stem-changing e→i keeps the change: <em>Sprich langsamer!</em>; a→ä does <strong>not</strong>: <em>Fahr langsam!</em>)</li>
+<li>ihr: <em>Kommt!</em></li>
+<li>Soften it with <strong>mal</strong> or <strong>bitte</strong>: <em>Komm mal her. Machen Sie bitte die Tür zu.</em></li>
+</ul>
+<h3 id="unit-8-consolidation-and-a1-1-checkpoint"><span class="unit-no">Unit 8</span>Consolidation and A1.1 checkpoint</h3>
+<div class="note n-das"><span class="note-label">Revision checkpoint — you should be able to</span><p></p></div>
+<ul class="checklist">
+<li><input type="checkbox"/><span>Introduce yourself for 90 seconds without stopping</span></li>
+<li><input type="checkbox"/><span>Form statements, yes/no questions and W-questions with correct verb position</span></li>
+<li><input type="checkbox"/><span>Conjugate any regular verb, plus sein/haben/the six modals</span></li>
+<li><input type="checkbox"/><span>Produce der/die/das + plural for 200 core nouns</span></li>
+<li><input type="checkbox"/><span>Use Akkusativ correctly (i.e. remember that only masculine changes)</span></li>
+<li><input type="checkbox"/><span>Choose nicht vs. kein correctly</span></li>
+<li><input type="checkbox"/><span>Tell the time both ways, say any date, understand spoken numbers</span></li>
+<li><input type="checkbox"/><span>Split separable verbs correctly</span></li>
+</ul>
+<div class="note n-das"><span class="note-label">Diagnostic</span><p>write 150 words about your daily routine. Count your errors by category. Any category with 3+ errors goes back into daily drilling for a week.</p></div>
+<hr/>
+<h1 data-code="A1.2" id="a1-2-completing-the-a1-picture-100-ue"><span class="lvl-tag">Modul A1.2 · 100 Unterrichtseinheiten</span>Completing the A1 picture</h1>
+<div class="exitdesc"><span class="exitdesc-label">Exit descriptor (CEFR A1, full)</span><p>You can handle simple, routine exchanges, talk about the past in simple terms, and understand slow, clear speech on familiar topics.</p></div>
+<h3 id="unit-9-dativ"><span class="unit-no">Unit 9</span>Dativ</h3>
+<p><strong><span class="g-marker">Grammar</span> the third case.</strong> Dative marks the <strong>indirect object</strong> — the recipient/beneficiary — and is required by certain prepositions and verbs.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th class="g-m">mask.</th>
+<th class="g-f">fem.</th>
+<th class="g-n">neut.</th>
+<th class="g-p">Plural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nom</td>
+<td>der/ein</td>
+<td>die/eine</td>
+<td>das/ein</td>
+<td>die</td>
+</tr>
+<tr>
+<td>Akk</td>
+<td><strong>den/einen</strong></td>
+<td>die/eine</td>
+<td>das/ein</td>
+<td>die</td>
+</tr>
+<tr>
+<td><strong>Dativ</strong></td>
+<td><strong>dem/einem</strong></td>
+<td><strong>der/einer</strong></td>
+<td><strong>dem/einem</strong></td>
+<td><strong>den/– (+n)</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Two memory hooks:</p>
+<ol>
+<li><strong>"R-M-R / N-M-N / M-R-M-N"</strong> — read the Nom/Akk/Dat rows of the definite article column-wise and chant them. Ugly but it works.</li>
+<li><strong>Dative plural always ends in -n</strong> on the noun itself: <em>die Kinder → mit den Kinder</em><em>n</em><strong>; <em>die Freunde → mit den Freunde**n</em></strong>. Exception: plurals already ending in -n or -s.</li>
+</ol>
+<p><strong>Dative pronouns:</strong> mir, dir, ihm, ihr, ihm, uns, euch, ihnen / Ihnen.</p>
+<p><strong>Verbs that take Dativ</strong> (there aren't many — learn the list, it covers 90% of cases):
+<em>helfen, danken, gefallen, gehören, passen, schmecken, antworten, glauben, gratulieren, folgen, begegnen, zuhören, wehtun</em></p>
+<p><em>Ich helfe </em><em>dir</em><em>. Das Buch gehört </em><em>meinem Bruder</em><em>. Das Essen schmeckt </em><em>mir</em><em> gut.</em></p>
+<p><strong>Word order with two objects — the rule:</strong></p>
+<ul>
+<li>Two nouns → <strong>Dativ before Akkusativ</strong>: <em>Ich gebe </em><em>dem Kind</em><em> </em><em>das Buch</em><em>.</em></li>
+<li>Any pronoun → <strong>pronoun first</strong>: <em>Ich gebe </em><em>es</em><em> dem Kind. Ich gebe </em><em>ihm</em><em> das Buch. Ich gebe </em><em>es ihm</em><em>.</em></li>
+</ul>
+<p>Short version: <strong>pronouns before nouns; among nouns, Dativ first; among pronouns, Akkusativ first.</strong></p>
+<h3 id="unit-10-prepositions-i"><span class="unit-no">Unit 10</span>Prepositions I</h3>
+<p><strong>Immer Dativ</strong> (memorise as a rhythm or to a tune — this is the standard German-classroom trick):
+<strong>aus, bei, mit, nach, seit, von, zu</strong> (+ gegenüber, ab, außer)</p>
+<p><strong>Immer Akkusativ:</strong>
+<strong>durch, für, gegen, ohne, um</strong> (+ bis, entlang)</p>
+<p>Contractions you must actively produce, not just recognise: <em>zu dem → </em><em>zum</em><strong>, <em>zu der → **zur</em></strong>, <em>bei dem → </em><em>beim</em><strong>, <em>von dem → **vom</em></strong>, <em>in dem → </em><em>im</em><strong>, <em>in das → **ins</em></strong>, <em>an dem → </em><em>am</em><strong>, <em>an das → **ans</em></strong>.</p>
+<div class="note n-die"><span class="note-label">High-frequency traps</span><p></p><ul>
+<li><em>nach Hause</em> (going home) vs <em>zu Hause</em> (at home). Fixed. Don't analyse it.</li>
+<li><em>nach</em> + city/country without article (<em>nach Berlin, nach Indien</em>), but <em>in die Schweiz, in die Türkei, in die USA</em> — countries with an article take <em>in</em> + Akkusativ.</li>
+<li><em>bei</em> = at someone's place / at a company: <em>bei meiner Familie, bei Bosch</em>. Not <em>by</em>.</li>
+<li><strong>seit + Präsens</strong>, never Perfekt: <em>Ich wohne </em><em>seit</em><em> zwei Jahren in Deutschland.</em> English says "I have been living"; German uses the present. This is one of the most persistent English-speaker errors and it survives all the way to C1 if not fixed here.</li>
+</ul></div>
+
+<h3 id="unit-11-wechselprapositionen"><span class="unit-no">Unit 11</span>Wechselpräpositionen</h3>
+<p><strong><span class="g-marker">Grammar</span> the nine two-way prepositions.</strong>
+<strong>an, auf, hinter, in, neben, über, unter, vor, zwischen</strong></p>
+<p>The rule is genuinely logical: <strong>Wohin? → Akkusativ</strong> (movement toward a destination). <strong>Wo? → Dativ</strong> (static location).</p>
+<p><em>Ich gehe </em><em>in die</em><em> Küche.</em> (Wohin? → Akk)
+<em>Ich bin </em><em>in der</em><em> Küche.</em> (Wo? → Dat)</p>
+<div class="note n-der"><span class="note-label">Why</span><p>the accusative historically marks a goal/endpoint; the dative marks a fixed position. Once you internalise "Akkusativ = arrow, Dativ = pin", you stop guessing.</p></div>
+<div class="note n-der"><span class="note-label">Test that actually works</span><p>ask the <em>verb</em>, not the sentence. Does the action end somewhere new? Akkusativ.
+Careful with <em>Ich laufe im Park</em> (running around inside the park — location) vs <em>Ich laufe in den Park</em> (running into the park — destination).</p></div>
+<h3 id="unit-1213-perfekt"><span class="unit-no">Unit 12–13</span>Perfekt</h3>
+<p><strong><span class="g-marker">Grammar</span> the spoken past tense.</strong> In everyday spoken German, the Perfekt does the work that English does with the simple past. <em>Gestern habe ich gearbeitet</em> = "Yesterday I worked."</p>
+<p><strong>Formation: haben/sein (position 2) + Partizip II (end).</strong> The Satzklammer again.</p>
+<p><strong>Partizip II patterns:</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Verb type</th>
+<th>Pattern</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>regular (schwach)</td>
+<td><strong>ge- + stem + -t</strong></td>
+<td>machen → <strong>ge</strong>mach<strong>t</strong></td>
+</tr>
+<tr>
+<td>irregular (stark)</td>
+<td><strong>ge- + (changed stem) + -en</strong></td>
+<td>trinken → <strong>ge</strong>trunk<strong>en</strong>; schreiben → <strong>ge</strong>schrieb<strong>en</strong></td>
+</tr>
+<tr>
+<td>mixed</td>
+<td>ge- + changed stem + -t</td>
+<td>bringen → <strong>ge</strong>brach<strong>t</strong>; denken → <strong>ge</strong>dach<strong>t</strong></td>
+</tr>
+<tr>
+<td>separable</td>
+<td>prefix + <strong>ge</strong> + stem</td>
+<td>aufstehen → auf<strong>ge</strong>standen; einkaufen → ein<strong>ge</strong>kauft</td>
+</tr>
+<tr>
+<td>inseparable (be-, er-, ver-, ent-, ge-, zer-, emp-, miss-)</td>
+<td><strong>no ge-</strong></td>
+<td>besuchen → besucht; verstehen → verstanden</td>
+</tr>
+<tr>
+<td>ends in <strong>-ieren</strong></td>
+<td><strong>no ge-</strong></td>
+<td>studieren → studiert; telefonieren → telefoniert</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>haben or sein?</strong> Default is <strong>haben</strong>. Use <strong>sein</strong> when:</p>
+<ol>
+<li>The verb expresses <strong>change of location</strong>: gehen, kommen, fahren, fliegen, laufen, reisen, steigen</li>
+<li>The verb expresses <strong>change of state</strong>: aufstehen, einschlafen, aufwachen, sterben, wachsen, werden</li>
+<li>The three memorised exceptions: <strong>sein, bleiben, passieren</strong></li>
+</ol>
+<p><em>Ich </em><em>bin</em><em> nach Berlin </em><em>gefahren</em><em>.</em> / <em>Ich </em><em>habe</em><em> das Auto </em><em>gefahren</em><em>.</em> — same verb, but the second has a direct object and is no longer "change of location". Transitive → haben.</p>
+<p><strong>Präteritum of sein, haben and modals</strong> — used in speech even though the rest of the past is Perfekt:
+<em>war, warst, war, waren, wart, waren</em> / <em>hatte, hattest, hatte, hatten, hattet, hatten</em>
+<em>konnte, musste, wollte, durfte, sollte, mochte</em> (note: umlaut disappears)</p>
+<div class="note n-die"><span class="note-label">Never say</span><p><em>Ich bin gewesen</em> when <em>Ich war</em> is natural, and <strong>never</strong> <em>Ich habe gekonnt</em> in a modal construction — say <em>Ich konnte</em>.</p></div>
+<div class="note n-das"><span class="note-label">Practice load</span><p>you need roughly <strong>80 irregular participles</strong> as automatic recall. Anki, 15 minutes daily, four weeks. There is no clever alternative.</p></div>
+<h3 id="unit-14-word-order-tekamolo-and-connectors"><span class="unit-no">Unit 14</span>Word order: TeKaMoLo and connectors</h3>
+<p><strong><span class="g-marker">Grammar</span> the Mittelfeld.</strong> When you have several adverbials, German orders them:</p>
+<p><strong>Te</strong>mporal → <strong>Ka</strong>usal → <strong>Mo</strong>dal → <strong>Lo</strong>kal
+<em>(When → Why → How → Where)</em></p>
+<p><em>Ich fahre </em><em>morgen</em><em> (Te) </em><em>wegen der Arbeit</em><em> (Ka) </em><em>mit dem Zug</em><em> (Mo) </em><em>nach München</em><em> (Lo).</em></p>
+<p>This is a strong default, not an iron law — you can front any element for emphasis (into position 1), and native speakers bend it. But writing to TeKaMoLo will never sound wrong, and it's what exam graders expect.</p>
+<p><strong>Also in the Mittelfeld:</strong> pronouns push to the front, right after the verb. <em>Gestern habe </em><em>ich es ihm</em><em> gegeben.</em></p>
+<p><strong>Hauptsatz-connectors (Position 0 — they do NOT count as position 1, so no inversion):</strong>
+<strong>und, oder, aber, denn, sondern</strong>
+<em>Ich bleibe zu Hause, </em><em>denn</em><em> ich bin krank.</em> (denn + normal word order)</p>
+<p><strong>Compare with <code>weil</code></strong>, which is a subordinating conjunction and sends the verb to the end (formally introduced in A2.1):
+<em>Ich bleibe zu Hause, </em><em>weil</em><em> ich krank </em><em>bin</em><em>.</em></p>
+<p>Same meaning, different syntax. <strong>denn</strong> and <strong>weil</strong> are the cleanest possible illustration of Hauptsatz vs. Nebensatz. Teach them as a pair.</p>
+<p><strong>sondern vs. aber:</strong> <em>sondern</em> only after a negation, correcting it. <em>Ich komme nicht heute, </em><em>sondern</em><em> morgen.</em> Otherwise <em>aber</em>.</p>
+<h3 id="unit-15-practical-a1-language"><span class="unit-no">Unit 15</span>Practical A1 language</h3>
+<p><strong>Themes:</strong> health and body (<em>Ich habe Kopfschmerzen. Mir ist schlecht.</em>), doctor's appointment, at the pharmacy, directions (<em>Gehen Sie geradeaus, biegen Sie links ab</em>), public transport, weather, clothing and shopping.</p>
+<p><strong>Idiomatic patterns worth memorising whole:</strong></p>
+<ul>
+<li><em>Mir ist kalt/warm/schlecht/langweilig</em> — <strong>not</strong> <em>Ich bin kalt</em>. These states take the dative person. English-speaker error #2.</li>
+<li><em>Es gibt</em> + <strong>Akkusativ</strong>: <em>Es gibt einen Supermarkt in der Nähe.</em></li>
+<li><em>Wie lange dauert…? / Wie weit ist es bis…?</em></li>
+<li><em>Können Sie mir helfen? Ich verstehe das nicht. Können Sie das bitte wiederholen?</em> — the four sentences that keep a real conversation alive. Overlearn them.</li>
+</ul>
+<h3 id="unit-16-a1-checkpoint-and-exam-contact"><span class="unit-no">Unit 16</span>A1 checkpoint and exam contact</h3>
+<div class="note n-das"><span class="note-label">Revision checkpoint</span><p></p></div>
+<ul class="checklist">
+<li><input type="checkbox"/><span>Nom / Akk / Dat table produced from memory in under 60 seconds</span></li>
+<li><input type="checkbox"/><span>Perfekt of 80 common verbs, correct auxiliary</span></li>
+<li><input type="checkbox"/><span>Correct case after all Dativ- and Akkusativ-only prepositions</span></li>
+<li><input type="checkbox"/><span>Wechselpräpositionen: correct case chosen from context, not guessed</span></li>
+<li><input type="checkbox"/><span>TeKaMoLo ordering in written sentences</span></li>
+<li><input type="checkbox"/><span>650-word active vocabulary</span></li>
+<li><input type="checkbox"/><span>5-minute conversation about yourself, family, home, daily routine, weekend</span></li>
+</ul>
+<div class="note n-das"><span class="note-label">Exam contact</span><p>sit one full <strong>Goethe-Zertifikat A1 (Start Deutsch 1)</strong> or <strong>telc Deutsch A1</strong> model test under timed conditions. Not to certify — to learn the feel of a German exam paper early, so the format is never the obstacle later.</p></div>
+<div class="note n-die"><span class="note-label">If you fail the checkpoint</span><p>do not proceed. A2 assumes fluent, automatic case selection. Building A2 on shaky A1 cases is the #1 reason people plateau at "false A2" for years.</p></div>
+<hr/>
+<h1 data-code="A2.1" id="a2-1-building-sentences-that-connect-100-ue"><span class="lvl-tag">Modul A2.1 · 100 Unterrichtseinheiten</span>Building sentences that connect</h1>
+<div class="exitdesc"><span class="exitdesc-label">Exit descriptor</span><p>You can describe your background and immediate environment, give reasons and explanations, and handle most routine service encounters.</p></div>
+<h3 id="unit-17-nebensatze-the-verb-final-clause"><span class="unit-no">Unit 17</span>Nebensätze: the verb-final clause</h3>
+<p><strong><span class="g-marker">Grammar</span> subordinate clauses.</strong> This is the structural leap of A2. Everything above A2 depends on it.</p>
+<p>In a <strong>Nebensatz</strong>, the conjugated verb goes to the <strong>very end</strong>:</p>
+<p><em>Ich komme nicht, </em><em>weil</em><em> ich krank </em><em>bin</em><em>.</em>
+<em>Ich weiß, </em><em>dass</em><em> er morgen </em><em>kommt</em><em>.</em>
+<strong><em>Wenn</em>* das Wetter gut </strong>ist*<em>, gehen wir spazieren.</em></p>
+<div class="note n-der"><span class="note-label">Why does German do this?</span><p>The subordinating conjunction occupies the "front field" of its own clause and effectively pushes the verb to the far edge, keeping the clause as one closed unit. Practically: treat a Nebensatz as a single block. When it comes first, the whole block counts as <strong>position 1</strong>, so the main clause verb follows immediately — producing the famous <strong>verb-comma-verb</strong> collision:</p></div>
+<p><em>Wenn das Wetter gut </em><em>ist</em><em>, </em><em>gehen</em><em> wir spazieren.</em></p>
+<p>Train that collision deliberately. It's a reliable marker of a learner who has genuinely internalised German syntax rather than translating.</p>
+<p><strong>Order of elements at the end of a Nebensatz</strong> (when there are two verbs):
+<em>…, weil ich nicht </em><em>kommen kann</em><em>.</em> — modal last.
+<em>…, weil ich gestern </em><em>gearbeitet habe</em><em>.</em> — auxiliary last.</p>
+<p>The finite verb is <em>always</em> the final word. Separable verbs re-join: <em>…, weil ich um sieben </em><em>aufstehe</em><em>.</em></p>
+<p><strong>Core subordinating conjunctions at this stage:</strong> <strong>weil</strong> (reason), <strong>dass</strong> (that), <strong>wenn</strong> (if / whenever), <strong>ob</strong> (whether).</p>
+<p><strong>dass vs. das:</strong> <em>dass</em> = conjunction; <em>das</em> = article or relative pronoun. Test: if you can replace it with <em>dieses/welches</em>, it's <em>das</em>.</p>
+<p><strong>ob vs. wenn:</strong> <em>ob</em> = whether (indirect yes/no question); <em>wenn</em> = if (condition). <em>Ich weiß nicht, </em><em>ob</em><em> er kommt</em> ≠ <em>Ich freue mich, </em><em>wenn</em><em> er kommt.</em></p>
+<h3 id="unit-18-reflexive-verbs"><span class="unit-no">Unit 18</span>Reflexive verbs</h3>
+<p><strong><span class="g-marker">Grammar</span></strong> Verbs where the subject and object are the same person. German uses them far more than English.</p>
+<p><strong>Akkusativ reflexive:</strong> mich, dich, <strong>sich</strong>, uns, euch, <strong>sich</strong>
+<em>Ich freue </em><em>mich</em><em>. Er interessiert </em><em>sich</em><em> für Musik. Wir treffen </em><em>uns</em><em> um acht.</em></p>
+<p><strong>Dativ reflexive</strong> (when there is already an accusative object): mir, dir, sich, uns, euch, sich
+<em>Ich putze </em><em>mir</em><em> die Zähne. Ich wasche </em><em>mir</em><em> die Hände. Ich kaufe </em><em>mir</em><em> ein Auto.</em></p>
+<p><strong>Note:</strong> German uses the definite article, not a possessive, for body parts: <em>Ich wasche mir </em><em>die</em><em> Hände</em>, not <em>meine Hände</em>. The dative pronoun already tells you whose they are.</p>
+<p><strong>High-frequency reflexives (learn with their preposition — you'll need it at B1):</strong>
+<em>sich freuen </em><em>auf</em><em> (+A, future) / </em><em>über</em><em> (+A, past-or-present), sich interessieren </em><em>für</em><em> (+A), sich ärgern </em><em>über</em><em> (+A), sich erinnern </em><em>an</em><em> (+A), sich kümmern </em><em>um</em><em> (+A), sich bewerben </em><em>um/bei</em><em>, sich beschweren </em><em>über</em><em>, sich entschuldigen </em><em>für/bei</em><em>, sich vorbereiten </em><em>auf</em><em>, sich gewöhnen </em><em>an</em><em>, sich treffen </em><em>mit</em><em>, sich unterhalten </em><em>über</em>**</p>
+<p>The <em>freuen auf</em> vs <em>freuen über</em> split is a classic exam item: <strong>auf</strong> = looking forward to something coming; <strong>über</strong> = pleased about something that has happened.</p>
+<h3 id="unit-19-position-and-movement-verbs"><span class="unit-no">Unit 19</span>Position and movement verbs</h3>
+<p><strong><span class="g-marker">Grammar</span> the Wechselverben pairs.</strong> These are the practical payoff of the Wechselpräpositionen.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Movement (Akkusativ) — weak verbs</th>
+<th>Position (Dativ) — strong verbs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>legen</strong> (legte, gelegt) — lay down</td>
+<td><strong>liegen</strong> (lag, gelegen) — lie</td>
+</tr>
+<tr>
+<td><strong>stellen</strong> (stellte, gestellt) — stand upright</td>
+<td><strong>stehen</strong> (stand, gestanden) — stand</td>
+</tr>
+<tr>
+<td><strong>setzen</strong> (setzte, gesetzt) — set down</td>
+<td><strong>sitzen</strong> (saß, gesessen) — sit</td>
+</tr>
+<tr>
+<td><strong>hängen</strong> (hängte, gehängt) — hang up</td>
+<td><strong>hängen</strong> (hing, gehangen) — be hanging</td>
+</tr>
+<tr>
+<td><strong>stecken</strong> — put into</td>
+<td><strong>stecken</strong> — be stuck in</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Ich </em><em>stelle</em><em> die Flasche </em><em>auf den</em><em> Tisch.</em> → <em>Die Flasche </em><em>steht auf dem</em><em> Tisch.</em></p>
+<div class="note n-der"><span class="note-label">Pattern to remember</span><p>the "doing" verb is regular and takes Akkusativ; the "being" verb is irregular and takes Dativ. That correlation holds across all five pairs.</p></div>
+<h3 id="unit-20-comparison"><span class="unit-no">Unit 20</span>Comparison</h3>
+<p><strong><span class="g-marker">Grammar</span> Komparativ and Superlativ (predicative and adverbial).</strong></p>
+<p>Regular: <em>schnell → schneller → am schnellsten</em>
+Short adjectives usually take Umlaut: <em>alt → </em><em>ä</em><em>lter → am </em><em>ä</em><em>ltesten</em>; also <em>jung, groß, kurz, lang, warm, kalt, stark, dumm, klug</em>
+Add <strong>-est-</strong> after -d, -t, -s, -ß, -z: <em>am kält</em><em>est</em><em>en, am heiß</em><em>est</em><em>en</em></p>
+<p>Irregular — memorise these six:
+<em>gut → besser → am besten</em>
+<em>viel → mehr → am meisten</em>
+<em>gern → lieber → am liebsten</em>
+<em>hoch → höher → am höchsten</em>
+<em>nah → näher → am nächsten</em>
+<em>groß → größer → am größten</em></p>
+<p><strong>Comparison structures:</strong></p>
+<ul>
+<li><strong>so … wie</strong> for equality: <em>Er ist </em><em>so</em><em> groß </em><em>wie</em><em> ich.</em></li>
+<li><strong>… als</strong> for difference: <em>Er ist größer </em><em>als</em><em> ich.</em></li>
+</ul>
+<div class="note n-die"><span class="note-label">Trap</span><p>English "than" → German <strong>als</strong>, not <em>wie</em>. <em>Größer wie ich</em> is a very common regional-colloquial form that is marked wrong in exams. Use <strong>als</strong>.</p></div>
+<p><strong>Attributive comparatives</strong> (<em>der schnellere Zug</em>) require adjective endings — deferred to A2.2 on purpose.</p>
+<h3 id="unit-21-directional-and-modal-detail"><span class="unit-no">Unit 21</span>Directional and modal detail</h3>
+<p><strong><span class="g-marker">Grammar</span> &amp; vocabulary:</strong></p>
+<ul>
+<li><strong>Konjunktionaladverbien</strong> — these are <em>adverbs</em>, so they occupy position 1 and force inversion: <strong>deshalb, deswegen, darum, trotzdem, dann, außerdem, sonst</strong>
+<em>Ich war krank. </em><em>Deshalb bin</em><em> ich nicht gekommen.</em>
+  Contrast the three ways to express the same cause:
+  | Type | Example | Verb position |
+  |---|---|---|
+  | Subordinating | <em>Ich kam nicht, </em><em>weil</em><em> ich krank </em><em>war</em><em>.</em> | end |
+  | Coordinating (Pos. 0) | <em>Ich kam nicht, </em><em>denn</em><em> ich </em><em>war</em><em> krank.</em> | 2nd of its clause |
+  | Adverb (Pos. 1) | <em>Ich war krank, </em><em>deshalb kam</em><em> ich nicht.</em> | immediately after |</li>
+</ul>
+<p>Exams love testing exactly this three-way distinction. Drill it as a transformation exercise: write one idea three ways.</p>
+<ul>
+<li><strong>Modal particles — introduce now, use lightly:</strong> <em>doch, mal, ja, denn, eben, halt.</em> They carry no dictionary meaning but massively affect tone. <em>Komm </em><em>mal</em><em> her</em> (softening). <em>Was machst du </em><em>denn</em><em>?</em> (curiosity/surprise). <em>Das ist </em><em>ja</em><em> interessant!</em> (mild surprise). <em>Mach das </em><em>doch</em><em>!</em> (urging). Native-sounding German is largely a matter of these particles; start noticing them in listening now, produce them from B1.</li>
+</ul>
+<h3 id="unit-22-themes-and-functions"><span class="unit-no">Unit 22</span>Themes and functions</h3>
+<p><strong>Themes:</strong> work and workplace, education and training, appointments and Behörden (Ausländerbehörde, Bürgeramt, Krankenkasse), housing and rental, banking, telephone.</p>
+<p><strong>Functional language:</strong></p>
+<ul>
+<li>Formal email opening/closing: <em>Sehr geehrte Damen und Herren, … / Mit freundlichen Grüßen</em></li>
+<li>Informal: <em>Liebe/r …, … / Viele Grüße</em> or <em>Liebe Grüße</em></li>
+<li>Appointment-making: <em>Ich hätte gern einen Termin. Passt Ihnen Dienstag um 10 Uhr? Leider kann ich am Montag nicht.</em></li>
+<li>Telephone: <em>Guten Tag, hier spricht … Könnte ich bitte Herrn … sprechen? Ich rufe an wegen …</em></li>
+</ul>
+<div class="note n-das"><span class="note-label">Writing target</span><p>60–80 word email with correct register, salutation and sign-off.</p></div>
+<h3 id="unit-2324-consolidation-and-a2-1-checkpoint"><span class="unit-no">Unit 23–24</span>Consolidation and A2.1 checkpoint</h3>
+<div class="note n-das"><span class="note-label">Revision checkpoint</span><p></p></div>
+<ul class="checklist">
+<li><input type="checkbox"/><span>Nebensatz verb-final produced automatically with weil, dass, wenn, ob</span></li>
+<li><input type="checkbox"/><span>Verb-comma-verb collision handled when the Nebensatz comes first</span></li>
+<li><input type="checkbox"/><span>15 reflexive verbs with correct pronoun case</span></li>
+<li><input type="checkbox"/><span>Wechselverben pairs used correctly</span></li>
+<li><input type="checkbox"/><span>Komparativ/Superlativ including the six irregulars</span></li>
+<li><input type="checkbox"/><span>The weil / denn / deshalb three-way transformation</span></li>
+<li><input type="checkbox"/><span>950-word active vocabulary</span></li>
+</ul>
+<div class="note n-das"><span class="note-label">Speaking task</span><p>3-minute monologue on "Mein Arbeitstag" or "Meine Ausbildung" containing at least six subordinate clauses. Record it. Transcribe your own recording — self-transcription catches errors that listening alone does not.</p></div>
+<hr/>
+<h1 data-code="A2.2" id="a2-2-precision-and-politeness-100-ue"><span class="lvl-tag">Modul A2.2 · 100 Unterrichtseinheiten</span>Precision and politeness</h1>
+<div class="exitdesc"><span class="exitdesc-label">Exit descriptor (CEFR A2, full)</span><p>You can communicate in simple routine tasks, describe your background and environment in detail, and express needs politely.</p></div>
+<h3 id="unit-2527-adjektivdeklination"><span class="unit-no">Unit 25–27</span>Adjektivdeklination</h3>
+<p><strong><span class="g-marker">Grammar</span> adjective endings. The hardest thing in A2, and the thing that most separates a "B1 candidate" from a "passing B1 candidate".</strong></p>
+<div class="note n-der"><span class="note-label">The governing principle</span><p>German needs the case/gender information to appear exactly <strong>once</strong> in the noun phrase. If the article already carries it, the adjective takes a weak ending. If the article doesn't (or isn't there), the adjective must carry it.</p></div>
+<p><strong>Type 1 — after a definite article (der, die, das, diese, jede, alle, welche):</strong> the article does the work. Adjective takes only <strong>-e</strong> or <strong>-en</strong>.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th class="g-m">mask.</th>
+<th class="g-f">fem.</th>
+<th class="g-n">neut.</th>
+<th class="g-p">Plural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nom</td>
+<td>der gut<strong>e</strong></td>
+<td>die gut<strong>e</strong></td>
+<td>das gut<strong>e</strong></td>
+<td>die gut<strong>en</strong></td>
+</tr>
+<tr>
+<td>Akk</td>
+<td>den gut<strong>en</strong></td>
+<td>die gut<strong>e</strong></td>
+<td>das gut<strong>e</strong></td>
+<td>die gut<strong>en</strong></td>
+</tr>
+<tr>
+<td>Dat</td>
+<td>dem gut<strong>en</strong></td>
+<td>der gut<strong>en</strong></td>
+<td>dem gut<strong>en</strong></td>
+<td>den gut<strong>en</strong></td>
+</tr>
+</tbody>
+</table></div>
+<div class="note n-der"><span class="note-label">Memory aid</span><p>draw the box. The top-left corner has five <strong>-e</strong> forms (Nom m/f/n + Akk f/n). <strong>Everything else is -en.</strong> That's the whole table.</p></div>
+<p><strong>Type 2 — after an indefinite article (ein, kein, mein, dein…):</strong> three gaps, because <em>ein</em> has no ending in masc. Nom and neut. Nom/Akk. The adjective fills them.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th class="g-m">mask.</th>
+<th class="g-f">fem.</th>
+<th class="g-n">neut.</th>
+<th class="g-p">Plural (kein/mein)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nom</td>
+<td>ein gut<strong>er</strong></td>
+<td>eine gut<strong>e</strong></td>
+<td>ein gut<strong>es</strong></td>
+<td>keine gut<strong>en</strong></td>
+</tr>
+<tr>
+<td>Akk</td>
+<td>einen gut<strong>en</strong></td>
+<td>eine gut<strong>e</strong></td>
+<td>ein gut<strong>es</strong></td>
+<td>keine gut<strong>en</strong></td>
+</tr>
+<tr>
+<td>Dat</td>
+<td>einem gut<strong>en</strong></td>
+<td>einer gut<strong>en</strong></td>
+<td>einem gut<strong>en</strong></td>
+<td>keinen gut<strong>en</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Type 3 — no article (Nullartikel):</strong> the adjective takes the full "der-word" signal endings: <strong>-er, -e, -es, -e</strong> in Nom; <em>guter Wein, kalte Milch, kaltes Wasser</em>; Dativ <em>mit gutem Wein, mit kalter Milch</em>.</p>
+<div class="note n-der"><span class="note-label">How to actually learn this</span><p>do NOT try to memorise 48 cells:</p><ol>
+<li><strong>Week 1:</strong> Type 1 only. The "-e in the corner, -en everywhere else" rule. Drill 100 phrases.</li>
+<li><strong>Week 2:</strong> Type 2. Note that it's identical to Type 1 <em>except</em> the three gap cells, which copy the der-word ending (<em>ein gut</em><em>er</em><strong> ← d</strong>er<strong>; <em>ein gut**es</em></strong> ← da<strong>s</strong>).</li>
+<li><strong>Week 3:</strong> Type 3. Adjective = article. Then mix all three.</li>
+<li><strong>Ongoing:</strong> every noun phrase you write for the next six months gets checked for endings. It takes months to automate; start now, not at B1.2.</li>
+</ol></div>
+
+<div class="note n-die"><span class="note-label">Reality check</span><p>in the exam, a wrong adjective ending rarely costs you the point on its own. But at B1 the graders assess "formale Richtigkeit" holistically, and consistently wrong endings drag you into the fail band. It's a cumulative tax, not a single penalty.</p></div>
+<h3 id="unit-28-konjunktiv-ii-gegenwart"><span class="unit-no">Unit 28</span>Konjunktiv II (Gegenwart)</h3>
+<p><strong><span class="g-marker">Grammar</span> politeness, wishes, hypotheticals.</strong></p>
+<p>Two formation routes:</p>
+<ol>
+<li><strong>würde + Infinitiv</strong> — works for almost all verbs, and is what people actually say.
+   <em>Ich </em><em>würde</em><em> gern nach Berlin </em><em>fahren</em><em>.</em></li>
+<li><strong>Real Konjunktiv II forms</strong> — obligatory for a small set of very frequent verbs, where <em>würde</em> sounds clumsy:</li>
+</ol>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Verb</th>
+<th>Konj. II</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sein</td>
+<td>wäre</td>
+</tr>
+<tr>
+<td>haben</td>
+<td>hätte</td>
+</tr>
+<tr>
+<td>werden</td>
+<td>würde</td>
+</tr>
+<tr>
+<td>können</td>
+<td>könnte</td>
+</tr>
+<tr>
+<td>müssen</td>
+<td>müsste</td>
+</tr>
+<tr>
+<td>dürfen</td>
+<td>dürfte</td>
+</tr>
+<tr>
+<td>sollen</td>
+<td>sollte</td>
+</tr>
+<tr>
+<td>wollen</td>
+<td>wollte</td>
+</tr>
+<tr>
+<td>mögen</td>
+<td>möchte</td>
+</tr>
+<tr>
+<td>wissen</td>
+<td>wüsste</td>
+</tr>
+<tr>
+<td>geben</td>
+<td>gäbe (<em>es gäbe</em>)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Three functions at A2:</strong></p>
+<ul>
+<li><strong>Höflichkeit</strong> (this is the everyday one): <strong><em>Könnten</em>* Sie mir bitte helfen? Ich </strong>hätte<strong> gern einen Kaffee. </strong>Wäre*<em> es möglich, …?</em></li>
+<li><strong>Ratschlag:</strong> <em>An deiner Stelle </em><em>würde</em><em> ich mit dem Chef </em><em>sprechen</em><em>. Du </em><em>solltest</em><em> mehr schlafen.</em></li>
+<li><strong>Wunsch:</strong> <em>Ich </em><em>wäre</em><em> gern reicher. </em><em>Hätte</em><em> ich doch mehr Zeit!</em></li>
+</ul>
+<div class="note n-der"><span class="note-label">Why it matters practically</span><p>German professional and administrative communication runs on Konjunktiv II. <em>Ich will einen Termin</em> sounds rude bordering on aggressive; <em>Ich hätte gern einen Termin</em> / <em>Könnten Sie mir einen Termin geben?</em> is neutral. This is a register issue with real social consequences, not a grammar nicety.</p></div>
+<h3 id="unit-29-prateritum-for-reading"><span class="unit-no">Unit 29</span>Präteritum for reading</h3>
+<p><strong><span class="g-marker">Grammar</span> the written past tense.</strong> Novels, news reports, fairy tales and formal reports use Präteritum, not Perfekt. You need it <strong>receptively</strong> at A2 and <strong>productively for a handful of verbs</strong>.</p>
+<p>Regular: stem + <strong>-te</strong> + endings — <em>machen → ich mach</em><em>te</em><em>, du mach</em><em>test</em><em>, er mach</em><em>te</em><em>, wir mach</em><em>ten</em><strong>
+Note: </strong>no ending difference between ich and er/sie/es**.</p>
+<p>Irregular: vowel change, no -te — <em>gehen → ging</em>, <em>kommen → kam</em>, <em>sehen → sah</em>, <em>sprechen → sprach</em>, <em>fahren → fuhr</em>, <em>finden → fand</em>, <em>bleiben → blieb</em>, <em>schreiben → schrieb</em>, <em>nehmen → nahm</em>, <em>geben → gab</em>, <em>stehen → stand</em>, <em>denken → dachte</em>, <em>bringen → brachte</em>.</p>
+<p><strong>Register rule (the mainstream German-school position):</strong></p>
+<ul>
+<li><strong>Speaking:</strong> Perfekt — except <em>sein, haben, modals, es gibt</em>, where Präteritum is normal (<em>Ich war, ich hatte, ich musste, es gab</em>).</li>
+<li><strong>Writing (narrative, formal reports, news):</strong> Präteritum.</li>
+<li><strong>Regional note:</strong> southern Germany, Austria and Switzerland use Perfekt even more; northern Germany uses Präteritum more freely in speech. Neither is wrong. For exams, use the rule above.</li>
+</ul>
+<h3 id="unit-30-temporal-and-concessive-clauses"><span class="unit-no">Unit 30</span>Temporal and concessive clauses</h3>
+<p><strong><span class="g-marker">Grammar</span></strong></p>
+<ul>
+<li><strong>als vs. wenn</strong> — a genuine trap, because English uses "when" for both.</li>
+<li><strong>als</strong> = a <strong>single completed event in the past</strong>. <em>Als ich 18 war, bin ich nach Deutschland gekommen.</em></li>
+<li><strong>wenn</strong> = <strong>repeated</strong> past events ("whenever"), or <strong>any</strong> present/future condition. <em>Immer wenn ich müde bin, trinke ich Kaffee. Wenn ich Zeit habe, rufe ich dich an.</em></li>
+<li>
+<p>Rule of thumb: <strong>one time + past = als. Everything else = wenn.</strong></p>
+</li>
+<li>
+<p><strong>obwohl</strong> (although — subordinating, verb final) vs. <strong>trotzdem</strong> (nevertheless — adverb, position 1, inversion):
+  <em>Ich bin gekommen, </em><em>obwohl</em><em> ich krank </em><em>war</em><em>.</em> / <em>Ich war krank. </em><em>Trotzdem bin</em><em> ich gekommen.</em></p>
+</li>
+<li>
+<p><strong>bevor, nachdem, während, bis, seitdem</strong> — introduce here; <strong>nachdem</strong> with Plusquamperfekt is deferred to B1.2.</p>
+</li>
+<li>
+<p><strong>Indirekte Fragen:</strong> <em>Ich weiß nicht, </em><em>wann</em><em> er </em><em>kommt</em><em>. Können Sie mir sagen, </em><em>wo</em><em> der Bahnhof </em><em>ist</em><em>? Ich frage mich, </em><em>ob</em><em> das </em><em>stimmt</em><em>.</em>
+  Note the verb goes to the end — indirect questions are Nebensätze. English speakers habitually keep question word order here (<em>…wo ist der Bahnhof</em>) and it's a persistent error.</p>
+</li>
+</ul>
+<h3 id="unit-31-relative-clauses-nom-akk"><span class="unit-no">Unit 31</span>Relative clauses (Nom / Akk)</h3>
+<p><strong><span class="g-marker">Grammar</span></strong> Relative pronouns look like definite articles — with two exceptions you'll meet at B1 (Dativ Plural <em>denen</em>, Genitiv <em>dessen/deren</em>).</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th class="g-m">mask.</th>
+<th class="g-f">fem.</th>
+<th class="g-n">neut.</th>
+<th class="g-p">Plural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nom</td>
+<td>der</td>
+<td>die</td>
+<td>das</td>
+<td>die</td>
+</tr>
+<tr>
+<td>Akk</td>
+<td>den</td>
+<td>die</td>
+<td>das</td>
+<td>die</td>
+</tr>
+</tbody>
+</table></div>
+<div class="note n-der"><span class="note-label">The rule that unlocks it</span><p>the <strong>gender/number</strong> of the pronoun comes from the noun it refers back to; the <strong>case</strong> comes from its job inside the relative clause. These are two independent decisions. Learners fail here by copying the case of the main clause.</p></div>
+<p><em>Das ist der Mann, </em><em>der</em><em> in Berlin wohnt.</em> (subject of the relative clause → Nom)
+<em>Das ist der Mann, </em><em>den</em><em> ich gestern getroffen habe.</em> (object of the relative clause → Akk)</p>
+<p>Verb goes to the end — a relative clause is a Nebensatz.</p>
+<p><strong>Unlike English, the relative pronoun can never be omitted.</strong> "The man I met" must be <em>Der Mann, </em><em>den</em><em> ich getroffen habe.</em></p>
+<h3 id="unit-32-a2-checkpoint-and-exam-contact"><span class="unit-no">Unit 32</span>A2 checkpoint and exam contact</h3>
+<div class="note n-das"><span class="note-label">Revision checkpoint</span><p></p></div>
+<ul class="checklist">
+<li><input type="checkbox"/><span>Adjective endings, all three types, produced with &lt; 20% error rate under time pressure</span></li>
+<li><input type="checkbox"/><span>Konjunktiv II for polite requests, advice, wishes</span></li>
+<li><input type="checkbox"/><span>Präteritum recognised in reading; produced for sein/haben/modals</span></li>
+<li><input type="checkbox"/><span>als / wenn chosen correctly</span></li>
+<li><input type="checkbox"/><span>obwohl / trotzdem / weil / deshalb / denn — all five placed correctly</span></li>
+<li><input type="checkbox"/><span>Relative clauses Nom/Akk</span></li>
+<li><input type="checkbox"/><span>1300-word active vocabulary</span></li>
+<li><input type="checkbox"/><span>5-minute conversation with an unfamiliar interlocutor on a familiar topic</span></li>
+</ul>
+<div class="note n-das"><span class="note-label">Exam contact</span><p>one full <strong>telc Deutsch A2</strong> or <strong>Goethe-Zertifikat A2</strong> model test, timed, self-scored. Whether you sit the real A2 exam is a cost decision — it certifies nothing you need if B1 is your goal, but it's useful pressure and a fallback certificate. If money is tight, skip it and put the €80–130 into a conversation tutor.</p></div>
+<p><strong>Warning about the A2→B1 gap.</strong> This is where most learners stall. A2 is "survive with memorised chunks"; B1 is "generate new sentences about unfamiliar topics and defend an opinion". The jump requires a shift from <em>studying German</em> to <em>using German</em>. From here on, at least half your weekly hours must be input and output, not exercises.</p>
+<hr/>
+<h1 data-code="B1.1" id="b1-1-from-surviving-to-explaining-100-ue"><span class="lvl-tag">Modul B1.1 · 100 Unterrichtseinheiten</span>From surviving to explaining</h1>
+<div class="exitdesc"><span class="exitdesc-label">Exit descriptor</span><p>You can deal with most situations while travelling, produce connected text on familiar topics, and describe experiences, hopes and plans with reasons.</p></div>
+<h3 id="unit-33-verbs-with-fixed-prepositions-da-wo-compounds"><span class="unit-no">Unit 33</span>Verbs with fixed prepositions + da-/wo- compounds</h3>
+<p><strong><span class="g-marker">Grammar</span> the highest-yield B1 topic, and the one most under-taught.</strong></p>
+<p>Hundreds of German verbs demand a specific preposition, and that preposition fixes the case. These are not deducible from English. <em>warten </em><em>auf</em><em> (+A)</em> — not "wait for". <em>denken </em><em>an</em><em> (+A)</em> — not "think about" in the <em>über</em> sense.</p>
+<p><strong>Core list (learn as three-part units: verb + preposition + case):</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>+Akkusativ</th>
+<th>+Dativ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>warten <strong>auf</strong>, denken <strong>an</strong>, sich erinnern <strong>an</strong>, sich freuen <strong>auf/über</strong>, sich interessieren <strong>für</strong>, sich ärgern <strong>über</strong>, sprechen <strong>über</strong>, sich kümmern <strong>um</strong>, bitten <strong>um</strong>, sich bewerben <strong>um</strong>, sich vorbereiten <strong>auf</strong>, achten <strong>auf</strong>, verzichten <strong>auf</strong>, sich gewöhnen <strong>an</strong>, glauben <strong>an</strong>, sich beschweren <strong>über</strong>, diskutieren <strong>über</strong></td>
+<td>sprechen <strong>mit</strong>, teilnehmen <strong>an</strong>, leiden <strong>unter</strong>, sich beschäftigen <strong>mit</strong>, gehören <strong>zu</strong>, sich treffen <strong>mit</strong>, sich streiten <strong>mit</strong>, abhängen <strong>von</strong>, träumen <strong>von</strong>, erzählen <strong>von</strong>, sich erkundigen <strong>nach</strong>, fragen <strong>nach</strong>, riechen <strong>nach</strong>, helfen <strong>bei</strong>, sich bedanken <strong>für/bei</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Da- and wo- compounds.</strong> German cannot put a preposition in front of a pronoun when referring to a <em>thing</em>:</p>
+<ul>
+<li>Referring to a thing: <strong>da(r)- + preposition</strong> → <em>Ich warte </em><em>darauf</em><em>. Ich denke </em><em>daran</em><em>. Ich interessiere mich </em><em>dafür</em><em>.</em></li>
+<li>Asking about a thing: <strong>wo(r)- + preposition</strong> → <em>Worauf wartest du? Woran denkst du? Wofür interessierst du dich?</em></li>
+<li>The <strong>-r-</strong> appears before vowels: <em>da</em><em>r</em><em>auf, da</em><em>r</em><em>an, da</em><em>r</em><em>über, wo</em><em>r</em><em>auf, wo</em><em>r</em><em>an, wo</em><em>r</em><em>über</em>.</li>
+<li><strong>People keep the real preposition:</strong> <em>Ich warte </em><em>auf ihn</em><em>. </em><em>Auf wen</em><em> wartest du?</em></li>
+</ul>
+<p><strong>Anticipatory da-compounds with dass-clauses</strong> — very common in B1 writing:
+<em>Ich freue mich </em><em>darauf</em><em>, </em><em>dass</em><em> du kommst.</em>
+<em>Ich hoffe </em><em>darauf</em><em>, dich bald zu sehen.</em></p>
+<div class="note n-der"><span class="note-label">Why this matters for the exam</span><p>telc's <em>Sprachbausteine</em> section is largely built from these. Thirty points, highly learnable. This alone can be the difference between 130 and 145 in the written part.</p></div>
+<h3 id="unit-34-relative-clauses-complete"><span class="unit-no">Unit 34</span>Relative clauses, complete</h3>
+<p>Extend to <strong>Dativ</strong> and <strong>prepositional</strong> relative clauses.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th class="g-m">mask.</th>
+<th class="g-f">fem.</th>
+<th class="g-n">neut.</th>
+<th class="g-p">Plural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nom</td>
+<td>der</td>
+<td>die</td>
+<td>das</td>
+<td>die</td>
+</tr>
+<tr>
+<td>Akk</td>
+<td>den</td>
+<td>die</td>
+<td>das</td>
+<td>die</td>
+</tr>
+<tr>
+<td><strong>Dat</strong></td>
+<td>dem</td>
+<td>der</td>
+<td>dem</td>
+<td><strong>denen</strong></td>
+</tr>
+<tr>
+<td><strong>Gen</strong></td>
+<td><strong>dessen</strong></td>
+<td><strong>deren</strong></td>
+<td><strong>dessen</strong></td>
+<td><strong>deren</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Das ist die Kollegin, </em><em>der</em><em> ich geholfen habe.</em> (helfen + Dativ)
+<em>Das sind die Leute, </em><em>mit denen</em><em> ich arbeite.</em> (preposition governs the case; preposition moves to the front of the relative clause)
+<em>Das ist der Mann, </em><em>dessen</em><em> Auto gestohlen wurde.</em> (Genitiv — possession)</p>
+<p><strong>Also:</strong> <strong>was</strong> as a relative pronoun after <em>alles, nichts, etwas, vieles, das</em> and after a whole clause:
+<em>Alles, </em><em>was</em><em> du sagst, ist richtig. Er ist zu spät gekommen, </em><em>was</em><em> mich geärgert hat.</em>
+<strong>wo</strong> for places: <em>Die Stadt, </em><em>wo</em><em> ich geboren bin</em> (= <em>in der ich geboren bin</em>).</p>
+<h3 id="unit-35-passive-voice"><span class="unit-no">Unit 35</span>Passive voice</h3>
+<p><strong><span class="g-marker">Grammar</span> Passiv.</strong> Essential for B1 reading (news, instructions, official letters) and for the <em>Sprachbausteine</em>.</p>
+<p><strong>Formation: werden + Partizip II.</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Tense</th>
+<th>Form</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Präsens</td>
+<td>werden + P2</td>
+<td>Das Haus <strong>wird</strong> gebaut.</td>
+</tr>
+<tr>
+<td>Präteritum</td>
+<td>wurde + P2</td>
+<td>Das Haus <strong>wurde</strong> gebaut.</td>
+</tr>
+<tr>
+<td>Perfekt</td>
+<td>ist + P2 + <strong>worden</strong></td>
+<td>Das Haus <strong>ist</strong> gebaut <strong>worden</strong>.</td>
+</tr>
+<tr>
+<td>with modal</td>
+<td>modal + P2 + <strong>werden</strong></td>
+<td>Das Haus <strong>muss</strong> gebaut <strong>werden</strong>.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Note the special participle <code>worden</code></strong> (not <em>geworden</em>) in the passive perfect. Exam item.</p>
+<p><strong>The agent:</strong> <em>von</em> + Dativ for a person/actor; <em>durch</em> + Akkusativ for a means/cause.
+<em>Das Fenster wurde </em><em>von</em><em> einem Kind geöffnet.</em> / <em>Die Stadt wurde </em><em>durch</em><em> ein Erdbeben zerstört.</em></p>
+<div class="note n-der"><span class="note-label">Why German uses passive so much</span><p>it's the standard register for institutional, technical and procedural language, where the actor is irrelevant or deliberately unnamed. <em>Ihr Antrag wird bearbeitet</em> tells you nothing about who is doing it — which is exactly the point. Recognising this makes German official letters far less intimidating.</p></div>
+<p><strong>Vorgangspassiv vs. Zustandspassiv</strong> — flag the distinction, don't over-drill it at B1:
+<em>Die Tür </em><em>wird</em><em> geöffnet</em> (the process — someone is opening it) vs <em>Die Tür </em><em>ist</em><em> geöffnet</em> (the resulting state — it's open).</p>
+<h3 id="unit-36-purpose-and-the-infinitive-with-zu"><span class="unit-no">Unit 36</span>Purpose, and the infinitive with zu</h3>
+<p><strong><span class="g-marker">Grammar</span></strong></p>
+<ul>
+<li>
+<p><strong>Infinitiv mit zu</strong> after certain verbs and expressions: <em>Ich habe vor, nach Berlin </em><em>zu fahren</em><em>. Es ist wichtig, Deutsch </em><em>zu lernen</em><em>. Ich hoffe, dich bald </em><em>zu sehen</em><em>.</em>
+  With separable verbs, <em>zu</em> slots inside: <em>an</em><em>zu</em><em>rufen, ein</em><em>zu</em><em>kaufen, auf</em><em>zu</em><em>stehen</em>.
+  <strong>No zu</strong> after modals, and after <em>gehen, kommen, lassen, sehen, hören, bleiben, helfen (often)</em>: <em>Ich gehe schwimmen. Ich lasse mir die Haare schneiden.</em></p>
+</li>
+<li>
+<p><strong>um … zu vs. damit</strong> — both express purpose.</p>
+</li>
+<li><strong>um … zu</strong> when the subject is the <strong>same</strong> in both clauses: <em>Ich lerne Deutsch, </em><em>um</em><em> in Deutschland </em><em>zu arbeiten</em><em>.</em></li>
+<li><strong>damit</strong> when the subjects <strong>differ</strong>: <em>Ich erkläre es langsam, </em><em>damit</em><em> du mich </em><em>verstehst</em><em>.</em></li>
+<li>
+<p><em>damit</em> also works when subjects are the same, but <em>um…zu</em> is stylistically preferred there.</p>
+</li>
+<li>
+<p><strong>ohne … zu / (an)statt … zu</strong>: <em>Er ging weg, </em><em>ohne</em><em> etwas </em><em>zu sagen</em><em>.</em></p>
+</li>
+</ul>
+<h3 id="unit-37-genitiv-and-n-deklination"><span class="unit-no">Unit 37</span>Genitiv and n-Deklination</h3>
+<p><strong>Genitiv</strong> — receding from speech, alive in writing and fixed prepositions.
+<em>das Auto </em><em>des</em><em> Mannes / </em><em>der</em><em> Frau / </em><em>des</em><em> Kindes / </em><em>der</em><em> Kinder</em>
+Masculine and neuter nouns add <strong>-(e)s</strong>: <em>des Mann</em><em>es</em><em>, des Kind</em><em>es</em><em>, des Autos</em>.</p>
+<p><strong>In speech, use von + Dativ:</strong> <em>das Auto von meinem Bruder</em>. Both are correct German; the Genitiv is more formal. For B1 writing, use Genitiv with the prepositions below and <em>von</em> elsewhere — that's the safe register.</p>
+<p><strong>Genitiv prepositions (B1 core):</strong> <strong>wegen, während, trotz, statt/anstatt, innerhalb, außerhalb, aufgrund</strong>
+<em>wegen des Wetters, während der Arbeit, trotz des Regens</em>
+(Colloquially <em>wegen dem Wetter</em> is extremely common but marked wrong in exams. Use the Genitiv when writing.)</p>
+<p><strong>n-Deklination</strong> — a closed class of masculine nouns that add <strong>-n/-en</strong> in <strong>every case except Nominativ Singular</strong>:
+<em>der Student → den/dem/des Student</em><em>en</em><strong>; also <em>Kunde, Kollege, Junge, Mensch, Nachbar, Herr, Präsident, Polizist, Praktikant, Journalist, Experte, Franzose, Grieche<em>
+Special: </em>der Name → des Namen**s</em></strong>, <em>das Herz → des Herz</em><em>ens</em><strong>.
+*Ich spreche mit dem Kunde</strong>n<strong>. Ich kenne den Herr</strong>n*<em> Schmidt.</em></p>
+<p>Small topic, but it appears in every Sprachbausteine set.</p>
+<h3 id="unit-38-adjective-extensions"><span class="unit-no">Unit 38</span>Adjective extensions</h3>
+<ul>
+<li><strong>Attributive comparative and superlative:</strong> <em>der schnell</em><em>ere</em><em> Zug, das best</em><em>e</em><em> Restaurant, mein ält</em><em>erer</em><em> Bruder.</em> Comparative/superlative marker first, then the normal ending: <em>schnell + er + e</em>.</li>
+<li><strong>Adjektive als Nomen:</strong> <em>der/die Deutsche, ein Deutscher, der Angestellte, die Verwandten</em>. They keep adjective endings. <em>Ich bin </em><em>Angestellter</em><em>. Er ist </em><em>der Angestellte</em><em>.</em></li>
+<li><strong>etwas / nichts / viel / wenig + neuter adjective, capitalised, -es:</strong> <em>etwas Interessant</em><em>es</em><em>, nichts Neu</em><em>es</em><em>, viel Gut</em><em>es</em>**.</li>
+<li><strong>Partizip als Adjektiv:</strong> <em>das kochend</em><em>e</em><em> Wasser</em> (Partizip I: active, ongoing), <em>das gekocht</em><em>e</em><em> Ei</em> (Partizip II: passive, completed).</li>
+</ul>
+<h3 id="unit-39-themes-for-b1-1"><span class="unit-no">Unit 39</span>Themes for B1.1</h3>
+<p>Health and healthcare system, work and job applications (Lebenslauf, Bewerbungsschreiben, Vorstellungsgespräch), housing and rental disputes, consumer complaints and returns, media and internet, environment and sustainability, travel, education systems.</p>
+<p><strong>Functional language:</strong></p>
+<ul>
+<li><strong>Meinung äußern:</strong> <em>Meiner Meinung nach … / Ich bin der Ansicht, dass … / Ich finde es wichtig, dass … / Ich halte das für problematisch.</em></li>
+<li><strong>Zustimmen/Widersprechen:</strong> <em>Da stimme ich dir zu. / Das sehe ich anders. / Da bin ich anderer Meinung. / Das mag sein, aber …</em></li>
+<li><strong>Complaining:</strong> <em>Ich möchte mich über … beschweren. Leider muss ich Ihnen mitteilen, dass … Ich bitte Sie, das Problem bis zum … zu beheben.</em></li>
+<li><strong>Vorschläge machen (needed for the telc "Gemeinsam planen" and Goethe "Gemeinsam etwas planen" tasks):</strong> <em>Wie wäre es, wenn …? Was hältst du davon, wenn …? Ich schlage vor, dass … Sollen wir vielleicht …?</em></li>
+</ul>
+<h3 id="unit-40-b1-1-checkpoint"><span class="unit-no">Unit 40</span>B1.1 checkpoint</h3>
+<ul class="checklist">
+<li><input type="checkbox"/><span>30 verb+preposition combinations produced correctly with case</span></li>
+<li><input type="checkbox"/><span>da-/wo- compounds used spontaneously</span></li>
+<li><input type="checkbox"/><span>Relative clauses in all cases, including prepositional</span></li>
+<li><input type="checkbox"/><span>Passive in three tenses + with modals</span></li>
+<li><input type="checkbox"/><span>um…zu / damit chosen correctly</span></li>
+<li><input type="checkbox"/><span>Genitiv prepositions</span></li>
+<li><input type="checkbox"/><span>1800-word active vocabulary</span></li>
+<li><input type="checkbox"/><span>8-minute discussion where you state and defend an opinion</span></li>
+</ul>
+<hr/>
+<h1 data-code="B1.2" id="b1-2-independent-user-100-ue"><span class="lvl-tag">Modul B1.2 · 100 Unterrichtseinheiten</span>Independent user</h1>
+<div class="exitdesc"><span class="exitdesc-label">Exit descriptor (CEFR B1, full)</span><p>You can understand the main points of clear standard input on familiar matters, deal with most travel situations, produce connected text, describe experiences and events, and briefly give reasons and explanations for opinions and plans.</p></div>
+<h3 id="unit-41-konjunktiv-ii-complete"><span class="unit-no">Unit 41</span>Konjunktiv II, complete</h3>
+<p><strong>Irreale Bedingungssätze (present):</strong>
+<em>Wenn ich mehr Zeit </em><em>hätte</em><em>, </em><em>würde</em><em> ich mehr </em><em>reisen</em><em>.</em>
+<em>Wenn ich reich </em><em>wäre</em><em>, </em><em>könnte</em><em> ich ein Haus kaufen.</em>
+Without <em>wenn</em>, by inversion (formal/literary): <em><strong>Hätte</strong> ich mehr Zeit, würde ich mehr reisen.</em></p>
+<p><strong>Konjunktiv II der Vergangenheit</strong> — one form only, regardless of the original tense:
+<strong>hätte / wäre + Partizip II</strong>
+<em>Wenn ich das </em><em>gewusst hätte</em><em>, </em><em>wäre</em><em> ich nicht </em><em>gekommen</em><em>.</em>
+<em>Ich </em><em>hätte</em><em> dir </em><em>geholfen</em><em>, wenn du gefragt hättest.</em></p>
+<p>With a modal, the double infinitive: <em>Ich </em><em>hätte</em><em> früher </em><em>kommen können</em><em>.</em> (Not <em>gekonnt</em>.)</p>
+<p><strong>Functions to master:</strong></p>
+<ul>
+<li>Regret: <em>Ich hätte das nicht sagen sollen.</em></li>
+<li>Reproach: <em>Du hättest mich anrufen können.</em></li>
+<li>Hypothetical: <em>An deiner Stelle hätte ich das anders gemacht.</em></li>
+<li>Speculation: <em>Das könnte stimmen. Er dürfte etwa 40 sein.</em></li>
+<li>Almost/nearly: <em>Ich wäre fast zu spät gekommen.</em></li>
+</ul>
+<h3 id="unit-42-plusquamperfekt-and-nachdem"><span class="unit-no">Unit 42</span>Plusquamperfekt and nachdem</h3>
+<p><strong><span class="g-marker">Grammar</span></strong> Plusquamperfekt = <strong>hatte/war + Partizip II</strong>. It marks the earlier of two past events.</p>
+<p><em>Nachdem ich gegessen </em><em>hatte</em><em>, </em><em>bin</em><em> ich spazieren gegangen.</em></p>
+<div class="note n-der"><span class="note-label">The tense-pairing rule with nachdem</span><p>(an exam favourite):</p><ul>
+<li>Nebensatz <strong>Plusquamperfekt</strong> → Hauptsatz <strong>Perfekt/Präteritum</strong></li>
+<li>Nebensatz <strong>Perfekt</strong> → Hauptsatz <strong>Präsens</strong></li>
+</ul></div>
+
+<p><em>Nachdem ich gegessen </em><em>habe</em><em>, gehe ich spazieren.</em></p>
+<p>Compare <strong>bevor</strong> (no tense shift needed — both clauses same tense) and <strong>während</strong> (simultaneous).</p>
+<h3 id="unit-43-two-part-connectors-and-text-cohesion"><span class="unit-no">Unit 43</span>Two-part connectors and text cohesion</h3>
+<p>These are what push writing from "correct B1" into "convincing B1", and they show up throughout the Sprachbausteine.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Connector</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>entweder … oder</strong></td>
+<td>either/or</td>
+<td><em>Entweder fahren wir mit dem Zug oder wir fliegen.</em></td>
+</tr>
+<tr>
+<td><strong>weder … noch</strong></td>
+<td>neither/nor</td>
+<td><em>Ich habe weder Zeit noch Geld.</em></td>
+</tr>
+<tr>
+<td><strong>sowohl … als auch</strong></td>
+<td>both/and</td>
+<td><em>Sowohl die Wohnung als auch die Lage sind gut.</em></td>
+</tr>
+<tr>
+<td><strong>nicht nur … sondern auch</strong></td>
+<td>not only/but also</td>
+<td><em>Er spricht nicht nur Deutsch, sondern auch Französisch.</em></td>
+</tr>
+<tr>
+<td><strong>zwar … aber</strong></td>
+<td>admittedly/but</td>
+<td><em>Das ist zwar teuer, aber es lohnt sich.</em></td>
+</tr>
+<tr>
+<td><strong>je … desto/umso</strong></td>
+<td>the more/the more</td>
+<td><strong><em>Je</em>* länger ich hier lebe, </strong>desto*<em> besser verstehe ich die Kultur.</em></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Note the syntax of <code>je … desto</code>:</strong> the <em>je</em>-clause is a Nebensatz (verb at the end), the <em>desto</em>-clause has the comparative in position 1 and the verb immediately after. It's structurally odd; drill it as a pattern.</p>
+<h3 id="unit-44-nominalisierung-verbalisierung"><span class="unit-no">Unit 44</span>Nominalisierung ↔ Verbalisierung</h3>
+<p><strong><span class="g-marker">Grammar</span> turning clauses into phrases and back.</strong> This is a formal exercise type on both telc and Goethe, and the skill behind German bureaucratic prose.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Nebensatz</th>
+<th>Nominal phrase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>weil</strong> es regnete</td>
+<td><strong>wegen</strong> des Regens</td>
+</tr>
+<tr>
+<td><strong>obwohl</strong> es regnete</td>
+<td><strong>trotz</strong> des Regens</td>
+</tr>
+<tr>
+<td><strong>während</strong> ich arbeitete</td>
+<td><strong>während</strong> der Arbeit</td>
+</tr>
+<tr>
+<td><strong>wenn</strong> man das macht</td>
+<td><strong>bei</strong> der Durchführung</td>
+</tr>
+<tr>
+<td><strong>nachdem</strong> er ankam</td>
+<td><strong>nach</strong> seiner Ankunft</td>
+</tr>
+<tr>
+<td><strong>damit</strong> / <strong>um … zu</strong></td>
+<td><strong>zwecks / zu</strong> + Dativ</td>
+</tr>
+</tbody>
+</table></div>
+<p>Reading German official letters becomes dramatically easier once you can silently expand <em>wegen der verspäteten Zahlung</em> into <em>weil Sie verspätet gezahlt haben</em>.</p>
+<h3 id="unit-45-passive-alternatives-and-futur-i"><span class="unit-no">Unit 45</span>Passive alternatives and Futur I</h3>
+<p><strong>Ersatzformen des Passivs</strong> (recognition + light production at B1; core skill at B2):</p>
+<ul>
+<li><strong>man</strong>: <em>Hier </em><em>kann man</em><em> gut essen.</em> (= Hier kann gut gegessen werden.)</li>
+<li><strong>sich lassen</strong>: <em>Das Problem </em><em>lässt sich</em><em> lösen.</em> (= kann gelöst werden)</li>
+<li><strong>sein + zu + Infinitiv</strong>: <em>Das Formular </em><em>ist</em><em> bis Freitag </em><em>abzugeben</em><em>.</em> (= muss abgegeben werden)</li>
+<li><strong>-bar / -lich adjectives</strong>: <em>Das ist </em><em>machbar</em><em> / </em><em>verständlich</em><em>.</em></li>
+</ul>
+<p><strong>Futur I: werden + Infinitiv.</strong> Note that German usually expresses future with the <strong>present tense + time adverb</strong> (<em>Morgen fahre ich nach Berlin</em>). Futur I is mainly used for:</p>
+<ul>
+<li>Prediction/assumption: <em>Er </em><em>wird</em><em> wohl krank </em><em>sein</em><em>.</em> (He's probably ill.)</li>
+<li>Promise/intention with emphasis: <em>Ich </em><em>werde</em><em> das </em><em>erledigen</em><em>.</em></li>
+</ul>
+<p>Overusing Futur I is a hallmark of English-speaker German. Default to the present tense.</p>
+<h3 id="unit-46-indirekte-rede-receptive"><span class="unit-no">Unit 46</span>Indirekte Rede (receptive)</h3>
+<p><strong>Konjunktiv I</strong> — you need to <em>recognise</em> this in newspapers and reports, not produce it. B1 exams do not require productive Konjunktiv I.</p>
+<p>Formation: infinitive stem + e, est, e, en, et, en → <em>er </em><em>sage</em><em>, er </em><em>habe</em><em>, er </em><em>komme</em><em>, er </em><em>sei</em><em><em>
+</em>sein</em> is irregular and the most common: <em>ich sei, du sei(e)st, er sei, wir seien</em></p>
+<p><em>Der Minister sagte, die Situation </em><em>sei</em><em> ernst. Er erklärte, er </em><em>habe</em><em> keine Zeit gehabt.</em></p>
+<p>When Konjunktiv I is identical to the indicative, German substitutes Konjunktiv II: <em>sie sagten, sie </em><em>hätten</em><em> keine Zeit</em> (not <em>haben</em>).</p>
+<p><strong>In spoken German</strong>, indirect speech simply uses <em>dass</em> + indicative: <em>Er hat gesagt, dass er keine Zeit hat.</em> That's what you produce.</p>
+<h3 id="unit-47-themes-and-register-for-b1-2"><span class="unit-no">Unit 47</span>Themes and register for B1.2</h3>
+<p>Society and integration, politics and civic life (relevant if you'll take <em>Leben in Deutschland</em>), work culture and conflict, digitalisation and AI, health and lifestyle, consumer rights, personal finance, city vs. country, gender and family roles, climate.</p>
+<p><strong>Register control</strong> — a genuine B1 competence:
+| | Informal (du) | Formal (Sie) |
+|---|---|---|
+| Opening | <em>Liebe Anna, / Hallo Tom,</em> | <em>Sehr geehrte Frau Müller, / Sehr geehrte Damen und Herren,</em> |
+| Request | <em>Kannst du mir …?</em> | <em>Könnten Sie mir bitte …? / Ich wäre Ihnen dankbar, wenn …</em> |
+| Closing | <em>Viele Grüße / Liebe Grüße</em> | <em>Mit freundlichen Grüßen</em> |
+| Apology | <em>Sorry, dass … / Tut mir leid</em> | <em>Ich bitte um Entschuldigung / Ich bedauere sehr, dass …</em> |</p>
+<p><strong>Comma after the salutation, then lowercase first word</strong> — <em>Sehr geehrte Frau Müller,\nvielen Dank für …</em> Getting this wrong looks careless to a German grader.</p>
+<h3 id="unit-48-b1-checkpoint"><span class="unit-no">Unit 48</span>B1 checkpoint</h3>
+<ul class="checklist">
+<li><input type="checkbox"/><span>Konjunktiv II present and past, including double infinitive</span></li>
+<li><input type="checkbox"/><span>Plusquamperfekt with nachdem, correct tense pairing</span></li>
+<li><input type="checkbox"/><span>All two-part connectors</span></li>
+<li><input type="checkbox"/><span>Nominalisierung/Verbalisierung transformations</span></li>
+<li><input type="checkbox"/><span>Passive + at least two Ersatzformen</span></li>
+<li><input type="checkbox"/><span>Konjunktiv I recognised in reading</span></li>
+<li><input type="checkbox"/><span>2400-word active vocabulary</span></li>
+<li><input type="checkbox"/><span>15-minute conversation on an abstract topic with an unfamiliar partner, including disagreement and negotiation</span></li>
+<li><input type="checkbox"/><span>150-word structured formal letter in 25 minutes, four bullet points fully covered</span></li>
+</ul>
+<hr/>
+<h1 id="part-ii-grammar-the-why-not-just-the-what"><span class="lvl-tag">Part II</span>Grammar: the "why", not just the "what"</h1>
+<p>Nine explanations that convert German from arbitrary rules into a system. Read this section once at A2, again at B1.</p>
+<h3 id="1-why-cases-exist-at-all">1. Why cases exist at all</h3>
+<p>English lost its case endings around 1200 and compensated with rigid word order. German kept them. The trade is: German pays for case endings, and buys <strong>free word order for emphasis</strong>. <em>Diesen Film habe ich schon gesehen</em> fronts the film for emphasis without ambiguity, because <em>diesen</em> is unmistakably the object. English can't do that without a clumsy cleft ("It's this film that I've already seen").</p>
+<p>So case endings aren't decoration. They're what lets you say things in the order that matches your emphasis. Once you see them as an emphasis tool rather than a tax, they become easier to care about.</p>
+<h3 id="2-why-the-verb-goes-to-position-2-and-to-the-end">2. Why the verb goes to position 2 — and to the end</h3>
+<p>German main clauses are <strong>verb-second</strong>; subordinate clauses are <strong>verb-final</strong>. The underlying structure is verb-final; in main clauses the finite verb raises to second position. That's why:</p>
+<ul>
+<li>The <strong>non-finite</strong> parts stay at the end (<em>Ich </em><em>habe</em><em> das Buch </em><em>gelesen</em>**)</li>
+<li>Subordinate clauses, which don't raise the verb, look "unchanged" (<em>…, weil ich das Buch gelesen </em><em>habe</em>**)</li>
+<li>Separable prefixes stay behind (<em>Ich </em><em>stehe</em><em> um sieben </em><em>auf</em>**) — they never left</li>
+</ul>
+<p>One mechanism, four surface phenomena. This is why the <strong>Satzklammer</strong> is the single most useful concept in German syntax: everything meaningful gets packed between the two verb positions, and the listener must wait to the end. It's also why German speakers rarely interrupt each other mid-sentence — the crucial information is at the end.</p>
+<h3 id="3-why-dativ-and-akkusativ-split-the-way-they-do">3. Why Dativ and Akkusativ split the way they do</h3>
+<p>Rough semantic core: <strong>Akkusativ = the thing directly affected/created/reached</strong>; <strong>Dativ = the person affected indirectly, the recipient, the location</strong>. This explains:</p>
+<ul>
+<li><em>helfen</em> takes Dativ — you don't <em>transform</em> the person, you benefit them</li>
+<li>Wechselpräpositionen: Akkusativ for a target reached, Dativ for a position occupied</li>
+<li><em>Mir ist kalt</em> — the coldness happens <em>to</em> me, I'm the affected party, not the agent</li>
+</ul>
+<p>It's imperfect (<em>folgen</em> takes Dativ despite motion) but explains ~80% of the cases and makes them memorable.</p>
+<h3 id="4-why-adjective-endings-work-the-way-they-do">4. Why adjective endings work the way they do</h3>
+<p>Stated once more because it's the core insight: <strong>the case/gender signal must appear exactly once in the noun phrase</strong>. Der-words carry it → adjective goes weak (-e/-en). No article → adjective carries it (strong endings). Ein-words are inconsistent, so the adjective covers the three gaps. This is redundancy control, not arbitrary cruelty.</p>
+<h3 id="5-why-german-has-separable-verbs">5. Why German has separable verbs</h3>
+<p>They're prepositions that got attached to verbs and drifted in meaning. <em>aufstehen</em> = "stand up"; <em>aufhören</em> = "stop" (no longer transparent); <em>aufgeben</em> = "give up" (also idiomatic, like English). English does the same thing with phrasal verbs — German just glues them on in the infinitive and detaches them in finite clauses. If you already know English phrasal verbs, this is a familiar problem in a different costume.</p>
+<h3 id="6-why-modal-particles-matter-more-than-they-look">6. Why modal particles matter more than they look</h3>
+<p><em>doch, mal, ja, denn, eben, halt, wohl</em> carry the interpersonal load that English handles with intonation and tag questions. <em>Das ist </em><em>ja</em><em> interessant</em> isn't "that is yes interesting" — it's "oh, that's interesting" with surprise baked in. A learner who never uses them sounds curt even when grammatically perfect. Start noticing them at A2, produce two or three of them from B1.</p>
+<h3 id="7-why-perfekt-beats-prateritum-in-speech">7. Why Perfekt beats Präteritum in speech</h3>
+<p>Historical drift, spreading north from southern German dialects. Practically: use Perfekt to talk, Präteritum to write, and keep <em>war/hatte/musste/es gab</em> in Präteritum in both. Nobody will penalise you for over-using Perfekt in speech; over-using Präteritum in speech sounds stilted or like you learned German from books.</p>
+<h3 id="8-why-compound-nouns-are-your-best-friend">8. Why compound nouns are your best friend</h3>
+<p>German builds words rather than borrowing them: <em>Krankenversicherungskarte</em> = Kranken + Versicherung + Karte. The <strong>last element determines gender and meaning</strong>; everything before it modifies. Once you know 1000 base words, you can decode tens of thousands of compounds without ever having seen them. This is why German vocabulary growth accelerates sharply around B1 — you stop learning words and start learning parts.</p>
+<h3 id="9-why-word-order-for-pronouns-and-negation-is-fixed">9. Why word order for pronouns and negation is fixed</h3>
+<p>The <strong>Mittelfeld</strong> (between the two verb positions) is ordered by information status: known information first, new information last. Pronouns are maximally known → they go first. <em>nicht</em> sits just before the element that carries the new, contradicted information. That's why <em>nicht</em> drifts: its position tells you what's being denied.</p>
+<hr/>
+<h1 id="part-iii-method"><span class="lvl-tag">Part III</span>Method</h1>
+<h2 id="the-weekly-template-10-h-week-version">The weekly template (10 h/week version)</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Hours</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Structured lesson</td>
+<td>3</td>
+<td>Textbook unit: grammar presentation + exercises</td>
+</tr>
+<tr>
+<td>Vocabulary</td>
+<td>1.75</td>
+<td>15 min/day Anki, sentence cards not word cards</td>
+</tr>
+<tr>
+<td>Listening</td>
+<td>2</td>
+<td>Podcast/video, one pass for gist, one pass with transcript</td>
+</tr>
+<tr>
+<td>Speaking</td>
+<td>2</td>
+<td>Tutor / tandem / Stammtisch. <strong>Non-negotiable.</strong></td>
+</tr>
+<tr>
+<td>Writing</td>
+<td>1</td>
+<td>One text per week, corrected by a human or a good AI corrector</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>0.25</td>
+<td>Error log maintenance</td>
+</tr>
+</tbody>
+</table></div>
+<p>Scale proportionally, but <strong>never let the speaking block reach zero</strong>. If you have five hours, it's 1.5 hours of speaking, not zero.</p>
+<h2 id="techniques-that-outperform-re-reading">Techniques that outperform re-reading</h2>
+<ol>
+<li><strong>Sentence cards, not word cards.</strong> <code>warten auf + A</code> alone is forgettable. <em>Ich warte seit einer Stunde auf den Bus.</em> encodes verb, preposition, case, and a usable chunk. Cloze the target element.</li>
+<li><strong>Retrieval before review.</strong> Try to produce the form first, then check. Recognition feels like learning and isn't.</li>
+<li><strong>Shadowing.</strong> Play 20 seconds of native audio, replay, speak simultaneously matching rhythm and intonation. 10 minutes daily for six weeks visibly changes your accent and — more importantly — your fluency, because you stop assembling sentences word by word.</li>
+<li><strong>The error log.</strong> One document, three columns: what I wrote / what's correct / the rule. Review weekly. Most learners make the same 20 errors for years because they never systematically track them. Fixing your personal top 10 is worth more than any new grammar topic.</li>
+<li><strong>Output before input on a topic.</strong> Try to write about "Umweltschutz" <em>before</em> reading the unit. You'll discover exactly which words you're missing, and then they stick.</li>
+<li><strong>Chunking over composing.</strong> Store <em>Ich hätte gern…</em>, <em>Könnten Sie bitte…</em>, <em>Meiner Meinung nach…</em>, <em>Da bin ich anderer Meinung</em> as single units. Fluency at B1 is largely a matter of having enough prefabricated chunks that you're not building every sentence from primitives.</li>
+<li><strong>Spaced revision checkpoints.</strong> After each sub-level, revisit the <em>previous</em> sub-level's checkpoint too. Grammar decays; case endings decay fastest.</li>
+</ol>
+<h2 id="vocabulary-policy">Vocabulary policy</h2>
+<ul>
+<li>Learn <strong>noun + article + plural</strong>, always.</li>
+<li>Learn <strong>verb + preposition + case</strong> as one item, always.</li>
+<li>Learn <strong>collocations</strong>, not isolated words: <em>eine Entscheidung treffen</em> (not <em>machen</em>), <em>einen Termin vereinbaren</em>, <em>Bescheid geben</em>, <em>Rücksicht nehmen</em>, <em>zur Verfügung stehen</em>, <em>in Frage kommen</em>, <em>eine Rolle spielen</em>.</li>
+<li>Target 15–20 new items daily. At that rate, 2400 words takes about 8 months including review overhead.</li>
+</ul>
+<h2 id="what-to-do-about-the-plateau">What to do about the plateau</h2>
+<p>Nearly everyone stalls at high A2 / low B1. Diagnosis:</p>
+<ul>
+<li><strong>If you understand but can't produce</strong> → your input/output ratio is wrong. Cut studying, add speaking.</li>
+<li><strong>If you produce but people don't understand</strong> → pronunciation. Go back to A1.1 Unit 1 and drill ch, r, ö/ü, and final devoicing.</li>
+<li><strong>If you can chat but fail exams</strong> → format problem, not language problem. Do timed model tests.</li>
+<li><strong>If you can pass exercises but freeze in real conversation</strong> → you're composing instead of chunking. Memorise 50 whole phrases.</li>
+</ul>
+<hr/>
+<h1 id="part-iv-materials"><span class="lvl-tag">Part IV</span>Materials</h1>
+<h2 id="textbooks">Textbooks</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Series</th>
+<th>Publisher</th>
+<th>Best for</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Schritte plus Neu</strong></td>
+<td>Hueber</td>
+<td>The BAMF Integrationskurs default</td>
+<td>Six volumes map exactly to A1.1–B1.2. Strongly everyday-life/DTZ oriented. If you want to shadow the official course, use this.</td>
+</tr>
+<tr>
+<td><strong>Menschen</strong></td>
+<td>Hueber</td>
+<td>Self-study and general courses</td>
+<td>Clearer visual design, better for adults studying alone</td>
+</tr>
+<tr>
+<td><strong>Netzwerk neu</strong></td>
+<td>Klett</td>
+<td>Younger adults, general</td>
+<td>Good audio, more contemporary topics</td>
+</tr>
+<tr>
+<td><strong>Linie 1</strong></td>
+<td>Klett</td>
+<td>Work-oriented learners</td>
+<td>Strong Berufssprache thread</td>
+</tr>
+<tr>
+<td><strong>Aspekte neu</strong></td>
+<td>Klett</td>
+<td>B1+ onward</td>
+<td>Where to go after this curriculum</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong><span class="g-marker">Grammar</span> reference:</strong> <em>Grammatik aktiv</em> (Cornelsen) A1–B1 — the best single self-study grammar workbook, left page rule / right page exercise. <em>Lehr- und Übungsbuch der deutschen Grammatik</em> ("die Dreyer-Schmitt", Hueber) as a fuller reference, but drier.</p>
+<h2 id="free-resources">Free resources</h2>
+<ul>
+<li><strong>Deutsche Welle — Nicos Weg</strong> (A1/A2/B1): a complete free video course, excellent quality, genuinely usable as your primary A1–B1 course if money is tight. Also DW's <em>Deutschtrainer</em>, <em>Ticket nach Berlin</em>, and <em>Langsam gesprochene Nachrichten</em> (slow news — the single best B1 listening resource).</li>
+<li><strong>Goethe-Institut</strong> free Modellsätze / Übungsmaterialien for every level.</li>
+<li><strong>telc</strong> free Übungstests (PDF + audio) for every level.</li>
+<li><strong>Easy German</strong> (YouTube) — street interviews with dual subtitles. The closest thing to real spoken German at a learner-accessible pace.</li>
+<li><strong>VHS-Lernportal</strong> — free, BAMF-aligned online courses A1–B2 plus a full DTZ preparation course. Underrated; it's the official digital arm of the Integrationskurs system.</li>
+</ul>
+<h2 id="speaking-practice-in-order-of-cost-effectiveness">Speaking practice, in order of cost-effectiveness</h2>
+<ol>
+<li><strong>Tandem partner</strong> (free) — Tandem/HelloTalk apps, or university tandem programmes. Most German universities run one.</li>
+<li><strong>Stammtisch / Sprachcafé</strong> (free–€3) — most VHS branches and many libraries run one weekly.</li>
+<li><strong>italki / Preply community tutor</strong> (€8–15/h) — for structured correction. Two sessions a week beats one long session.</li>
+<li><strong>VHS conversation course</strong> (€100–200/semester).</li>
+</ol>
+<p>For your area: <strong>VHS Ludwigsburg</strong>, <strong>vhs Stuttgart</strong>, and <strong>VHS Kornwestheim</strong> all run general German courses and telc exams; Stuttgart also has a <strong>Goethe-Institut</strong> exam centre. If your employer needs your German, ask about <strong>Berufssprachkurse (DeuFöV)</strong> funding before paying yourself.</p>
+<hr/>
+<h1 id="part-v-the-final-8-weeks-before-the-exam"><span class="lvl-tag">Part V</span>The final 8 weeks before the exam</h1>
+<p>Only start this once you've finished B1.2 content. Exam training is not language learning; doing it too early wastes both.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Full timed model test, cold. Score it honestly. This is your baseline.</td>
+</tr>
+<tr>
+<td>2–3</td>
+<td>Weakest two sections only. If it's Sprachbausteine: 200 gap-fill items. If it's Schreiben: 8 letters, all corrected.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Second full model test. Compare.</td>
+</tr>
+<tr>
+<td>5–6</td>
+<td>Speaking. Rehearse the three parts with a partner until the structure is automatic. Record and review.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Third full model test + targeted repair.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Light review, sleep, no new grammar. Re-read your error log.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="telc-b1-written-strategy">telc B1 written strategy</h2>
+<ul>
+<li><strong>Time budget:</strong> ~60 min Lesen, ~25 min Sprachbausteine, leave 5 min buffer within the 90-minute block. Then Hören (fixed, one listen for most tasks). Then 30 min Schreiben.</li>
+<li><strong>Leseverstehen Teil 1</strong> (headline matching): read the <em>texts</em> first, headlines second. Reverse of instinct, but faster.</li>
+<li><strong>Leseverstehen Teil 3</strong> (Anzeigen): underline the two or three hard criteria in each situation, then scan. Some situations have <strong>no</strong> matching ad — that's a valid answer, and candidates lose points forcing a match.</li>
+<li><strong>Sprachbausteine:</strong> read the whole text once before answering anything. Most gaps are prepositions, connectors or fixed collocations, all resolvable from context.</li>
+<li><strong>Schreiben — the template that satisfies the Nullregel:</strong>
+  1. Salutation (correct register — check whether the prompt is du or Sie)
+  2. Opening reason for writing (<em>Ich schreibe Ihnen, weil…</em>)
+  3. <strong>Four paragraphs, one per Leitpunkt, each visibly addressed</strong>
+  4. Closing (<em>Ich freue mich auf Ihre Antwort / Über eine schnelle Rückmeldung würde ich mich freuen</em>)
+  5. Sign-off matching the salutation
+  Then spend the last 4 minutes checking only: verb position, adjective endings, capitalisation of nouns. Nothing else.</li>
+</ul>
+<h2 id="speaking-strategy-both-exams">Speaking strategy (both exams)</h2>
+<ul>
+<li><strong>You are marked on interaction, not on being right.</strong> In <em>Gemeinsam planen</em>, a candidate who agrees with everything scores badly. Disagree once, propose an alternative, negotiate a compromise. That's the behaviour being assessed.</li>
+<li>Have three sentences ready for every stall: <em>Das ist eine interessante Frage. / Da muss ich kurz überlegen. / Wie soll ich sagen…</em> Silence costs more than filler.</li>
+<li>If you don't know a word, <strong>paraphrase out loud</strong> rather than stopping: <em>Ich meine dieses Ding, mit dem man…</em> Paraphrasing is an explicitly rewarded B1 competence.</li>
+<li>Ask your partner questions. <em>Was meinst du? Wie siehst du das?</em> It's assessed interaction and it buys you thinking time.</li>
+</ul>
+<hr/>
+<h1 id="part-vi-where-sources-disagree-and-what-to-follow"><span class="lvl-tag">Part VI</span>Where sources disagree, and what to follow</h1>
+<p>Real differences you'll hit if you use more than one resource.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Point of disagreement</th>
+<th>Positions</th>
+<th>Follow this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>When to introduce <code>weil</code></strong></td>
+<td>Some A1 courses (and many online courses) teach it at A1.2; Schritte plus Neu and most BAMF-aligned courses put it in A2.1</td>
+<td><strong>A2.1.</strong> Introducing verb-final clauses before Dativ and Perfekt are automatic causes more damage than the early exposure gains.</td>
+</tr>
+<tr>
+<td><strong>Perfekt vs. Präteritum in speech</strong></td>
+<td>Northern German usage tolerates Präteritum in speech; southern/Austrian usage is almost exclusively Perfekt; textbooks vary</td>
+<td><strong>Perfekt for speaking; Präteritum for writing; sein/haben/modals in Präteritum in both.</strong> This is the standard taught nationally and expected in exams.</td>
+</tr>
+<tr>
+<td><strong><code>wegen</code> + Genitiv or Dativ</strong></td>
+<td>Duden accepts Dativ as colloquial; prescriptive grammars require Genitiv</td>
+<td><strong>Genitiv in writing.</strong> Dativ is fine in speech and nobody will blink, but it's marked in exam writing.</td>
+</tr>
+<tr>
+<td><strong><code>als</code> vs. <code>wie</code> for comparison</strong></td>
+<td><em>größer wie ich</em> is widespread in southern German speech</td>
+<td><strong>Always <code>als</code>.</strong> <em>wie</em> only for equality (<em>so … wie</em>).</td>
+</tr>
+<tr>
+<td><strong>Teaching adjective endings</strong></td>
+<td>Some courses teach the three-table system; others teach a single unified "signal ending" table</td>
+<td><strong>Three tables, in the order Type 1 → 2 → 3.</strong> The unified table is elegant and much harder for most learners to use under time pressure.</td>
+</tr>
+<tr>
+<td><strong>Konjunktiv I at B1</strong></td>
+<td>Some B1 courses include productive Konjunktiv I; Goethe and telc B1 do not require it</td>
+<td><strong>Receptive only.</strong> Learn to read it; don't waste hours producing it until B2.</td>
+</tr>
+<tr>
+<td><strong>Genitiv teaching level</strong></td>
+<td>Some courses defer Genitiv entirely to B2</td>
+<td><strong>Introduce at B1.1</strong> for the prepositions and possession. It appears in exam reading texts regardless.</td>
+</tr>
+<tr>
+<td><strong>Passive teaching level</strong></td>
+<td>A2.2 in some series, B1.1 in others</td>
+<td><strong>Recognition at A2.2, production at B1.1.</strong> Both exams test it.</td>
+</tr>
+<tr>
+<td><strong>Number of B1 words</strong></td>
+<td>Goethe/ÖSD list ≈ 2400; some schools quote 3000+</td>
+<td><strong>2400 active is the exam-relevant figure.</strong> Aim higher for real life.</td>
+</tr>
+<tr>
+<td><strong>Whether to sit A1/A2 exams on the way</strong></td>
+<td>Schools sell them; they certify nothing you need</td>
+<td><strong>Skip them unless a visa or employer requires them.</strong> Use free model tests as pressure instead, and spend the money on speaking hours.</td>
+</tr>
+</tbody>
+</table></div>
+<hr/>
+<h1 id="appendix-a-the-12-errors-that-will-follow-you-to-b2-if-not-fixed-early"><span class="lvl-tag">Appendix A</span>The 12 errors that will follow you to B2 if not fixed early</h1>
+<ol>
+<li><code>weil ich bin krank</code> → <strong>weil ich krank bin</strong> (verb final)</li>
+<li><code>Ich bin arbeiten</code> → <strong>Ich arbeite (gerade)</strong> (no continuous tense)</li>
+<li><code>Ich habe seit zwei Jahren hier gewohnt</code> → <strong>Ich wohne seit zwei Jahren hier</strong> (seit + Präsens)</li>
+<li><code>Ich bin kalt</code> → <strong>Mir ist kalt</strong></li>
+<li><code>Ich habe nach Hause gegangen</code> → <strong>Ich bin nach Hause gegangen</strong> (sein for motion)</li>
+<li><code>größer wie ich</code> → <strong>größer als ich</strong></li>
+<li><code>Ich freue mich über morgen</code> → <strong>Ich freue mich auf morgen</strong> (auf = future)</li>
+<li><code>Können Sie mir sagen, wo ist der Bahnhof?</code> → <strong>…wo der Bahnhof ist</strong> (indirect question = Nebensatz)</li>
+<li><code>Du musst nicht rauchen</code> when you mean forbidden → <strong>Du darfst nicht rauchen</strong></li>
+<li>Missing or wrong adjective endings — the silent grade-killer</li>
+<li>Nouns not capitalised in writing — instantly marks a text as careless</li>
+<li><code>Ich will einen Termin</code> → <strong>Ich hätte gern einen Termin</strong> (register, not grammar — but it's the one that affects how people treat you)</li>
+</ol>
+<h1 id="appendix-b-master-checkpoint-schedule"><span class="lvl-tag">Appendix B</span>Master checkpoint schedule</h1>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>After</th>
+<th>Do this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1.1</td>
+<td>150-word text + error categorisation; re-record your self-introduction</td>
+</tr>
+<tr>
+<td>A1.2</td>
+<td>Full A1 model test, timed; produce the three-case table from memory</td>
+</tr>
+<tr>
+<td>A2.1</td>
+<td>3-minute recorded monologue with 6+ subordinate clauses; self-transcribe</td>
+</tr>
+<tr>
+<td>A2.2</td>
+<td>Full A2 model test; adjective-ending accuracy audit (target &lt; 20% error)</td>
+</tr>
+<tr>
+<td>B1.1</td>
+<td>8-minute opinion discussion with a tutor; 30 verb+preposition audit</td>
+</tr>
+<tr>
+<td>B1.2</td>
+<td>Three full B1 model tests across 8 weeks; error log final review</td>
+</tr>
+<tr>
+<td><strong>Every 4 weeks throughout</strong></td>
+<td>Re-test the <em>previous</em> level's checkpoint. Decay is real and it hits cases hardest.</td>
+</tr>
+</tbody>
+</table></div>
+      <footer class="docfoot">
+        Kursplan Deutsch A1 → B1 · Stand Juli 2026<br>
+        Sources cross-referenced: CEFR · BAMF Integrationskursverordnung · telc Deutsch B1 (Zertifikat Deutsch) · Goethe-Zertifikat B1 Durchführungsbestimmungen · Goethe/ÖSD Wortlisten
+      </footer>
+    </article>
+
+  </div>
+</main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var groups = Array.prototype.slice.call(document.querySelectorAll(".grp"));
+  var links  = Array.prototype.slice.call(document.querySelectorAll("nav.toc a[href^='#']"));
+  var byHash = {};
+  links.forEach(function (a) { byHash[a.getAttribute("href").slice(1)] = a; });
+
+  /* ---- expand / collapse groups ---- */
+  groups.forEach(function (g) {
+    var btn = g.querySelector("button");
+    btn.addEventListener("click", function () {
+      var open = g.getAttribute("data-open") === "true";
+      g.setAttribute("data-open", open ? "false" : "true");
+      btn.setAttribute("aria-expanded", open ? "false" : "true");
+    });
+  });
+
+  function openGroupOf(el) {
+    var g = el.closest(".grp");
+    if (!g) return;
+    groups.forEach(function (o) {
+      o.classList.toggle("is-current", o === g);
+    });
+    if (g.getAttribute("data-open") !== "true") {
+      g.setAttribute("data-open", "true");
+      g.querySelector("button").setAttribute("aria-expanded", "true");
+    }
+  }
+
+  /* ---- scroll-spy ---- */
+  var targets = Array.prototype.slice.call(
+    document.querySelectorAll(".doc h1[id], .doc h2[id], .doc h3[id]")
+  );
+  var current = null;
+  var nowLabel = document.querySelector(".mbar .now");
+
+  function setActive(id) {
+    if (id === current) return;
+    current = id;
+    links.forEach(function (a) { a.classList.remove("active"); });
+    document.querySelectorAll(".unit-no.is-current").forEach(function (n) {
+      n.classList.remove("is-current");
+    });
+    var a = byHash[id];
+    var h = document.getElementById(id);
+    if (h) {
+      var no = h.querySelector(".unit-no");
+      if (no) no.classList.add("is-current");
+      if (nowLabel) nowLabel.textContent = (h.textContent || "").trim().slice(0, 60);
+    }
+    if (!a) return;
+    a.classList.add("active");
+    openGroupOf(a);
+    var rail = document.querySelector(".rail");
+    if (rail && a.offsetTop) {
+      var top = a.offsetTop, h2 = rail.clientHeight;
+      if (top < rail.scrollTop + 60 || top > rail.scrollTop + h2 - 80) {
+        rail.scrollTo({ top: Math.max(0, top - h2 / 2.4), behavior: "smooth" });
+      }
+    }
+  }
+
+  function spy() {
+    var best = null, bestTop = -Infinity;
+    var line = 130;
+    for (var i = 0; i < targets.length; i++) {
+      var t = targets[i].getBoundingClientRect().top;
+      if (t <= line && t > bestTop) { bestTop = t; best = targets[i]; }
+    }
+    if (!best && targets.length) best = targets[0];
+    if (best) setActive(best.id);
+  }
+
+  var ticking = false;
+  window.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { spy(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener("load", spy);
+  spy();
+
+  /* ---- filter ---- */
+  var filter = document.querySelector(".filter");
+  if (filter) {
+    filter.addEventListener("input", function () {
+      var q = filter.value.trim().toLowerCase();
+      groups.forEach(function (g) {
+        var gtext = (g.querySelector("button").textContent || "").toLowerCase();
+        var items = Array.prototype.slice.call(g.querySelectorAll("li"));
+        var anyHit = false;
+        items.forEach(function (li) {
+          var hit = !q || li.textContent.toLowerCase().indexOf(q) > -1;
+          li.style.display = hit ? "" : "none";
+          if (hit) anyHit = true;
+        });
+        var groupHit = !q || gtext.indexOf(q) > -1 || anyHit;
+        g.style.display = groupHit ? "" : "none";
+        if (q) {
+          g.setAttribute("data-open", anyHit ? "true" : "false");
+          if (gtext.indexOf(q) > -1) {
+            items.forEach(function (li) { li.style.display = ""; });
+            g.setAttribute("data-open", "true");
+          }
+        }
+      });
+      if (!q) {
+        groups.forEach(function (g) {
+          g.setAttribute("data-open", g.classList.contains("is-current") ? "true" : "false");
+        });
+      }
+    });
+  }
+
+  /* ---- mobile drawer ---- */
+  var toggle = document.querySelector(".mbar button");
+  if (toggle) {
+    toggle.addEventListener("click", function () {
+      document.body.classList.toggle("nav-open");
+    });
+    document.querySelector(".rail").addEventListener("click", function (e) {
+      if (e.target.closest("a")) document.body.classList.remove("nav-open");
+    });
+    document.addEventListener("click", function (e) {
+      if (!document.body.classList.contains("nav-open")) return;
+      if (e.target.closest(".rail") || e.target.closest(".mbar")) return;
+      document.body.classList.remove("nav-open");
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") document.body.classList.remove("nav-open");
+    });
+  }
+
+  /* ---- checklist counter & browser memory persistence ---- */
+  var STORAGE_KEY_SCROLL = "deutsch_kursplan_scroll";
+  var STORAGE_KEY_CHECKLIST = "deutsch_kursplan_checklist";
+
+  try {
+    var allCheckboxes = Array.prototype.slice.call(document.querySelectorAll("ul.checklist input[type=checkbox]"));
+    var savedChecklist = JSON.parse(localStorage.getItem(STORAGE_KEY_CHECKLIST) || "{}");
+    allCheckboxes.forEach(function (box, idx) {
+      if (savedChecklist[idx] !== undefined) {
+        box.checked = !!savedChecklist[idx];
+      }
+      box.addEventListener("change", function () {
+        savedChecklist[idx] = box.checked;
+        try {
+          localStorage.setItem(STORAGE_KEY_CHECKLIST, JSON.stringify(savedChecklist));
+        } catch (e) {}
+      });
+    });
+  } catch (e) {}
+
+  document.querySelectorAll("ul.checklist").forEach(function (ul) {
+    var boxes = ul.querySelectorAll("input[type=checkbox]");
+    var updateCount = function () {
+      var done = ul.querySelectorAll("input:checked").length;
+      ul.setAttribute("data-done", done + "/" + boxes.length);
+    };
+    updateCount();
+    boxes.forEach(function (b) {
+      b.addEventListener("change", updateCount);
+    });
+  });
+
+  /* ---- scroll position memory ---- */
+  var saveScrollTimeout;
+  window.addEventListener("scroll", function () {
+    clearTimeout(saveScrollTimeout);
+    saveScrollTimeout = setTimeout(function () {
+      try {
+        localStorage.setItem(STORAGE_KEY_SCROLL, window.scrollY || window.pageYOffset);
+      } catch (e) {}
+    }, 150);
+  }, { passive: true });
+
+  var restoreScroll = function () {
+    try {
+      var savedPos = localStorage.getItem(STORAGE_KEY_SCROLL);
+      if (savedPos !== null && !window.location.hash) {
+        window.scrollTo(0, parseInt(savedPos, 10) || 0);
+      }
+    } catch (e) {}
+  };
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(restoreScroll, 50);
+  } else {
+    window.addEventListener("DOMContentLoaded", restoreScroll);
+  }
+
+  /* ---- expand all ---- */
+  var expander = document.querySelector("[data-expand]");
+  if (expander) {
+    expander.addEventListener("click", function () {
+      var allOpen = groups.every(function (g) { return g.getAttribute("data-open") === "true"; });
+      groups.forEach(function (g) { g.setAttribute("data-open", allOpen ? "false" : "true"); });
+      expander.textContent = allOpen ? "Expand all" : "Collapse all";
+    });
+  }
+})();
+
+</script>
+</body>
+</html>

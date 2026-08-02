@@ -8,7 +8,7 @@ DeutschDaily is an offline-first daily German practice app focused on useful res
 - Spaced repetition scheduling
 - **Vocabulary**: 2,525-word German frequency dictionary with example sentences, SRS review, and paginated practice (50 words per page)
 - **Sentences**: Browse and practice daily-life resident scenarios by topic with pattern learning and English-to-German translation exercises
-- A1, A2, and B1 grammar curriculum with a complete topic index, study tracking, focused explanations, examples, and generated exercises
+- **Kursplan (Curriculum Syllabus)**: Comprehensive A1 → B1 study plan covering 48 units and 600 Unterrichtseinheiten structured according to BAMF Integrationskurs and telc/Goethe specifications
 - Pattern learning and pattern practice
 - German to English and English to German practice
 - Text-to-speech support with browser speech synthesis plus optional desktop fallback voices when network audio is available
@@ -42,10 +42,10 @@ No install step is required.
 
 ```text
 DEDaily.html              App shell and script/style includes
+deutsch-a1-b1-kursplan.html  Interactive A1 → B1 Kursplan (48 units / 600 UE syllabus)
 src/content.js            Topics, patterns, and sentence seed data
 src/learning.js           Learn more generation and teaching metadata
 src/vocab.js              500-card daily-life vocabulary deck
-src/grammar.js            A1/A2/B1 grammar course content
 src/frequency-dictionary-data.js  2,525-word frequency dictionary data
 src/frequency-dictionary.json     Parsed frequency dictionary (JSON, generated)
 src/storage.js            Local storage, daily queue, history, and SRS
@@ -94,7 +94,6 @@ The validation checks:
 - topics, levels, and pattern references are valid
 - every sentence has learning metadata
 - vocabulary cards have valid topics, source refs, noun gender/article data, and examples
-- grammar modules cover A1, A2, and B1 with complete lesson metadata
 - frequency dictionary has 2,525 unique, sequential entries with all required fields
 - expected replies and practice prompts are not generic
 - formal/informal coverage stays above the configured threshold

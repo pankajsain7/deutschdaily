@@ -226,3 +226,9 @@ textarea:focus-visible {
   padding: 16px 40px 80px;
   flex: 1;
 }
+
+.app-content.kursplan-active {
+  max-width: none;
+  padding: 16px 24px 0;
+  overflow: hidden;
+}

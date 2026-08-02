@@ -55,7 +55,7 @@ let DB = {
 function validSentenceIdSet() { return new Set(SENTENCES.map(s => s.id)); }
 function validPatternIdSet() { return new Set(PATTERNS.map(p => p.id)); }
 function validVocabIdSet() { return new Set(VOCAB_CARDS.map(v => v.id)); }
-function validGrammarLessonIdSet() { return new Set(GRAMMAR_LESSONS.map(lesson => lesson.id)); }
+function validGrammarLessonIdSet() { return new Set(); }
 function validFrequencyRankSet() { return new Set((typeof FREQUENCY_DICTIONARY !== 'undefined' ? FREQUENCY_DICTIONARY : []).map(e => String(e.rank))); }
 
 function dateKey(date = new Date()) {
@@ -656,35 +656,8 @@ function recordVocabAttempt({ id, result, intervalBefore = 0, intervalAfter = 0,
   DB.vocabAttempts.push({ id, date: today(), result, wasDue, intervalBefore, intervalAfter });
   if (DB.vocabAttempts.length > 1000) DB.vocabAttempts = DB.vocabAttempts.slice(-1000);
 }
-function setGrammarStudied(id, studied = true) {
-  if (!validGrammarLessonIdSet().has(id)) return false;
-  if (studied) {
-    DB.grammarStudied.add(id);
-    recordStudy();
-  } else {
-    DB.grammarStudied.delete(id);
-  }
-  save();
-  return true;
-}
-function recordGrammarScore(id, correct, total) {
-  if (!validGrammarLessonIdSet().has(id)) return false;
-  const safeTotal = clampNumber(total, 1, 100, 1);
-  const safeCorrect = clampNumber(correct, 0, safeTotal, 0);
-  const previous = DB.grammarScores[id];
-  const previousRate = previous && previous.total ? previous.correct / previous.total : -1;
-  const nextRate = safeCorrect / safeTotal;
-  DB.grammarScores[id] = {
-    correct: nextRate >= previousRate ? safeCorrect : previous.correct,
-    total: nextRate >= previousRate ? safeTotal : previous.total,
-    attempts: (previous ? previous.attempts : 0) + 1,
-    updatedAt: today(),
-  };
-  if (nextRate >= 0.8) DB.grammarStudied.add(id);
-  recordStudy();
-  save();
-  return true;
-}
+function setGrammarStudied() { return false; }
+function recordGrammarScore() { return false; }
 
 function blankVocabSrsState() {
   return { interval: 0, ease: 2.5, level: 0, nextReview: null, lastReview: null };
