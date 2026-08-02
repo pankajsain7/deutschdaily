@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', vocabPage: 1, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: 'today', todayTab: 'sentences', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', vocabPage: 1, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
@@ -41,7 +41,7 @@ function normalizePatternFilter(value) {
 }
 
 function stateFromUrl(href) {
-  const fallback = { view: 'today', topicId: null, filter: 'all', query: '', libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: 'today', todayTab: 'sentences', topicId: null, filter: 'all', query: '', libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -55,9 +55,13 @@ function stateFromUrl(href) {
   const filter = params.get('filter');
   const range = params.get('range');
   const tab = params.get('tab');
+  const mode = params.get('mode');
   const day = normalizeDateKey(params.get('day'));
 
-  if (view === 'browse') {
+  if (view === 'today') {
+    fallback.view = 'today';
+    fallback.todayTab = mode === 'vocab' || mode === 'sentences' ? mode : (typeof DB !== 'undefined' && DB.todayTab === 'vocab' ? 'vocab' : 'sentences');
+  } else if (view === 'browse') {
     fallback.view = 'browse';
     fallback.topicId = topic && TOPIC_IDS.has(topic) ? topic : null;
     fallback.filter = VALID_FILTERS.has(filter) ? filter : 'all';
@@ -93,7 +97,9 @@ function urlFromState(state = V) {
   const view = normalizeViewName(state.view);
   const publicView = view === 'saved' ? 'library' : (view === 'history-day' || view === 'progress') ? 'progress' : view;
   if (publicView !== 'today') params.set('view', publicView);
-  if (view === 'browse') {
+  if (view === 'today') {
+    if (state.todayTab === 'vocab') params.set('mode', 'vocab');
+  } else if (view === 'browse') {
     if (state.topicId && TOPIC_IDS.has(state.topicId)) params.set('topic', state.topicId);
     if (state.filter && state.filter !== 'all') params.set('filter', state.filter);
   } else if (view === 'vocab') {
@@ -118,6 +124,7 @@ function urlFromState(state = V) {
 function applyUrlState(href) {
   const next = stateFromUrl(href);
   V.view = next.view;
+  V.todayTab = next.todayTab || (typeof DB !== 'undefined' && DB.todayTab === 'vocab' ? 'vocab' : 'sentences');
   V.topicId = next.topicId;
   V.filter = next.filter;
   V.query = '';
@@ -146,6 +153,7 @@ function commitState({ replace = false, scroll = false } = {}) {
 function nav(view, extra) {
   const nextView = normalizeViewName(view);
   V.view = nextView;
+  if (nextView === 'today' && (extra === 'sentences' || extra === 'vocab')) V.todayTab = extra;
   V.topicId = nextView === 'browse' && extra && TOPIC_IDS.has(extra) ? extra : null;
   V.vocabTopicId = nextView === 'vocab' && extra && VOCAB_TOPIC_IDS.has(extra) ? extra : null;
   V.filter = 'all';
@@ -158,6 +166,16 @@ function nav(view, extra) {
   V.historyDay = null;
   if (nextView === 'patterns') V.patFilter = 'learning';
   commitState({ scroll: true });
+}
+function setTodayTab(tab) {
+  const mode = tab === 'vocab' ? 'vocab' : 'sentences';
+  V.todayTab = mode;
+  if (typeof DB !== 'undefined') {
+    DB.todayTab = mode;
+    save();
+  }
+  V.query = '';
+  commitState();
 }
 
 function jsArg(v) {
@@ -253,7 +271,7 @@ function renderKursplan() {
 }
 
 // ─── TODAY ───────────────────────────────────
-function renderToday() {
+function renderTodaySentences() {
   ensureDailyQueue();
   const qs = DB.dailyQueue.map(id => SENTENCES.find(s => s.id === id)).filter(Boolean);
   const queueDone = qs.filter(s => DB.dailyQueueDone.has(s.id) || (DB.srs[s.id] && DB.srs[s.id].lastReview === today())).length;
@@ -265,7 +283,13 @@ function renderToday() {
   const gc = `<div class="goal-card">
 <div class="goal-top">
   <div><div class="goal-title">📅 Today's Practice</div><div class="goal-date">${new Date().toLocaleDateString('en-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
-  <button class="goal-btn" onclick="openGoalModal()">Goal: ${DB.dailyGoal} ✏️</button>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div class="today-segmented-control" role="tablist" aria-label="Today practice category">
+      <button class="today-seg-btn on" onclick="setTodayTab('sentences')" role="tab" aria-selected="true" type="button">💬 Sentences</button>
+      <button class="today-seg-btn" onclick="setTodayTab('vocab')" role="tab" aria-selected="false" type="button">🔤 Vocab</button>
+    </div>
+    <button class="goal-btn" onclick="openGoalModal()">Goal: ${DB.dailyGoal} ✏️</button>
+  </div>
 </div>
 <div class="goal-nums">
   <div><div class="gnum-v" style="color:var(--green)">${queueDone}</div><div class="gnum-l">Queue done</div></div>
@@ -288,6 +312,11 @@ ${done ? `<div class="goal-complete">🎉 Daily goal complete. Review due cards,
 </div>
 
 ${qs.map((s, i) => renderSentenceCard(s, i, true)).join('')}`;
+}
+
+function renderToday() {
+  const isVocab = V.todayTab === 'vocab';
+  return isVocab ? renderVocab(true) : renderTodaySentences();
 }
 
 // ─── BROWSE ──────────────────────────────────
@@ -401,7 +430,7 @@ function renderLoadMore(shown, total, action) {
 function loadMoreFreq() { V.freqPage = (V.freqPage || 1) + 1; render(); }
 function loadMoreVocab() { V.vocabPage = (V.vocabPage || 1) + 1; render(); }
 
-function renderVocab() {
+function renderVocab(isToday = false) {
   ensureVocabDailyQueue();
   const dueIds = getVocabReviewIds();
   const dueCards = dueIds.map(id => VOCAB_BY_ID[id]).filter(Boolean);
@@ -437,15 +466,37 @@ function renderVocab() {
     ? `All Vocab Cards (${visibleCards.length})`
     : `${V.vocabFilter.charAt(0).toUpperCase() + V.vocabFilter.slice(1)} Cards (${visibleCards.length})`;
 
+  const pageHeader = isToday ? '' : `<h2 class="page-title">Vocabulary</h2><p class="page-sub">Build your German vocabulary with spaced repetition.</p>`;
+  const todaySwitch = isToday ? `<div class="today-segmented-control" role="tablist" aria-label="Today practice category">
+    <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">💬 Sentences</button>
+    <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">🔤 Vocab</button>
+  </div>` : '';
+
+  const todaySectionBar = isToday ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:16px">
+  <div style="font-size:14px;font-weight:600;color:var(--text)">Today's ${queueCards.length} Vocab Cards</div>
+  <div style="display:flex;gap:7px">
+    <button onclick="startVocabPractice({ids:${queueIdsJson}})" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🎯 Practice</button>
+    <button onclick="refreshVocabQueue()" style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;font-weight:500">🔄 New batch</button>
+  </div>
+</div>` : '';
+
+  const actionRow = !isToday ? `<div class="vocab-action-row">
+  ${queueCards.length ? `<button class="learned-practice-btn" onclick="startVocabPractice({ids:${queueIdsJson}})">🎯 Practice Today's ${queueCards.length}</button>` : ''}
+  ${dueCards.length ? `<button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">🔁 Practice Due ${dueCards.length}</button>` : ''}
+  ${visibleCards.length ? `<button class="act-btn vocab-visible-practice" onclick="startVocabPractice({ids:${visibleIdsJson},skipSessionFilter:true})">Practice Visible</button>` : ''}
+</div>` : '';
+
   return `<div style="padding-top:14px">
-<h2 class="page-title">Vocabulary</h2>
-<p class="page-sub">Build your German vocabulary with spaced repetition.</p>
+${pageHeader}
 ${dueSection}
 
 <div class="goal-card vocab-goal-card">
   <div class="goal-top">
     <div><div class="goal-title">🗂️ Today's Vocab Queue</div><div class="goal-date">${queueCards.length} card${queueCards.length !== 1 ? 's' : ''} ready</div></div>
-    <button class="goal-btn" onclick="refreshVocabQueue()" type="button">New batch</button>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      ${todaySwitch}
+      <button class="goal-btn" onclick="refreshVocabQueue()" type="button">New batch</button>
+    </div>
   </div>
   <div class="goal-nums">
     <div><div class="gnum-v" style="color:var(--green)">${queueDone}</div><div class="gnum-l">Queue done</div></div>
@@ -461,21 +512,18 @@ ${dueSection}
   </div>
 </div>
 
-<div class="vocab-action-row">
-  ${queueCards.length ? `<button class="learned-practice-btn" onclick="startVocabPractice({ids:${queueIdsJson}})">🎯 Practice Today's ${queueCards.length}</button>` : ''}
-  ${dueCards.length ? `<button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">🔁 Practice Due ${dueCards.length}</button>` : ''}
-  ${visibleCards.length ? `<button class="act-btn vocab-visible-practice" onclick="startVocabPractice({ids:${visibleIdsJson},skipSessionFilter:true})">Practice Visible</button>` : ''}
-</div>
+${actionRow}
+${todaySectionBar}
 
-${queueCards.length ? `<div class="sec-lbl">Today's New / Due Queue</div>${queueCards.map((card, i) => renderVocabCard(card, i)).join('')}` : ''}
+${queueCards.length ? `${!isToday ? `<div class="sec-lbl">Today's New / Due Queue</div>` : ''}${queueCards.map((card, i) => renderVocabCard(card, i)).join('')}` : ''}
 
-<div class="search-wrap" style="margin:16px 0"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search vocab, English meaning, topic, article, plural..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
+${!isToday ? `<div class="search-wrap" style="margin:16px 0"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search vocab, English meaning, topic, article, plural..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
 <div class="filter-row vocab-topic-row">${topicChips}</div>
 <div class="filter-row">
   ${['all', 'new', 'due', 'learned', 'saved'].map(f => `<button class="filter-chip${V.vocabFilter === f ? ' on' : ''}" onclick="setVocabFilter('${f}')" aria-pressed="${V.vocabFilter === f}" type="button">${f === 'all' ? 'All' : f === 'new' ? 'New' : f === 'due' ? 'Due' : f === 'learned' ? '✓ Learned' : '⭐ Saved'}</button>`).join('')}
 </div>
 <div class="sec-lbl">${cardsTitle}</div>
-${visibleCards.length ? visibleCards.slice(0, (V.vocabPage || 1) * PAGE_SIZE).map((card, i) => renderVocabCard(card, i)).join('') + renderLoadMore(Math.min(visibleCards.length, (V.vocabPage || 1) * PAGE_SIZE), visibleCards.length, 'loadMoreVocab()') : `<div class="empty-state"><div class="empty-icon">🔍</div>No vocab cards match.</div>`}
+${visibleCards.length ? visibleCards.slice(0, (V.vocabPage || 1) * PAGE_SIZE).map((card, i) => renderVocabCard(card, i)).join('') + renderLoadMore(Math.min(visibleCards.length, (V.vocabPage || 1) * PAGE_SIZE), visibleCards.length, 'loadMoreVocab()') : `<div class="empty-state"><div class="empty-icon">🔍</div>No vocab cards match.</div>`}` : ''}
   </div>`;
 }
 function renderVocabCard(card, i) {
@@ -1537,7 +1585,7 @@ function setVocabGoal(n) {
 }
 function setQuery(q) { V.query = q; V.freqPage = 1; V.vocabPage = 1; clearTimeout(window._qt); window._qt = setTimeout(render, 300); }
 function refreshQueue() { DB.dailyQueueDate = null; save(); nav('today'); }
-function refreshVocabQueue() { DB.vocabDailyQueueDate = null; save(); nav('vocab'); }
+function refreshVocabQueue() { DB.vocabDailyQueueDate = null; save(); commitState(); }
 
 // ─── TTS ─────────────────────────────────────
 // ── TTS Engine ──────────────────────────────────────────────────────────────

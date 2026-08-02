@@ -15,6 +15,7 @@ const DEFAULT_SETTINGS = {
 
 let DB = {
   version: DB_VERSION,
+  todayTab: 'sentences',
   learned: new Set(),
   favorites: new Set(),
   understood: new Set(),
@@ -270,6 +271,7 @@ function normalizeDb(raw = {}) {
   const todayK = today();
   const normalized = {
     version: DB_VERSION,
+    todayTab: safe.todayTab === 'vocab' ? 'vocab' : 'sentences',
     learned: new Set(learned),
     favorites: new Set(uniqueValidIds(safe.favorites, validSentenceIds)),
     understood: new Set(uniqueValidIds(safe.understood, validPatternIds)),
@@ -334,6 +336,7 @@ function normalizeDb(raw = {}) {
 function dbToObj() {
   return {
     version: DB.version,
+    todayTab: DB.todayTab || 'sentences',
     learned: [...DB.learned],
     favorites: [...DB.favorites],
     understood: [...DB.understood],
