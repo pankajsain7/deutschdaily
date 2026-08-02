@@ -2763,7 +2763,11 @@ document.addEventListener('keydown', e => {
   if (PP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (PP.idx >= PP.queue.length) return;
-    if (isSpace) { patternPracticeReveal(); return; }
+    if (isSpace) {
+      if (!PP.revealed) patternPracticeReveal();
+      else patternPracticeNext();
+      return;
+    }
     if (e.code === 'ArrowRight') { e.preventDefault(); patternPracticeNext(); return; }
     if (e.code === 'ArrowLeft') { e.preventDefault(); patternPracticePrev(); return; }
     return;
@@ -2773,7 +2777,11 @@ document.addEventListener('keydown', e => {
   if (VP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (VP.idx >= VP.queue.length) return;
-    if (isSpace) { vocabPracticeReveal(); return; }
+    if (isSpace) {
+      if (!VP.revealed) vocabPracticeReveal();
+      else vocabPracticeAnswer('good');
+      return;
+    }
     if (e.code === 'ArrowRight') { e.preventDefault(); vocabPracticeNext(); return; }
     if (VP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
@@ -2787,7 +2795,11 @@ document.addEventListener('keydown', e => {
   if (FP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (FP.idx >= FP.queue.length) return;
-    if (isSpace) { frequencyPracticeReveal(); return; }
+    if (isSpace) {
+      if (!FP.revealed) frequencyPracticeReveal();
+      else frequencyPracticeAnswer('good');
+      return;
+    }
     if (e.code === 'ArrowRight') { e.preventDefault(); frequencyPracticeNext(); return; }
     if (FP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
@@ -2801,33 +2813,81 @@ document.addEventListener('keydown', e => {
   if (P.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (P.idx >= P.queue.length) return;
-    if (isSpace) { practiceReveal(); return; }
+    if (isSpace) {
+      if (!P.revealed) {
+        practiceReveal();
+      } else {
+        const currentCard = P.queue[P.idx];
+        const attemptKey = String(P.idx);
+        if (currentCard && !P.answered[attemptKey]) {
+          recordGotAndNext();
+        } else {
+          practiceNext();
+        }
+      }
+      return;
+    }
     if (e.code === 'ArrowRight') { e.preventDefault(); practiceNext(); return; }
     if (e.code === 'ArrowLeft') { e.preventDefault(); practicePrev(); return; }
     return;
   }
 
-  // Main feed flashcard keyboard shortcuts (Space toggles reveal / hide)
+  // Main feed flashcard keyboard shortcuts (1st Space reveals, 2nd Space switches to next card)
   if (isSpace) {
+    const cards = Array.from(document.querySelectorAll('.vc, .sc, .fc'));
+    if (!cards.length) return;
+
+    let currentIndex = -1;
     const focused = document.activeElement;
-    let cardEl = focused ? focused.closest('.vc, .sc, .fc') : null;
-    if (!cardEl) {
-      const cards = Array.from(document.querySelectorAll('.vc, .sc, .fc'));
+    if (focused) {
+      const cardEl = focused.closest('.vc, .sc, .fc');
+      if (cardEl) currentIndex = cards.indexOf(cardEl);
+    }
+
+    if (currentIndex === -1) {
       let minDistance = Infinity;
-      cards.forEach(card => {
+      cards.forEach((card, idx) => {
         const rect = card.getBoundingClientRect();
-        const dist = Math.abs(rect.top - 80);
-        if (rect.bottom > 80 && dist < minDistance) {
+        const dist = Math.abs(rect.top - 120);
+        if (rect.bottom > 120 && dist < minDistance) {
           minDistance = dist;
-          cardEl = card;
+          currentIndex = idx;
         }
       });
     }
-    if (cardEl && cardEl.id) {
-      const rawId = cardEl.id;
+
+    if (currentIndex === -1) currentIndex = 0;
+
+    const currentCardEl = cards[currentIndex];
+    if (!currentCardEl || !currentCardEl.id) return;
+
+    const rawId = currentCardEl.id;
+    let isRevealed = false;
+    if (rawId.startsWith('vc-')) {
+      const en = document.getElementById('ven-' + rawId.replace('vc-', ''));
+      isRevealed = en && !en.classList.contains('hid');
+    } else if (rawId.startsWith('sc-')) {
+      const en = document.getElementById('en-' + rawId.replace('sc-', ''));
+      isRevealed = en && !en.classList.contains('hid');
+    } else if (rawId.startsWith('fc-')) {
+      const en = document.getElementById('fen-' + rawId.replace('fc-', ''));
+      isRevealed = en && !en.classList.contains('hid');
+    }
+
+    if (!isRevealed) {
       if (rawId.startsWith('vc-')) toggleVocabReveal(rawId.replace('vc-', ''));
       else if (rawId.startsWith('sc-')) toggleReveal(rawId.replace('sc-', ''));
       else if (rawId.startsWith('fc-')) toggleFreqReveal(rawId.replace('fc-', ''));
+    } else {
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < cards.length) {
+        const nextCardEl = cards[nextIndex];
+        nextCardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const nextRawId = nextCardEl.id;
+        if (nextRawId.startsWith('vc-')) toggleVocabReveal(nextRawId.replace('vc-', ''));
+        else if (nextRawId.startsWith('sc-')) toggleReveal(nextRawId.replace('sc-', ''));
+        else if (nextRawId.startsWith('fc-')) toggleFreqReveal(nextRawId.replace('fc-', ''));
+      }
     }
   }
 });
