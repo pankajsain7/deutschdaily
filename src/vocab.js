@@ -532,7 +532,7 @@ n|die|Sperrung|closure|Sperrungen|A2|bml
 n|der|Fluchtweg|escape route|Fluchtwege|A2|bml
 n|die|Sicherheit|safety|—|A2|bml
 n|die|Angst|fear|Ängste|A1|al
-n|der|Streit|argument|Streite|A2|bcl
+n|der|Streit|argument|—|A2|bcl
 n|der|Lärm|noise|—|A2|bml
 n|der|Einbruch|burglary|Einbrüche|A2|bml
 n|der|Verlust|loss|Verluste|A2|bml
