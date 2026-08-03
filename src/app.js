@@ -3206,7 +3206,7 @@ function applyImport(text) {
   // Show success toast
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#16A34A;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
-  toast.textContent = `✅ Imported! ${merged.learned.length} sentences · ${merged.vocabLearned.length} vocab · ${merged.grammarStudied.length} grammar topics`;
+  toast.textContent = `✅ Imported! ${merged.learned.length} sentences · ${merged.vocabLearned.length} vocab · ${merged.freqLearned.length} frequency words · ${merged.grammarStudied.length} grammar topics`;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
@@ -3576,7 +3576,7 @@ function renderProgressActivity() {
     ${renderHistoryQuickActions()}
     <div class="history-stat-grid">
       ${renderHistoryStat('New learned', totalNew, 'sentences added', 'var(--green)')}
-      ${renderHistoryStat('Practice reps', totalPractice, 'sentences and patterns', 'var(--blue)')}
+      ${renderHistoryStat('Practice reps', totalPractice, 'sentences, patterns & vocab', 'var(--blue)')}
       ${renderHistoryStat('Active days', activeDays, 'out of 30 days', 'var(--amber)')}
       ${renderHistoryStat('Recall', avgAccuracy, 'practice accuracy', totalGot + totalAgain && pct(totalGot, totalGot + totalAgain) < 70 ? 'var(--red)' : 'var(--green)')}
     </div>
