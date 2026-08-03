@@ -11,6 +11,12 @@ const SCENARIO_BY_TOPIC = {
     place: 'phone, email, reception, or online appointment flow',
     purpose: 'book, move, confirm, or clarify an appointment'
   },
+  everyday: {
+    speaker: 'You',
+    listener: 'bakery, café, restaurant, or shop staff, or a passer-by on the street',
+    place: 'counter, table, checkout, supermarket aisle, or pavement',
+    purpose: 'order, pay, ask a price, or find your way'
+  },
   admin: {
     speaker: 'You',
     listener: 'Bürgerbüro/Bürgeramt, Ausländerbehörde, Jobcenter, Finanzamt, bank, insurance, employer, or official office',
@@ -76,6 +82,7 @@ const SCENARIO_BY_TOPIC = {
 const EXPECTED_REPLY_BY_TOPIC = {
   understand: 'You may hear a slower repeat, a written word, a spelling, or a simpler explanation.',
   appointments: 'You may hear a date, time, waiting-list option, confirmation method, or "Leider kein Termin frei" ("Unfortunately, no appointment is available").',
+  everyday: 'You may hear a price, "Sonst noch etwas?" ("Anything else?"), "Zum Hier-Essen oder zum Mitnehmen?" ("Eat in or take away?"), or a short direction.',
   admin: 'You may hear a document list, deadline, reference number, portal instruction, Aktenzeichen, Vorgangsnummer, or "Das müssen Sie nachreichen" ("You need to submit that later").',
   housing: 'You may hear a repair date, Hausmeister contact, request for photos, or a note about the Hausordnung.',
   health: 'You may hear questions like Seit wann? ("Since when?"), gesetzlich oder privat versichert? ("public or private insurance?"), Haben Sie Ihre Karte dabei? ("Do you have your card with you?"), or a note about eAU/Überweisung.',
@@ -91,6 +98,7 @@ const EXPECTED_REPLY_BY_TOPIC = {
 const LEARNER_REPLY_BY_TOPIC = {
   understand: 'Answer with the exact problem: Das Wort habe ich nicht verstanden. or Können Sie das bitte wiederholen?',
   appointments: 'Confirm or ask the next step: Ja, das passt. Können Sie mir den Termin schriftlich bestätigen?',
+  everyday: 'Keep it short: Das ist alles, danke. / Zum Mitnehmen, bitte. / Danke, ich schaue nur.',
   admin: 'Give the document/reference number if you have it, then ask: Was muss ich als Nächstes machen?',
   housing: 'Give the address, problem, and since when it started, then ask for a concrete repair or callback.',
   health: 'Answer with duration, insurance, and urgency: Seit gestern. Ich bin gesetzlich versichert. Es ist dringend.',
@@ -106,6 +114,7 @@ const LEARNER_REPLY_BY_TOPIC = {
 const PRACTICE_BY_TOPIC = {
   understand: 'Say the sentence aloud, then repeat the key word you need clarified.',
   appointments: 'Say the sentence aloud with a real day and time, then answer one likely follow-up.',
+  everyday: 'Say it with a real order, price, or street near you, then answer one likely follow-up.',
   admin: 'Say it with one real document or deadline from your life, then ask for the next step.',
   housing: 'Say the problem, add since when it started, then ask for a concrete next action.',
   health: 'Say the symptom, add duration, then ask one medicine or appointment question.',

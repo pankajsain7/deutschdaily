@@ -249,11 +249,13 @@ const ICO = {
   card: svg(`<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.8h19M6.2 14.6h4"/>`),
   chat: svg(`<path d="M8 13.2H5.5a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2V7"/><path d="M9.5 7h9a2 2 0 0 1 2 2v6.2a2 2 0 0 1-2 2h-2.2L12.6 20v-2.8H9.5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>`),
   lifebuoy: svg(`<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.6"/><path d="m5.99 5.99 3.46 3.46M18.01 5.99l-3.46 3.46M5.99 18.01l3.46-3.46M18.01 18.01l-3.46-3.46"/>`),
+  cup: svg(`<path d="M4.5 5.5h11v6a5.5 5.5 0 0 1-11 0v-6z"/><path d="M15.5 7.5h1.8a2.7 2.7 0 0 1 0 5.4h-1.8"/><path d="M3.5 20.5h13"/>`),
 };
 
 // Topic id → icon. Falls back to a neutral bubble for unmapped topics.
 const TOPIC_ICO = {
   understand: 'help',
+  everyday: 'cup',
   appointments: 'calendar',
   admin: 'landmark',
   housing: 'home',

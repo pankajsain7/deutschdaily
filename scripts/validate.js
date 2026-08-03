@@ -18,6 +18,7 @@ const expectedScripts = [
 const errors = [];
 const topicTargets = {
   understand: 20,
+  everyday: 16,
   appointments: 18,
   admin: 20,
   housing: 18,
@@ -92,8 +93,8 @@ const vocabTopicIds = new Set(VOCAB_TOPICS.map(t => t.id));
 const vocabSourceIds = new Set(Object.keys(VOCAB_SOURCE_REFS));
 const vocabIds = new Set();
 
-record(SENTENCES.length === 200, `expected 200 sentences, found ${SENTENCES.length}`);
-record(SENTENCE_SEEDS.length === 200, `expected 200 sentence seeds, found ${SENTENCE_SEEDS.length}`);
+record(SENTENCES.length === 216, `expected 216 sentences, found ${SENTENCES.length}`);
+record(SENTENCE_SEEDS.length === 216, `expected 216 sentence seeds, found ${SENTENCE_SEEDS.length}`);
 record(activePatterns.length === 50, `expected 50 active patterns, found ${activePatterns.length}`);
 record(VOCAB_CARDS.length === 500, `expected 500 vocab cards, found ${VOCAB_CARDS.length}`);
 record(VOCAB_TOPICS.length === 12, `expected 12 vocab topics, found ${VOCAB_TOPICS.length}`);
