@@ -7,15 +7,16 @@ const SKEY_BACKUP = 'dd_v4_backup';
 const SKEY_RECOVERY = 'dd_v4_recovery';
 const DB_VERSION = 8;
 const FIRST_REVIEW_DAYS = 3;
-const DEFAULT_VOCAB_DAILY_GOAL = 10;
-const DEFAULT_FREQ_DAILY_GOAL = 10;
+const DEFAULT_VOCAB_DAILY_GOAL = 15;
+const DEFAULT_FREQ_DAILY_GOAL = 15;
+const FREQUENCY_DICTIONARY_SIZE = 2525;
 const DEFAULT_SETTINGS = {
   externalTts: true,
 };
 
 let DB = {
   version: DB_VERSION,
-  todayTab: 'sentences',
+  todayTab: 'vocab',
   learned: new Set(),
   favorites: new Set(),
   understood: new Set(),
@@ -57,7 +58,7 @@ function validSentenceIdSet() { return new Set(SENTENCES.map(s => s.id)); }
 function validPatternIdSet() { return new Set(PATTERNS.map(p => p.id)); }
 function validVocabIdSet() { return new Set(VOCAB_CARDS.map(v => v.id)); }
 function validGrammarLessonIdSet() { return new Set(); }
-function validFrequencyRankSet() { return new Set((typeof FREQUENCY_DICTIONARY !== 'undefined' ? FREQUENCY_DICTIONARY : []).map(e => String(e.rank))); }
+function validFrequencyRankSet() { return new Set(Array.from({ length: FREQUENCY_DICTIONARY_SIZE }, (_, index) => String(index + 1))); }
 
 function dateKey(date = new Date()) {
   const d = new Date(date);
@@ -201,7 +202,7 @@ function normalizeVocabAttempts(value, validIds) {
     return {
       id: String(raw.id),
       date: normalizeDateKey(raw.date) || today(),
-      result: ['again', 'hard', 'good', 'easy', 'manual'].includes(raw.result) ? raw.result : 'again',
+      result: ['again', 'hard', 'good', 'easy', 'manual', 'skip'].includes(raw.result) ? raw.result : 'again',
       wasDue: Boolean(raw.wasDue),
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
@@ -215,7 +216,7 @@ function normalizeFrequencyAttempts(value, validIds) {
     return {
       id: String(raw.id),
       date: normalizeDateKey(raw.date) || today(),
-      result: ['again', 'hard', 'good', 'easy', 'manual'].includes(raw.result) ? raw.result : 'again',
+      result: ['again', 'hard', 'good', 'easy', 'manual', 'skip'].includes(raw.result) ? raw.result : 'again',
       wasDue: Boolean(raw.wasDue),
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
@@ -271,7 +272,7 @@ function normalizeDb(raw = {}) {
   const todayK = today();
   const normalized = {
     version: DB_VERSION,
-    todayTab: safe.todayTab === 'vocab' ? 'vocab' : 'sentences',
+    todayTab: safe.todayTab === 'sentences' ? 'sentences' : 'vocab',
     learned: new Set(learned),
     favorites: new Set(uniqueValidIds(safe.favorites, validSentenceIds)),
     understood: new Set(uniqueValidIds(safe.understood, validPatternIds)),
@@ -290,7 +291,7 @@ function normalizeDb(raw = {}) {
     vocabFavorites: new Set(uniqueValidIds(safe.vocabFavorites, validVocabIds)),
     vocabSrs: normalizeSrs(safe.vocabSrs, validVocabIds),
     vocabAttempts: normalizeVocabAttempts(safe.vocabAttempts, validVocabIds),
-    vocabDailyGoal: clampNumber(safe.vocabDailyGoal, 1, 50, DEFAULT_VOCAB_DAILY_GOAL),
+    vocabDailyGoal: clampNumber(safe.vocabDailyGoal, 1, 60, DEFAULT_VOCAB_DAILY_GOAL),
     vocabDailyQueue: uniqueValidIds(safe.vocabDailyQueue, validVocabIds),
     vocabDailyQueueDate,
     vocabDailyQueueDone: new Set(vocabDailyQueueDate === todayK ? uniqueValidIds(safe.vocabDailyQueueDone, validVocabIds) : []),
@@ -298,7 +299,7 @@ function normalizeDb(raw = {}) {
     freqFavorites: new Set(uniqueValidIds(safe.freqFavorites, validFreqIds)),
     freqSrs: normalizeSrs(safe.freqSrs, validFreqIds),
     freqAttempts: normalizeFrequencyAttempts(safe.freqAttempts, validFreqIds),
-    freqDailyGoal: clampNumber(safe.freqDailyGoal, 1, 50, DEFAULT_FREQ_DAILY_GOAL),
+    freqDailyGoal: clampNumber(safe.freqDailyGoal, 1, 60, DEFAULT_FREQ_DAILY_GOAL),
     freqDailyQueue: uniqueValidIds(safe.freqDailyQueue, validFreqIds),
     freqDailyQueueDate,
     freqDailyQueueDone: new Set(freqDailyQueueDate === todayK ? uniqueValidIds(safe.freqDailyQueueDone, validFreqIds) : []),
@@ -336,7 +337,7 @@ function normalizeDb(raw = {}) {
 function dbToObj() {
   return {
     version: DB.version,
-    todayTab: DB.todayTab || 'sentences',
+    todayTab: DB.todayTab || 'vocab',
     learned: [...DB.learned],
     favorites: [...DB.favorites],
     understood: [...DB.understood],
@@ -727,7 +728,7 @@ function getNewSentencePool() {
   return shuffle(pool);
 }
 function getNewVocabPool() {
-  return shuffle(VOCAB_CARDS.filter(card => !DB.vocabLearned.has(card.id) && !isVocabScheduledFuture(card.id)));
+  return VOCAB_CARDS.filter(card => !DB.vocabLearned.has(card.id) && !isVocabScheduledFuture(card.id)).sort((a, b) => a.priority - b.priority);
 }
 function ensureDailyQueue() {
   const t = today();
@@ -754,7 +755,7 @@ function ensureVocabDailyQueue() {
     DB.vocabDailyQueueDone = new Set();
   }
   const dueIds = getVocabReviewIds();
-  const due = shuffle(dueIds.map(id => VOCAB_BY_ID[id]).filter(Boolean));
+  const due = dueIds.map(id => VOCAB_BY_ID[id]).filter(Boolean).sort((a, b) => a.priority - b.priority);
   const newPool = getNewVocabPool();
   const queue = [...due, ...newPool.filter(card => !dueIds.includes(card.id))].slice(0, DB.vocabDailyGoal);
   DB.vocabDailyQueue = queue.map(card => card.id);

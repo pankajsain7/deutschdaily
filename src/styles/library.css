@@ -112,6 +112,37 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+.lib-type-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  margin: -6px 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.lib-type-btn {
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--text-2);
+  font: 500 12px 'Inter', sans-serif;
+  cursor: pointer;
+}
+
+.lib-type-btn.on {
+  background: var(--white);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.lib-type-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 .learned-cta {
   background: var(--green-bg);
   border: 0.5px solid var(--green-border);

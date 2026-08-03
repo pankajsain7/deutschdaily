@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', todayTab: 'sentences', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', vocabPage: 1, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', libType: 'vocab', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', vocabPage: 1, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
@@ -21,6 +21,7 @@ const VALID_FREQ_FILTERS = new Set(['all', 'new', 'due', 'learned', 'saved']);
 const VALID_FREQ_RANGES = new Set(['all', '1-500', '501-1000', '1001-1500', '1501-2000', '2001-2525']);
 const VALID_PATTERN_FILTERS = new Set(['learning', 'due', 'understood', 'all']);
 const VALID_LIBRARY_TABS = new Set(['saved', 'learned']);
+const VALID_LIBRARY_TYPES = new Set(['sentences', 'vocab']);
 const TOPIC_IDS = new Set(TOPICS.map(t => t.id));
 const VOCAB_TOPIC_IDS = new Set(VOCAB_TOPICS.map(t => t.id));
 
@@ -41,7 +42,7 @@ function normalizePatternFilter(value) {
 }
 
 function stateFromUrl(href) {
-  const fallback = { view: 'today', todayTab: 'sentences', topicId: null, filter: 'all', query: '', libTab: 'saved', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'saved', libType: 'vocab', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -56,11 +57,12 @@ function stateFromUrl(href) {
   const range = params.get('range');
   const tab = params.get('tab');
   const mode = params.get('mode');
+  const type = params.get('type');
   const day = normalizeDateKey(params.get('day'));
 
   if (view === 'today') {
     fallback.view = 'today';
-    fallback.todayTab = mode === 'vocab' || mode === 'sentences' ? mode : (typeof DB !== 'undefined' && DB.todayTab === 'vocab' ? 'vocab' : 'sentences');
+    fallback.todayTab = mode === 'vocab' || mode === 'sentences' ? mode : (typeof DB !== 'undefined' && DB.todayTab === 'sentences' ? 'sentences' : 'vocab');
   } else if (view === 'browse') {
     fallback.view = 'browse';
     fallback.topicId = topic && TOPIC_IDS.has(topic) ? topic : null;
@@ -79,6 +81,7 @@ function stateFromUrl(href) {
   } else if (view === 'saved') {
     fallback.view = 'saved';
     fallback.libTab = VALID_LIBRARY_TABS.has(tab) ? tab : 'saved';
+    fallback.libType = VALID_LIBRARY_TYPES.has(type) ? type : 'vocab';
   } else if (view === 'progress' || view === 'history-day') {
     if (day) {
       fallback.view = 'history-day';
@@ -98,7 +101,7 @@ function urlFromState(state = V) {
   const publicView = view === 'saved' ? 'library' : (view === 'history-day' || view === 'progress') ? 'progress' : view;
   if (publicView !== 'today') params.set('view', publicView);
   if (view === 'today') {
-    if (state.todayTab === 'vocab') params.set('mode', 'vocab');
+    if (state.todayTab === 'sentences') params.set('mode', 'sentences');
   } else if (view === 'browse') {
     if (state.topicId && TOPIC_IDS.has(state.topicId)) params.set('topic', state.topicId);
     if (state.filter && state.filter !== 'all') params.set('filter', state.filter);
@@ -112,6 +115,7 @@ function urlFromState(state = V) {
     params.set('filter', normalizePatternFilter(state.patFilter));
   } else if (view === 'saved') {
     if (state.libTab && state.libTab !== 'saved') params.set('tab', state.libTab);
+    if (state.libType === 'sentences') params.set('type', 'sentences');
   } else if (view === 'progress') {
     if (state.progressTab && state.progressTab !== 'overview') params.set('tab', state.progressTab);
   } else if (view === 'history-day' && state.historyDay) {
@@ -124,11 +128,12 @@ function urlFromState(state = V) {
 function applyUrlState(href) {
   const next = stateFromUrl(href);
   V.view = next.view;
-  V.todayTab = next.todayTab || (typeof DB !== 'undefined' && DB.todayTab === 'vocab' ? 'vocab' : 'sentences');
+  V.todayTab = next.todayTab || (typeof DB !== 'undefined' && DB.todayTab === 'sentences' ? 'sentences' : 'vocab');
   V.topicId = next.topicId;
   V.filter = next.filter;
   V.query = '';
   V.libTab = next.libTab;
+  V.libType = next.libType;
   V.patFilter = next.patFilter;
   V.vocabTopicId = next.vocabTopicId;
   V.vocabFilter = next.vocabFilter;
@@ -285,8 +290,8 @@ function renderTodaySentences() {
   <div><div class="goal-title">📅 Today's Practice</div><div class="goal-date">${new Date().toLocaleDateString('en-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <div class="today-segmented-control" role="tablist" aria-label="Today practice category">
-      <button class="today-seg-btn on" onclick="setTodayTab('sentences')" role="tab" aria-selected="true" type="button">💬 Sentences</button>
       <button class="today-seg-btn" onclick="setTodayTab('vocab')" role="tab" aria-selected="false" type="button">🔤 Vocab</button>
+      <button class="today-seg-btn on" onclick="setTodayTab('sentences')" role="tab" aria-selected="true" type="button">💬 Sentences</button>
     </div>
     <button class="goal-btn" onclick="openGoalModal()">Goal: ${DB.dailyGoal} ✏️</button>
   </div>
@@ -314,9 +319,57 @@ ${done ? `<div class="goal-complete">🎉 Daily goal complete. Review due cards,
 ${qs.map((s, i) => renderSentenceCard(s, i, true)).join('')}`;
 }
 
+function renderTodayVocab() {
+  ensureFreqDailyQueue();
+  const dueIds = getFreqReviewIds().sort((a, b) => Number(a) - Number(b));
+  const queueEntries = DB.freqDailyQueue.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
+  const queueDone = queueEntries.filter(entry => DB.freqDailyQueueDone.has(String(entry.rank)) || (DB.freqSrs[String(entry.rank)] && DB.freqSrs[String(entry.rank)].lastReview === today())).length;
+  const total = typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length;
+  const queuePct = queueEntries.length ? Math.min(100, Math.round(queueDone / queueEntries.length * 100)) : 0;
+  const queueIdsJson = idsArg(queueEntries.map(entry => String(entry.rank)));
+  const goalOptions = [15, 30, 45, 60].map(n => `<button class="vocab-goal-opt${DB.freqDailyGoal === n ? ' on' : ''}" onclick="setFreqGoal(${n})" aria-pressed="${DB.freqDailyGoal === n}" type="button">${n}</button>`).join('');
+
+  return `<div>
+<div class="goal-card vocab-goal-card">
+  <div class="goal-top">
+    <div><div class="goal-title">🔤 Today's Vocab Queue</div><div class="goal-date">${queueEntries.length} card${queueEntries.length !== 1 ? 's' : ''} ready</div></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="today-segmented-control" role="tablist" aria-label="Today practice category">
+        <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">🔤 Vocab</button>
+        <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">💬 Sentences</button>
+      </div>
+      <button class="goal-btn" onclick="refreshFreqQueue()" type="button">New batch</button>
+    </div>
+  </div>
+  <div class="goal-nums">
+    <div><div class="gnum-v" style="color:var(--green)">${queueDone}</div><div class="gnum-l">Queue done</div></div>
+    <div><div class="gnum-v" style="color:var(--amber)">${dueIds.length}</div><div class="gnum-l">Due</div></div>
+    <div><div class="gnum-v" style="color:var(--accent)">${DB.freqLearned.size}</div><div class="gnum-l">Learned</div></div>
+    <div><div class="gnum-v" style="color:var(--pink)">${DB.freqFavorites.size}</div><div class="gnum-l">Saved</div></div>
+    <div><div class="gnum-v" style="color:var(--text-3)">${total - DB.freqLearned.size}</div><div class="gnum-l">Remaining</div></div>
+  </div>
+  <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
+  <div class="vocab-goal-row">
+    <span>Daily vocab goal</span>
+    <div class="vocab-goal-options">${goalOptions}</div>
+  </div>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:16px">
+  <div style="font-size:14px;font-weight:600;color:var(--text)">Today's ${queueEntries.length} Vocab Cards</div>
+  <div style="display:flex;gap:7px">
+    <button onclick="startFrequencyPractice({ids:${queueIdsJson}})" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🎯 Practice</button>
+    <button onclick="refreshFreqQueue()" style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;font-weight:500">🔄 New batch</button>
+  </div>
+</div>
+
+${queueEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}
+  </div>`;
+}
+
 function renderToday() {
   const isVocab = V.todayTab === 'vocab';
-  return isVocab ? renderVocab(true) : renderTodaySentences();
+  return isVocab ? renderTodayVocab() : renderTodaySentences();
 }
 
 // ─── BROWSE ──────────────────────────────────
@@ -433,8 +486,8 @@ function loadMoreVocab() { V.vocabPage = (V.vocabPage || 1) + 1; render(); }
 function renderVocab(isToday = false) {
   ensureVocabDailyQueue();
   const dueIds = getVocabReviewIds();
-  const dueCards = dueIds.map(id => VOCAB_BY_ID[id]).filter(Boolean);
-  const queueCards = DB.vocabDailyQueue.map(id => VOCAB_BY_ID[id]).filter(Boolean);
+  const dueCards = dueIds.map(id => VOCAB_BY_ID[id]).filter(Boolean).sort((a, b) => a.priority - b.priority);
+  const queueCards = DB.vocabDailyQueue.map(id => VOCAB_BY_ID[id]).filter(Boolean).sort((a, b) => a.priority - b.priority);
   const queueDone = queueCards.filter(card => DB.vocabDailyQueueDone.has(card.id) || (DB.vocabSrs[card.id] && DB.vocabSrs[card.id].lastReview === today())).length;
   const learned = DB.vocabLearned.size;
   const saved = DB.vocabFavorites.size;
@@ -454,7 +507,7 @@ function renderVocab(isToday = false) {
   </div>
   <div class="review-section-sub">These vocabulary cards are scheduled for spaced review today.</div>
 </div>` : '';
-  const goalOptions = [5, 10, 15, 20, 25, 30].map(n => `<button class="vocab-goal-opt${DB.vocabDailyGoal === n ? ' on' : ''}" onclick="setVocabGoal(${n})" aria-pressed="${DB.vocabDailyGoal === n}" type="button">${n}</button>`).join('');
+  const goalOptions = [15, 30, 45, 60].map(n => `<button class="vocab-goal-opt${DB.vocabDailyGoal === n ? ' on' : ''}" onclick="setVocabGoal(${n})" aria-pressed="${DB.vocabDailyGoal === n}" type="button">${n}</button>`).join('');
   const topicChips = [`<button class="filter-chip${!V.vocabTopicId ? ' on' : ''}" onclick="setVocabTopic(null)" aria-pressed="${!V.vocabTopicId}" type="button">All topics</button>`]
     .concat(VOCAB_TOPICS.map(topic => `<button class="filter-chip${V.vocabTopicId === topic.id ? ' on' : ''}" onclick="setVocabTopic('${topic.id}')" aria-pressed="${V.vocabTopicId === topic.id}" type="button">${topic.emoji} ${topic.name}</button>`))
     .join('');
@@ -468,8 +521,8 @@ function renderVocab(isToday = false) {
 
   const pageHeader = isToday ? '' : `<h2 class="page-title">Vocabulary</h2><p class="page-sub">Build your German vocabulary with spaced repetition.</p>`;
   const todaySwitch = isToday ? `<div class="today-segmented-control" role="tablist" aria-label="Today practice category">
-    <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">💬 Sentences</button>
     <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">🔤 Vocab</button>
+    <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">💬 Sentences</button>
   </div>` : '';
 
   const todaySectionBar = isToday ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:16px">
@@ -486,7 +539,7 @@ function renderVocab(isToday = false) {
   ${visibleCards.length ? `<button class="act-btn vocab-visible-practice" onclick="startVocabPractice({ids:${visibleIdsJson},skipSessionFilter:true})">Practice Visible</button>` : ''}
 </div>` : '';
 
-  return `<div style="padding-top:14px">
+  return `<div${isToday ? '' : ' style="padding-top:14px"'}>
 ${pageHeader}
 ${dueSection}
 
@@ -692,53 +745,79 @@ function renderFreqCard(entry, i) {
   const srsDots = learned ? `<span class="srs-dots" title="${esc(nextLabel)}">${SRS_INTERVALS.map((_, dot) => `<span class="srs-dot${dot < srsLvl ? ' filled' : ''}"></span>`).join('')}</span>${nextLabel ? `<span class="srs-next">${esc(nextLabel)}</span>` : ''}` : '';
   return `<div class="vc freq-card${learned ? ' lrn' : ''}${saved ? ' fav' : ''}" id="fc-${id}">
 <div class="sc-top">
-  <span class="topic-label">#${entry.rank}</span>
+  <span class="topic-label">Rank #${entry.rank}</span>
   <span class="lvl-tag">${esc(freqPosLabel(entry))}</span>
   ${learned ? `<span class="lrn-badge">✓ Learned</span>${srsDots}` : ''}
 </div>
 <button class="vocab-term reveal-btn" onclick="toggleFreqReveal('${id}')" aria-expanded="false" type="button" lang="de">${esc(freqDisplay(entry))}</button>
 <div class="freq-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-<div class="reveal-hint" id="fhn-${id}">👆 Tap to reveal English translation</div>
 <button class="vocab-en hid reveal-btn" id="fen-${id}" onclick="toggleFreqReveal('${id}')" aria-hidden="true" hidden type="button">
-  <span class="freq-en-word">${esc(entry.english)}</span>
   <span class="freq-en-sentence">${esc(entry.englishSentence)}</span>
 </button>
-<div class="freq-ipa hid" id="fipa-${id}" hidden>${entry.ipa ? esc(entry.ipa) : ''}</div>
 <div class="card-actions">
   <button class="act-btn speak-btn" data-id="freq-${id}" onclick="speak(${jsArg(entry.germanSentence || entry.german)},'freq-${id}')" type="button">
     ${ICO.speak} Listen
   </button>
-  <button class="act-btn${learned ? ' is-learned' : ''}" id="flrn-btn-${id}" onclick="toggleFreqLearned('${id}')">
+  <button class="act-btn${learned ? ' is-learned' : ''}" id="flrn-btn-${id}" onclick="toggleFreqLearnedUi('${id}')" type="button">
     ${ICO.check} ${learned ? 'Learned' : 'Mark learned'}
   </button>
-  <button class="act-btn${saved ? ' is-fav' : ''}" id="ffav-btn-${id}" onclick="toggleFreqFav('${id}')">
+  <button class="act-btn${saved ? ' is-fav' : ''}" id="ffav-btn-${id}" onclick="toggleFreqFavUi('${id}')" type="button">
     ${ICO.star} ${saved ? 'Saved' : 'Save'}
   </button>
-  <button class="act-btn" onclick="startFrequencyPractice({ids:['${id}'],skipSessionFilter:true})">Practice</button>
 </div>
   </div>`;
 }
 function toggleFreqReveal(id) {
   const en = document.getElementById('fen-' + id);
-  const hn = document.getElementById('fhn-' + id);
-  const ipa = document.getElementById('fipa-' + id);
   const card = document.getElementById('fc-' + id);
   if (!en) return;
   if (en.classList.contains('hid')) {
     en.hidden = false;
     en.setAttribute('aria-hidden', 'false');
     en.classList.remove('hid');
-    if (hn) hn.style.display = 'none';
-    if (ipa) { ipa.hidden = false; ipa.classList.remove('hid'); }
     if (card) card.querySelectorAll('.reveal-btn').forEach(btn => btn.setAttribute('aria-expanded', 'true'));
   } else {
     en.classList.add('hid');
     en.hidden = true;
     en.setAttribute('aria-hidden', 'true');
-    if (hn) hn.style.display = 'block';
-    if (ipa) { ipa.hidden = true; ipa.classList.add('hid'); }
     if (card) card.querySelectorAll('.reveal-btn').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
   }
+}
+function syncFreqCardState(id) {
+  const card = document.getElementById('fc-' + id);
+  if (!card) return;
+  const learned = DB.freqLearned.has(id);
+  const saved = DB.freqFavorites.has(id);
+  card.classList.toggle('lrn', learned);
+  card.classList.toggle('fav', saved);
+
+  const learnedBtn = document.getElementById('flrn-btn-' + id);
+  if (learnedBtn) {
+    learnedBtn.classList.toggle('is-learned', learned);
+    learnedBtn.innerHTML = `${ICO.check} ${learned ? 'Learned' : 'Mark learned'}`;
+  }
+  const savedBtn = document.getElementById('ffav-btn-' + id);
+  if (savedBtn) {
+    savedBtn.classList.toggle('is-fav', saved);
+    savedBtn.innerHTML = `${ICO.star} ${saved ? 'Saved' : 'Save'}`;
+  }
+
+  const top = card.querySelector('.sc-top');
+  if (!top) return;
+  top.querySelectorAll('.lrn-badge, .srs-dots, .srs-next').forEach(element => element.remove());
+  if (learned) {
+    const nextLabel = freqSrsNextLabel(id);
+    const level = getFreqSrsLevel(id);
+    top.insertAdjacentHTML('beforeend', `<span class="lrn-badge">✓ Learned</span><span class="srs-dots" title="${esc(nextLabel)}">${SRS_INTERVALS.map((_, dot) => `<span class="srs-dot${dot < level ? ' filled' : ''}"></span>`).join('')}</span>${nextLabel ? `<span class="srs-next">${esc(nextLabel)}</span>` : ''}`);
+  }
+}
+function toggleFreqLearnedUi(id) {
+  toggleFreqLearned(id);
+  syncFreqCardState(id);
+}
+function toggleFreqFavUi(id) {
+  toggleFreqFav(id);
+  syncFreqCardState(id);
 }
 function setFreqFilter(filter) {
   V.freqFilter = VALID_FREQ_FILTERS.has(filter) ? filter : 'all';
@@ -751,7 +830,9 @@ function setFreqRange(range) {
   commitState();
 }
 function setFreqGoal(n) {
-  DB.freqDailyGoal = clampNumber(n, 1, 50, DEFAULT_FREQ_DAILY_GOAL);
+  DB.freqDailyGoal = clampNumber(n, 1, 60, DEFAULT_FREQ_DAILY_GOAL);
+  DB.freqDailyQueue = [];
+  DB.freqDailyQueueDate = null;
   save();
   render();
 }
@@ -1228,19 +1309,29 @@ ${informal ? `<div class="pat-informal">
 
 // ─── SAVED / LIBRARY ─────────────────────────
 function setLibTab(tab) { V.libTab = VALID_LIBRARY_TABS.has(tab) ? tab : 'saved'; commitState(); }
+function setLibType(type) { V.libType = VALID_LIBRARY_TYPES.has(type) ? type : 'vocab'; commitState(); }
 
 function renderSaved() {
   const favSents = SENTENCES.filter(s => DB.favorites.has(s.id));
   const learnedSents = SENTENCES.filter(s => DB.learned.has(s.id));
+  const favFreq = [...DB.freqFavorites].map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
+  const learnedFreq = [...DB.freqLearned].map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
+  const showSentences = V.libType === 'sentences';
+  const savedCount = showSentences ? favSents.length : favFreq.length;
+  const learnedCount = showSentences ? learnedSents.length : learnedFreq.length;
   const tabs = `<div class="lib-tabs">
-<button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')">⭐ Saved (${favSents.length})</button>
-<button class="lib-tab${V.libTab === 'learned' ? ' on' : ''}" onclick="setLibTab('learned')">📗 Learned (${learnedSents.length})</button>
+<button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')">⭐ Saved (${savedCount})</button>
+<button class="lib-tab${V.libTab === 'learned' ? ' on' : ''}" onclick="setLibTab('learned')">📗 Learned (${learnedCount})</button>
+  </div>`;
+  const typeToggle = `<div class="lib-type-toggle" role="tablist" aria-label="Library item type">
+<button class="lib-type-btn${showSentences ? ' on' : ''}" onclick="setLibType('sentences')" role="tab" aria-selected="${showSentences}" type="button">Sentences</button>
+<button class="lib-type-btn${showSentences ? '' : ' on'}" onclick="setLibType('vocab')" role="tab" aria-selected="${!showSentences}" type="button">Vocab</button>
   </div>`;
 
   // SRS due-for-review section
   const reviewIds = getSrsReviewIds();
   const reviewSents = reviewIds.map(id => SENTENCES.find(s => s.id === id)).filter(Boolean);
-  const reviewSection = reviewSents.length ? (() => {
+  const sentenceReviewSection = reviewSents.length ? (() => {
     const ids = JSON.stringify(reviewSents.map(s => s.id)).replace(/"/g, "'");
     return `<div class="review-section">
   <div class="review-section-hdr">
@@ -1250,27 +1341,49 @@ function renderSaved() {
   <div class="review-section-sub">These sentences are scheduled for review today - spaced repetition in action!</div>
 </div>`;
   })() : '';
+  const reviewFreqIds = getFreqReviewIds();
+  const reviewFreq = reviewFreqIds.map(id => freqById(id)).filter(Boolean);
+  const frequencyReviewSection = reviewFreq.length ? `<div class="review-section">
+  <div class="review-section-hdr">
+    <div class="review-section-title">🔁 Due for Review <span class="review-count-badge">${reviewFreq.length}</span></div>
+    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${idsArg(reviewFreqIds)},isSRS:true})">Practice Now</button>
+  </div>
+  <div class="review-section-sub">These vocabulary cards are scheduled for review today.</div>
+</div>` : '';
+  const reviewSection = showSentences ? sentenceReviewSection : frequencyReviewSection;
 
-  if (V.libTab === 'learned') return renderLearnedTab(tabs, learnedSents, reviewSection);
-  if (!favSents.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${reviewSection}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">⭐</div>No saved sentences yet.<br><span style="font-size:13px">Tap ⭐ Save on any card.</span></div></div>`;
+  if (V.libTab === 'learned') return renderLearnedTab(`${tabs}${typeToggle}`, showSentences ? learnedSents : [], showSentences ? [] : learnedFreq);
+  if (!savedCount) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">⭐</div>No saved ${showSentences ? 'sentences' : 'vocabulary'} yet.<br><span style="font-size:13px">Tap Save on any ${showSentences ? 'sentence' : 'vocabulary'} card.</span></div></div>`;
   const favIds = JSON.stringify(favSents.map(s => s.id)).replace(/"/g, "'");
-  return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${reviewSection}
-<div class="learned-cta">
+  const favFreqIds = idsArg(favFreq.map(entry => String(entry.rank)));
+  const sentenceSection = favSents.length ? `<div class="learned-cta">
   <div class="learned-cta-info">
     <div class="learned-cta-title">⭐ ${favSents.length} saved sentence${favSents.length !== 1 ? 's' : ''}</div>
     <div class="learned-cta-sub">Practice your saved sentences</div>
   </div>
   <button class="learned-practice-btn" onclick="startPractice({ids:${favIds}})">🎯 Practice All</button>
 </div>
-${favSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}</div>`;
+${favSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}` : '';
+  const frequencySection = favFreq.length ? `<div class="learned-cta">
+  <div class="learned-cta-info">
+    <div class="learned-cta-title">⭐ ${favFreq.length} saved frequency word${favFreq.length !== 1 ? 's' : ''}</div>
+    <div class="learned-cta-sub">Practice your saved vocabulary</div>
+  </div>
+  <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${favFreqIds},skipSessionFilter:true})">🎯 Practice All</button>
+</div>
+${favFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}` : '';
+  return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}
+${showSentences ? sentenceSection : frequencySection}</div>`;
 }
 
-function renderLearnedTab(tabs, learnedSents, reviewSection) {
-  if (!learnedSents.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">📗</div>No learned sentences yet.<br><span style="font-size:13px">Mark sentences ✓ Done to track your progress.</span></div></div>`;
+function renderLearnedTab(tabs, learnedSents, learnedFreq) {
+  if (!learnedSents.length && !learnedFreq.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">📗</div>No learned items yet.<br><span style="font-size:13px">Mark a sentence or vocabulary card learned to track it here.</span></div></div>`;
 
   // SRS due sentences
   const dueIds = getSrsReviewIds();
   const dueSents = dueIds.map(id => SENTENCES.find(s => s.id === id)).filter(Boolean);
+  const dueFreqIds = getFreqReviewIds();
+  const dueFreq = dueFreqIds.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
 
   // Sentences reviewed today (practiced via SRS today, now scheduled for future)
   const td = todayISO();
@@ -1280,9 +1393,10 @@ function renderLearnedTab(tabs, learnedSents, reviewSection) {
   });
 
   const dueIdsJson = JSON.stringify(dueSents.map(s => s.id)).replace(/"/g, "'");
+  const dueFreqIdsJson = idsArg(dueFreqIds);
 
   // Due for practice section with individual cards
-  const dueSection = dueSents.length ? `
+  const sentenceDueSection = dueSents.length ? `
     <div class="review-section">
       <div class="review-section-hdr">
         <div class="review-section-title">🔁 Due for Review <span class="review-count-badge">${dueSents.length}</span></div>
@@ -1291,9 +1405,20 @@ function renderLearnedTab(tabs, learnedSents, reviewSection) {
       <div class="review-section-sub">These sentences are scheduled for review today — spaced repetition in action!</div>
     </div>
     ${dueSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}
-  ` : `<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:14px;padding:18px;margin-bottom:16px;text-align:center">
+  ` : '';
+  const frequencyDueSection = dueFreq.length ? `
+    <div class="review-section">
+      <div class="review-section-hdr">
+        <div class="review-section-title">🔁 Due Frequency Review <span class="review-count-badge">${dueFreq.length}</span></div>
+        <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueFreqIdsJson},isSRS:true})">🎯 Practice Due</button>
+      </div>
+      <div class="review-section-sub">These vocabulary cards are scheduled for review today.</div>
+    </div>
+    ${dueFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}
+  ` : '';
+  const dueSection = sentenceDueSection || frequencyDueSection ? `${sentenceDueSection}${frequencyDueSection}` : `<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:14px;padding:18px;margin-bottom:16px;text-align:center">
       <div style="font-size:15px;font-weight:700;color:var(--green)">✅ All caught up!</div>
-      <div style="font-size:12px;color:var(--text-3);margin-top:4px">No sentences due for review right now. Check back later!</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:4px">No items due for review right now. Check back later!</div>
     </div>`;
 
   // Reviewed today section
@@ -1303,17 +1428,29 @@ function renderLearnedTab(tabs, learnedSents, reviewSection) {
   ` : '';
 
   // All learned section
-  const allSection = `
+  const allSentenceSection = learnedSents.length ? `
     <div class="sec-lbl">📗 All Learned (${learnedSents.length})</div>
     ${learnedSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}
-  `;
+  ` : '';
+  const learnedFreqIds = idsArg(learnedFreq.map(entry => String(entry.rank)));
+  const allFrequencySection = learnedFreq.length ? `
+    <div class="learned-cta">
+      <div class="learned-cta-info">
+        <div class="learned-cta-title">🔤 ${learnedFreq.length} learned frequency word${learnedFreq.length !== 1 ? 's' : ''}</div>
+        <div class="learned-cta-sub">Review your learned vocabulary</div>
+      </div>
+      <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${learnedFreqIds},skipSessionFilter:true})">🎯 Practice All</button>
+    </div>
+    ${learnedFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}
+  ` : '';
 
   return `<div style="padding-top:14px">
 <h2 class="page-title">Library</h2>
 ${tabs}
 ${dueSection}
 ${reviewedSection}
-${allSection}
+${allSentenceSection}
+${allFrequencySection}
   </div>`;
 }
 
@@ -1352,23 +1489,27 @@ function renderProgressOverview() {
     const key = addDaysISO(-i);
     const cnt = DB.attempts.filter(a => a.date === key && a.result !== 'skip').length
       + DB.patternAttempts.filter(a => a.date === key && a.result !== 'skip').length
-      + DB.vocabAttempts.filter(a => a.date === key).length;
+      + DB.vocabAttempts.filter(a => a.date === key && a.result !== 'skip').length
+      + DB.freqAttempts.filter(a => a.date === key && a.result !== 'skip').length;
     const d = parseDateKey(key);
     const label = i === 0 ? 'Today' : i === 1 ? 'Yest' : d.toLocaleDateString('en-DE', { weekday: 'short' });
     histRows.push({ label, cnt, isToday: i === 0 });
   }
   const maxH = Math.max(...histRows.map(r => r.cnt), 1);
-  const studiedDates = new Set([...DB.attempts, ...DB.patternAttempts, ...DB.vocabAttempts].filter(a => a.result !== 'skip').map(a => a.date));
+  const studiedDates = new Set([...DB.attempts, ...DB.patternAttempts, ...DB.vocabAttempts, ...DB.freqAttempts].filter(a => a.result !== 'skip').map(a => a.date));
   Object.keys(DB.historyWords).forEach(k => studiedDates.add(k));
   const reviewDue = getSrsReviewIds().length;
   const patternDue = getPatternReviewIds().length;
   const vocabDue = getVocabReviewIds().length;
   const vocabDone = DB.vocabLearned.size;
+  const freqDue = getFreqReviewIds().length;
+  const freqDone = DB.freqLearned.size;
   const overdue = Object.values(DB.srs).filter(s => s.nextReview && s.nextReview < today()).length;
   const srsTotal = Object.keys(DB.srs).length;
   const srsLvl5plus = Object.entries(DB.srs).filter(([id, v]) => DB.learned.has(id) && v.level >= 5).length;
   const newToday = (DB.historyWords[today()] || []).length;
-  const reviewsToday = DB.attempts.filter(a => a.date === today() && a.wasDue && a.result !== 'skip').length;
+  const reviewsToday = [...DB.attempts, ...DB.patternAttempts, ...DB.vocabAttempts, ...DB.freqAttempts]
+    .filter(a => a.date === today() && a.wasDue && a.result !== 'skip').length;
   const sentenceAgg = aggregateAttempts(DB.attempts, a => a.id);
   const topicAgg = aggregateAttempts(DB.attempts, a => a.topic);
   const dirAgg = aggregateAttempts(DB.attempts, a => a.direction);
@@ -1412,6 +1553,7 @@ ${histRows.map(r => {
   <div class="stat-box"><div class="stat-lbl">Reviews Today</div><div class="stat-num" style="color:var(--amber)">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
   <div class="stat-box"><div class="stat-lbl">Patterns</div><div class="stat-num" style="color:var(--purple)">${und}</div><div class="stat-sub">${patternDue} due</div></div>
   <div class="stat-box"><div class="stat-lbl">Vocab</div><div class="stat-num" style="color:var(--blue)">${vocabDone}</div><div class="stat-sub">${vocabDue} due of ${VOCAB_CARDS.length}</div></div>
+  <div class="stat-box"><div class="stat-lbl">Frequency</div><div class="stat-num" style="color:var(--accent)">${freqDone}</div><div class="stat-sub">${freqDue} due of ${FREQUENCY_DICTIONARY_SIZE}</div></div>
 </div>
 
 <div class="stats-sec-hdr">🔁 Spaced Repetition</div>
@@ -1578,7 +1720,7 @@ function setVocabTopic(topicId) {
   commitState();
 }
 function setVocabGoal(n) {
-  DB.vocabDailyGoal = clampNumber(n, 1, 50, DEFAULT_VOCAB_DAILY_GOAL);
+  DB.vocabDailyGoal = clampNumber(n, 1, 60, DEFAULT_VOCAB_DAILY_GOAL);
   DB.vocabDailyQueueDate = null;
   save();
   commitState();
@@ -2224,7 +2366,7 @@ function startVocabPractice(opts) {
   if (!cards.length) return;
   P.active = false;
   PP.active = false;
-  VP = { active: true, queue: shuffle([...cards]), idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, isSRS, dir, dirChoice: !requestedDir, answered: {}, missedIds: [] };
+  VP = { active: true, queue: [...cards].sort((a, b) => a.priority - b.priority), idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, isSRS, dir, dirChoice: !requestedDir, answered: {}, missedIds: [] };
   renderVocabPractice();
 }
 
@@ -2421,7 +2563,7 @@ function vocabPracticeNext() {
     if (currentCard && !VP.answered[attemptKey]) {
       VP.answered[attemptKey] = 'skip';
       VP.skipped++;
-      recordVocabAttempt({ id: currentCard.id, result: 'again', intervalBefore: 0, intervalAfter: 0, wasDue: false });
+      recordVocabAttempt({ id: currentCard.id, result: 'skip', intervalBefore: 0, intervalAfter: 0, wasDue: false });
       save();
     }
     VP.idx++;
@@ -2491,7 +2633,7 @@ function renderFrequencyPractice() {
   const pct = Math.round(FP.idx / total * 100);
   const ratingHelp = DB.freqLearned.has(id)
     ? 'Again = 1 day · Hard = shorter interval · Good = normal interval · Easy = longer interval'
-    : 'Again requeues · Hard = 1 day · Good = 3 days · Easy = 5 days';
+    : 'Again = not learned · Hard = 1 day · Good = 3 days · Easy = 5 days';
   ov.innerHTML = `
   <div class="practice-hdr">
     <button class="practice-exit" onclick="closePractice()">Exit</button>
@@ -2502,14 +2644,12 @@ function renderFrequencyPractice() {
   </div>
   <div class="practice-body">
     <div class="practice-card freq-practice-card">
-      <div class="practice-topic-lbl">#${entry.rank} · ${esc(freqPosLabel(entry))}</div>
+      <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))}</div>
       <div class="practice-de freq-practice-word" lang="de">${esc(entry.german)}</div>
       ${FP.revealed ? `
         <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-        <div class="practice-en freq-practice-en">${esc(entry.english)}</div>
-        <div class="vocab-practice-example"><strong>Example</strong><span lang="de">${esc(entry.germanSentence)}</span><em>${esc(entry.englishSentence)}</em></div>
-        ${entry.ipa ? `<div class="practice-use"><strong>IPA:</strong> ${esc(entry.ipa)}</div>` : ''}
-      ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the example sentence and meaning</button>`}
+        <div class="practice-en freq-practice-en">${esc(entry.englishSentence)}</div>
+      ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the sentence translation</button>`}
     </div>
     <div style="display:flex;justify-content:center;margin:10px 0">
       <button class="act-btn speak-btn" data-id="fprac-${id}" onclick="speak(${jsArg(entry.germanSentence || entry.german)},'fprac-${id}')" style="font-size:13px;padding:8px 18px" type="button">
@@ -2561,10 +2701,6 @@ function frequencyPracticeAnswer(rating) {
 
   if (rating === 'again') {
     FP.missedIds.push(id);
-    if (!scheduled.learned && !FP.queue.slice(FP.idx + 1).some(e => String(e.rank) === id)) {
-      const insertAt = Math.min(FP.queue.length, FP.idx + 3);
-      FP.queue.splice(insertAt, 0, current);
-    }
   }
   recordFreqAttempt({ id, result: rating, intervalBefore, intervalAfter, wasDue: scheduled.wasDue });
   save();
@@ -2579,7 +2715,7 @@ function frequencyPracticeNext() {
     if (current && !FP.answered[attemptKey]) {
       FP.answered[attemptKey] = 'skip';
       FP.skipped++;
-      recordFreqAttempt({ id: String(current.rank), result: 'again', intervalBefore: 0, intervalAfter: 0, wasDue: false });
+      recordFreqAttempt({ id: String(current.rank), result: 'skip', intervalBefore: 0, intervalAfter: 0, wasDue: false });
       save();
     }
     FP.idx++;
@@ -2744,7 +2880,7 @@ document.addEventListener('keydown', e => {
   const isSpace = e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar' || e.keyCode === 32;
 
   // Grammar quiz keyboard shortcuts
-  if (GQ.lessonId && !GQ.complete && GQ.questions.length) {
+  if (typeof GQ !== 'undefined' && GQ.lessonId && !GQ.complete && GQ.questions.length) {
     const question = GQ.questions[GQ.index];
     if (GQ.selected === null && ['1', '2', '3', '4'].includes(e.key)) {
       const idx = Number(e.key) - 1;
@@ -2774,8 +2910,7 @@ document.addEventListener('keydown', e => {
     if (VP.idx >= VP.queue.length) return;
     if (isSpace) {
       e.preventDefault();
-      if (!VP.revealed) vocabPracticeReveal();
-      else vocabPracticeAnswer('good');
+      vocabPracticeReveal();
       return;
     }
     if (e.code === 'ArrowRight') { e.preventDefault(); vocabPracticeNext(); return; }
@@ -2793,8 +2928,7 @@ document.addEventListener('keydown', e => {
     if (FP.idx >= FP.queue.length) return;
     if (isSpace) {
       e.preventDefault();
-      if (!FP.revealed) frequencyPracticeReveal();
-      else frequencyPracticeAnswer('good');
+      frequencyPracticeReveal();
       return;
     }
     if (e.code === 'ArrowRight') { e.preventDefault(); frequencyPracticeNext(); return; }
@@ -2830,11 +2964,11 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // Main feed flashcard keyboard shortcuts (1st Space reveals, 2nd Space switches to next card)
+  // Main feed flashcard keyboard shortcut
   if (isSpace) {
     e.preventDefault();
     const activeEl = document.activeElement;
-    let cardEl = activeEl ? activeEl.closest('.vc, .sc, .fc') : null;
+    const activeCard = activeEl ? activeEl.closest('.vc, .sc, .fc') : null;
 
     if (activeEl && activeEl.tagName === 'BUTTON') {
       activeEl.blur();
@@ -2843,12 +2977,7 @@ document.addEventListener('keydown', e => {
     const cards = Array.from(document.querySelectorAll('.vc, .sc, .fc'));
     if (!cards.length) return;
 
-    let targetIdx = -1;
-    const focused = document.activeElement;
-    if (focused) {
-      const cardEl = focused.closest('.vc, .sc, .fc');
-      if (cardEl) targetIdx = cards.indexOf(cardEl);
-    }
+    let targetIdx = activeCard ? cards.indexOf(activeCard) : -1;
 
     if (targetIdx === -1) {
       targetIdx = cards.findIndex(card => {
@@ -2863,33 +2992,9 @@ document.addEventListener('keydown', e => {
     if (!currentCardEl || !currentCardEl.id) return;
 
     const rawId = currentCardEl.id;
-    let isRevealed = false;
-    if (rawId.startsWith('vc-')) {
-      const en = document.getElementById('ven-' + rawId.replace('vc-', ''));
-      isRevealed = en && !en.classList.contains('hid');
-    } else if (rawId.startsWith('sc-')) {
-      const en = document.getElementById('en-' + rawId.replace('sc-', ''));
-      isRevealed = en && !en.classList.contains('hid');
-    } else if (rawId.startsWith('fc-')) {
-      const en = document.getElementById('fen-' + rawId.replace('fc-', ''));
-      isRevealed = en && !en.classList.contains('hid');
-    }
-
-    if (!isRevealed) {
-      if (rawId.startsWith('vc-')) toggleVocabReveal(rawId.replace('vc-', ''));
-      else if (rawId.startsWith('sc-')) toggleReveal(rawId.replace('sc-', ''));
-      else if (rawId.startsWith('fc-')) toggleFreqReveal(rawId.replace('fc-', ''));
-    } else {
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < cards.length) {
-        const nextCardEl = cards[nextIndex];
-        nextCardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const nextRawId = nextCardEl.id;
-        if (nextRawId.startsWith('vc-')) toggleVocabReveal(nextRawId.replace('vc-', ''));
-        else if (nextRawId.startsWith('sc-')) toggleReveal(nextRawId.replace('sc-', ''));
-        else if (nextRawId.startsWith('fc-')) toggleFreqReveal(nextRawId.replace('fc-', ''));
-      }
-    }
+    if (rawId.startsWith('vc-')) toggleVocabReveal(rawId.replace('vc-', ''));
+    else if (rawId.startsWith('sc-')) toggleReveal(rawId.replace('sc-', ''));
+    else if (rawId.startsWith('fc-')) toggleFreqReveal(rawId.replace('fc-', ''));
   }
 });
 
@@ -3043,7 +3148,7 @@ function applyImport(text) {
   if (!text.trim()) { show('❌ Nothing to import — paste or load a file first.'); return; }
   let parsed;
   try { parsed = JSON.parse(text); } catch (e) { show('❌ Invalid JSON. Make sure you copied the full text without changes.'); return; }
-  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.vocabLearned) && !Array.isArray(parsed.grammarStudied) && !parsed.streak && !parsed.srs && !parsed.vocabSrs && !parsed.grammarScores && !parsed.attempts && !parsed.vocabAttempts)) { show('❌ This doesn\'t look like a DeutschDaily backup file.'); return; }
+  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.vocabLearned) && !Array.isArray(parsed.freqLearned) && !Array.isArray(parsed.grammarStudied) && !parsed.streak && !parsed.srs && !parsed.vocabSrs && !parsed.freqSrs && !parsed.grammarScores && !parsed.attempts && !parsed.vocabAttempts && !parsed.freqAttempts)) { show('❌ This doesn\'t look like a DeutschDaily backup file.'); return; }
   const imported = normalizeDb(parsed);
   const current = dbToObj();
   const mergeHistoryWords = (a, b) => {
@@ -3074,6 +3179,14 @@ function applyImport(text) {
     vocabDailyQueue: DB.vocabDailyQueue,
     vocabDailyQueueDate: DB.vocabDailyQueueDate,
     vocabDailyQueueDone: [...new Set([...current.vocabDailyQueueDone, ...imported.vocabDailyQueueDone])],
+    freqLearned: [...new Set([...current.freqLearned, ...imported.freqLearned])],
+    freqFavorites: [...new Set([...current.freqFavorites, ...imported.freqFavorites])],
+    freqSrs: mergeSrsMaps(current.freqSrs, imported.freqSrs),
+    freqAttempts: mergeAttempts(current.freqAttempts, imported.freqAttempts),
+    freqDailyGoal: DB.freqDailyGoal,
+    freqDailyQueue: DB.freqDailyQueue,
+    freqDailyQueueDate: DB.freqDailyQueueDate,
+    freqDailyQueueDone: [...new Set([...current.freqDailyQueueDone, ...imported.freqDailyQueueDone])],
     grammarStudied: [...new Set([...current.grammarStudied, ...imported.grammarStudied])],
     grammarScores: mergeGrammarScores(current.grammarScores, imported.grammarScores),
     attempts: mergeAttempts(current.attempts, imported.attempts),
@@ -3135,13 +3248,17 @@ function getHistoryDaySummary(key, dayIndex = 0) {
   const sentenceIds = historyValidSentenceIds(DB.historyWords[key] || []);
   const sentenceAttempts = DB.attempts.filter(a => a.date === key);
   const patternAttempts = DB.patternAttempts.filter(a => a.date === key);
+  const vocabAttempts = DB.vocabAttempts.filter(a => a.date === key);
+  const frequencyAttempts = DB.freqAttempts.filter(a => a.date === key);
   const answeredSentenceAttempts = sentenceAttempts.filter(a => a.mode === 'practice' && historyIsPracticeResult(a.result));
   const answeredPatternAttempts = patternAttempts.filter(a => historyIsPracticeResult(a.result));
   const answeredAttempts = [...answeredSentenceAttempts, ...answeredPatternAttempts];
+  const answeredVocabAttempts = vocabAttempts.filter(a => a.result !== 'skip');
+  const answeredFrequencyAttempts = frequencyAttempts.filter(a => a.result !== 'skip');
   const got = answeredAttempts.filter(a => a.result === 'got').length;
   const again = answeredAttempts.filter(a => a.result === 'again').length;
-  const skipped = sentenceAttempts.filter(a => a.result === 'skip').length + patternAttempts.filter(a => a.result === 'skip').length;
-  const reviews = sentenceAttempts.filter(a => a.wasDue && historyIsPracticeResult(a.result)).length + patternAttempts.filter(a => a.wasDue && historyIsPracticeResult(a.result)).length;
+  const skipped = [...sentenceAttempts, ...patternAttempts, ...vocabAttempts, ...frequencyAttempts].filter(a => a.result === 'skip').length;
+  const reviews = [...sentenceAttempts, ...patternAttempts, ...vocabAttempts, ...frequencyAttempts].filter(a => a.wasDue && a.result !== 'skip').length;
   const attemptSentenceIds = historyValidSentenceIds(sentenceAttempts.map(a => a.id));
   const missedSentenceIds = historyValidSentenceIds(sentenceAttempts.filter(a => a.result === 'again').map(a => a.id));
   const topicCounts = {};
@@ -3169,15 +3286,17 @@ function getHistoryDaySummary(key, dayIndex = 0) {
     sentenceIds,
     sentenceAttempts,
     patternAttempts,
-    practiceCount: answeredAttempts.length,
+    practiceCount: answeredAttempts.length + answeredVocabAttempts.length + answeredFrequencyAttempts.length,
     sentencePracticeCount: answeredSentenceAttempts.length,
     patternPracticeCount: answeredPatternAttempts.length,
+    vocabPracticeCount: answeredVocabAttempts.length,
+    frequencyPracticeCount: answeredFrequencyAttempts.length,
     got,
     again,
     skipped,
     reviews,
     accuracy: pct(got, got + again),
-    activityCount: sentenceIds.length + answeredAttempts.length + skipped,
+    activityCount: sentenceIds.length + answeredAttempts.length + answeredVocabAttempts.length + answeredFrequencyAttempts.length + skipped,
     missedSentenceIds,
     topTopics,
   };
@@ -3242,6 +3361,7 @@ function renderHistoryHeatmap(days) {
 function renderHistoryQuickActions() {
   const dueIds = getSrsReviewIds();
   const patternDueIds = getPatternReviewIds();
+  const frequencyDueIds = getFreqReviewIds();
   const missedIds = historyRecentMissedIds();
   const missedPatternIds = historyRecentMissedPatternIds();
   const learnedIds = [...DB.learned];
@@ -3252,6 +3372,9 @@ function renderHistoryQuickActions() {
   }
   if (patternDueIds.length) {
     actions.push(`<button class="history-action" onclick="startPatternPractice({ids:${idsArg(patternDueIds)}})" type="button"><strong>Review ${patternDueIds.length} due pattern${patternDueIds.length !== 1 ? 's' : ''}</strong><span>Keep sentence patterns fresh</span></button>`);
+  }
+  if (frequencyDueIds.length) {
+    actions.push(`<button class="history-action" onclick="startFrequencyPractice({ids:${idsArg(frequencyDueIds)},isSRS:true})" type="button"><strong>Review ${frequencyDueIds.length} due frequency card${frequencyDueIds.length !== 1 ? 's' : ''}</strong><span>Scheduled vocabulary review</span></button>`);
   }
   if (missedIds.length) {
     actions.push(`<button class="history-action" onclick="startPractice({ids:${idsArg(missedIds)},skipSessionFilter:true})" type="button"><strong>Retry ${missedIds.length} missed sentence${missedIds.length !== 1 ? 's' : ''}</strong><span>From the last 14 days</span></button>`);

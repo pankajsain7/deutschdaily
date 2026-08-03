@@ -46,6 +46,10 @@ const source = [
     normalizePatternFilter,
     renderRevealDetails,
     applyImport,
+    validFrequencyRankSet,
+    getHistoryDaySummary,
+    renderProgressOverview,
+    renderSaved,
     getViewState: () => V,
     // Frequency
     FREQUENCY_DICTIONARY,
@@ -57,6 +61,10 @@ const source = [
     unmarkFreqLearned,
     toggleFreqLearned,
     toggleFreqFav,
+    startFrequencyPractice,
+    frequencyPracticeAnswer,
+    frequencyPracticeNext,
+    getFrequencyPracticeState: () => FP,
   };`
 ].join('\n');
 
@@ -227,7 +235,7 @@ reset({
 });
 assert(t.DB().vocabLearned.has('vb001'), 'vocab learned IDs are normalized');
 assert(t.DB().vocabFavorites.has('vb002'), 'vocab favorites are normalized');
-assert.strictEqual(t.DB().vocabDailyGoal, 50, 'vocab daily goal is clamped');
+assert.strictEqual(t.DB().vocabDailyGoal, 60, 'vocab daily goal is clamped');
 assert(!t.DB().vocabSrs.missing, 'invalid vocab SRS entry is removed');
 assert.strictEqual(JSON.stringify(t.getVocabReviewIds()), JSON.stringify(['vb001']), 'due vocab review IDs are returned');
 
@@ -283,6 +291,10 @@ reset({
   vocabFavorites: ['vb011'],
   vocabSrs: { vb010: { interval: 3, ease: 2.5, level: 1, nextReview: t.addDaysISO(3), lastReview: t.today() } },
   vocabAttempts: [{ id: 'vb010', date: t.today(), result: 'good', intervalBefore: 0, intervalAfter: 3 }],
+  freqLearned: ['10'],
+  freqFavorites: ['11'],
+  freqSrs: { '10': { interval: 3, ease: 2.5, level: 1, nextReview: t.addDaysISO(3), lastReview: t.today() } },
+  freqAttempts: [{ id: '10', date: t.today(), result: 'good', intervalBefore: 0, intervalAfter: 3 }],
   grammarStudied: ['a1-word-position'],
   grammarScores: { 'a1-word-position': { correct: 5, total: 6, attempts: 1, updatedAt: t.today() } },
 });
@@ -291,6 +303,10 @@ t.applyImport(JSON.stringify({
   vocabFavorites: ['vb013'],
   vocabSrs: { vb012: { interval: 5, ease: 2.5, level: 1, nextReview: t.addDaysISO(5), lastReview: t.today() } },
   vocabAttempts: [{ id: 'vb012', date: t.today(), result: 'easy', intervalBefore: 0, intervalAfter: 5 }],
+  freqLearned: ['12'],
+  freqFavorites: ['13'],
+  freqSrs: { '12': { interval: 5, ease: 2.5, level: 1, nextReview: t.addDaysISO(5), lastReview: t.today() } },
+  freqAttempts: [{ id: '12', date: t.today(), result: 'easy', intervalBefore: 0, intervalAfter: 5 }],
   grammarStudied: ['a2-comparative-form'],
   grammarScores: { 'a2-comparative-form': { correct: 6, total: 6, attempts: 1, updatedAt: t.today() } },
 }));
@@ -298,6 +314,10 @@ assert(t.DB().vocabLearned.has('vb010') && t.DB().vocabLearned.has('vb012'), 'im
 assert(t.DB().vocabFavorites.has('vb011') && t.DB().vocabFavorites.has('vb013'), 'import merges vocab favorites');
 assert(t.DB().vocabSrs.vb010 && t.DB().vocabSrs.vb012, 'import merges vocab SRS maps');
 assert(t.DB().vocabAttempts.some(a => a.id === 'vb012'), 'import merges vocab attempts');
+assert(t.DB().freqLearned.has('10') && t.DB().freqLearned.has('12'), 'import merges frequency learned IDs');
+assert(t.DB().freqFavorites.has('11') && t.DB().freqFavorites.has('13'), 'import merges frequency favorites');
+assert(t.DB().freqSrs['10'] && t.DB().freqSrs['12'], 'import merges frequency SRS maps');
+assert(t.DB().freqAttempts.some(a => a.id === '12'), 'import merges frequency attempts');
 
 reset({ settings: { externalTts: false } });
 assert.strictEqual(t.DB().settings.externalTts, true, 'external TTS stays enabled after normalizing old settings');
@@ -361,6 +381,9 @@ assert.strictEqual(t.getViewState().patFilter, 'learning', 'Patterns tab default
 t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=learned');
 assert.strictEqual(t.getViewState().view, 'saved', 'library URL opens Library tab');
 assert.strictEqual(t.getViewState().libTab, 'learned', 'library URL selects learned subtab');
+assert.strictEqual(t.getViewState().libType, 'vocab', 'Library defaults to vocabulary items');
+const sentenceLibraryUrl = t.urlFromState({ view: 'saved', libTab: 'learned', libType: 'sentences' });
+assert.strictEqual(sentenceLibraryUrl, '/DEDaily.html?view=library&tab=learned&type=sentences', 'Library URL preserves sentence item type');
 
 t.applyUrlState('http://localhost/DEDaily.html?view=vocab&topic=money&filter=saved');
 assert.strictEqual(t.getViewState().view, 'vocab', 'vocab URL opens Vocab tab');
@@ -393,6 +416,7 @@ assert(!revealHtml.includes('Learn' + ' more'), 'revealed details must not conta
 
 // ─── Frequency Dictionary ─────────────────────
 assert(Array.isArray(t.FREQUENCY_DICTIONARY) && t.FREQUENCY_DICTIONARY.length === 2525, 'FREQUENCY_DICTIONARY is loaded with 2525 entries');
+assert.strictEqual(t.validFrequencyRankSet().size, 2525, 'frequency ID validation remains available independently of dictionary data');
 
 // scheduleFreq: new entry with each rating
 reset({});
@@ -444,6 +468,40 @@ reset({
 });
 t.ensureFreqDailyQueue();
 assert.strictEqual(t.DB().freqDailyQueue[0], '1', 'due freq reviews should be first in the freq daily queue');
+
+reset({});
+t.startFrequencyPractice({ ids: ['1'] });
+t.frequencyPracticeNext();
+assert.strictEqual(t.getFrequencyPracticeState().skipped, 1, 'skipping increments the frequency practice skip count');
+assert.strictEqual(t.DB().freqAttempts[0].result, 'skip', 'frequency skips are recorded as skips');
+assert(!t.DB().freqLearned.has('1'), 'skipping does not schedule or learn a frequency card');
+
+reset({});
+const sixtyFrequencyIds = Array.from({ length: 60 }, (_, index) => String(index + 1));
+t.startFrequencyPractice({ ids: sixtyFrequencyIds });
+t.frequencyPracticeAnswer('again');
+assert.strictEqual(t.getFrequencyPracticeState().queue.length, 60, 'Again does not increase a 60-card frequency session');
+assert.strictEqual(t.getFrequencyPracticeState().missedIds[0], '1', 'Again keeps the card available for Review Again');
+
+reset({
+  freqLearned: ['1'],
+  freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
+  freqAttempts: [
+    { id: '1', date: t.today(), result: 'good', wasDue: true, intervalBefore: 3, intervalAfter: 8 },
+    { id: '2', date: t.today(), result: 'skip', wasDue: false, intervalBefore: 0, intervalAfter: 0 },
+  ],
+});
+const frequencyHistory = t.getHistoryDaySummary(t.today());
+assert.strictEqual(frequencyHistory.frequencyPracticeCount, 1, 'answered frequency cards count in daily history');
+assert.strictEqual(frequencyHistory.skipped, 1, 'frequency skips count in daily history');
+assert.strictEqual(frequencyHistory.reviews, 1, 'due frequency answers count as reviews');
+assert(t.renderProgressOverview().includes('Frequency'), 'progress overview includes frequency learning stats');
+
+reset({ freqLearned: ['1'], freqFavorites: ['2'] });
+assert(t.renderSaved().includes('saved frequency word'), 'Library Saved tab includes saved frequency words');
+t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=learned');
+assert(t.renderSaved().includes('learned frequency word'), 'Library Learned tab includes learned frequency words');
+assert(t.renderSaved().includes('Library item type'), 'Library renders the Sentences/Vocab type toggle');
 
 // toggleFreqLearned / toggleFreqFav update DB
 reset({});

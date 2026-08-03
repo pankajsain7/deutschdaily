@@ -45,6 +45,28 @@
   border-color: rgba(245, 158, 11, 0.15);
 }
 
+.vc {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vc:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.04);
+  border-color: rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
+}
+
+.vc.lrn {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0FDF4 100%);
+  border-color: rgba(16, 185, 129, 0.15);
+}
+
+.vc.fav {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFBEB 100%);
+  border-color: rgba(245, 158, 11, 0.15);
+}
+
 .pc {
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
@@ -1451,26 +1473,11 @@
   font-weight: 700;
 }
 
-.freq-en-word {
-  display: block;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
 .freq-en-sentence {
   display: block;
   font-size: 14px;
   color: var(--text-2);
   font-weight: 400;
-}
-
-.freq-ipa {
-  font-size: 14px;
-  color: var(--text-3);
-  font-family: 'Georgia', serif;
-  margin-top: 6px;
 }
 
 .freq-practice-card {
@@ -1499,8 +1506,9 @@
 }
 
 .freq-practice-en {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text-2);
   margin-bottom: 12px;
 }
 
@@ -1514,6 +1522,6 @@
   }
 
   .freq-practice-en {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
