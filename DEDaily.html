@@ -8,7 +8,11 @@
   <meta name="theme-color" content="#4F46E5">
   <title>DeutschDaily</title>
   <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="src/styles.css?v=vocab-20260623">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="src/styles.css?v=ui-20260803">
 </head>
 
 <body>
@@ -25,18 +29,18 @@
       <div class="sidebar-divider"></div>
       <nav class="nav-desktop" style="flex:1">
         <div class="sidebar-section-label">Learn</div>
-        <button class="nb on" id="nb-today" onclick="nav('today')"><span class="nb-icon-wrap"><span class="nb-icon">📅</span></span> Today</button>
-        <button class="nb" id="nb-browse" onclick="nav('browse')"><span class="nb-icon-wrap"><span class="nb-icon">💬</span></span> Sentences</button>
-        <button class="nb" id="nb-words" onclick="nav('frequency')"><span class="nb-icon-wrap"><span class="nb-icon">🔤</span></span> Vocabulary</button>
-        <button class="nb" id="nb-patterns" onclick="nav('patterns')"><span class="nb-icon-wrap"><span class="nb-icon">🧩</span></span> Patterns</button>
-        <button class="nb" id="nb-kursplan" onclick="nav('kursplan')"><span class="nb-icon-wrap"><span class="nb-icon">🗺️</span></span> Kursplan</button>
+        <button class="nb on" id="nb-today" onclick="nav('today')"><span class="nb-icon-wrap" data-icon="today"></span> Today</button>
+        <button class="nb" id="nb-browse" onclick="nav('browse')"><span class="nb-icon-wrap" data-icon="sentences"></span> Sentences</button>
+        <button class="nb" id="nb-words" onclick="nav('frequency')"><span class="nb-icon-wrap" data-icon="vocab"></span> Vocabulary</button>
+        <button class="nb" id="nb-patterns" onclick="nav('patterns')"><span class="nb-icon-wrap" data-icon="patterns"></span> Patterns</button>
+        <button class="nb" id="nb-kursplan" onclick="nav('kursplan')"><span class="nb-icon-wrap" data-icon="kursplan"></span> Kursplan</button>
         <div class="sidebar-section-label">Track</div>
-        <button class="nb" id="nb-library" onclick="nav('saved')"><span class="nb-icon-wrap"><span class="nb-icon">📖</span></span> Library</button>
-        <button class="nb" id="nb-progress" onclick="nav('progress')"><span class="nb-icon-wrap"><span class="nb-icon">📊</span></span> Progress</button>
+        <button class="nb" id="nb-library" onclick="nav('saved')"><span class="nb-icon-wrap" data-icon="library"></span> Library</button>
+        <button class="nb" id="nb-progress" onclick="nav('progress')"><span class="nb-icon-wrap" data-icon="progress"></span> Progress</button>
       </nav>
       <div class="sidebar-footer">
         <div class="sidebar-footer-stat">
-          <div class="sfs-icon">🎯</div>
+          <div class="sfs-icon" data-icon="target"></div>
           <div><div class="sfs-val" id="sb-learned-count">0</div><div style="font-size:11px;color:var(--text-3)" id="sb-learned-lbl">sentences learned</div></div>
         </div>
       </div>
@@ -51,7 +55,8 @@
             </div>
             <div class="pbar-lbl" id="hpl">0 / 0 sentences learned</div>
           </div>
-          <button class="streak-pill" id="stk" onclick="nav('progress')" type="button">🔥 <span id="stk-n">0</span></button>
+          <button class="streak-pill" id="stk" onclick="nav('progress')" type="button" title="Day streak"><span
+              data-icon="flame"></span><span id="stk-n">0</span><span class="sr-only">day streak</span></button>
         </div>
       </div>
 
@@ -59,13 +64,13 @@
     </main>
 
     <nav class="mobile-nav">
-      <button class="mnb on" id="mnb-today" onclick="nav('today')"><span class="mnb-icon">📅</span>Today</button>
-      <button class="mnb" id="mnb-browse" onclick="nav('browse')"><span class="mnb-icon">💬</span>Phrases</button>
-      <button class="mnb" id="mnb-words" onclick="nav('frequency')"><span class="mnb-icon">🔤</span>Vocab</button>
-      <button class="mnb" id="mnb-patterns" onclick="nav('patterns')"><span class="mnb-icon">🧩</span>Patterns</button>
-      <button class="mnb" id="mnb-kursplan" onclick="nav('kursplan')"><span class="mnb-icon">🗺️</span>Kursplan</button>
-      <button class="mnb" id="mnb-library" onclick="nav('saved')"><span class="mnb-icon">📖</span>Library</button>
-      <button class="mnb" id="mnb-progress" onclick="nav('progress')"><span class="mnb-icon">📊</span>Progress</button>
+      <button class="mnb on" id="mnb-today" onclick="nav('today')"><span class="mnb-icon" data-icon="today"></span>Today</button>
+      <button class="mnb" id="mnb-browse" onclick="nav('browse')"><span class="mnb-icon" data-icon="sentences"></span>Phrases</button>
+      <button class="mnb" id="mnb-words" onclick="nav('frequency')"><span class="mnb-icon" data-icon="vocab"></span>Vocab</button>
+      <button class="mnb" id="mnb-patterns" onclick="nav('patterns')"><span class="mnb-icon" data-icon="patterns"></span>Patterns</button>
+      <button class="mnb" id="mnb-kursplan" onclick="nav('kursplan')"><span class="mnb-icon" data-icon="kursplan"></span>Kursplan</button>
+      <button class="mnb" id="mnb-library" onclick="nav('saved')"><span class="mnb-icon" data-icon="library"></span>Library</button>
+      <button class="mnb" id="mnb-progress" onclick="nav('progress')"><span class="mnb-icon" data-icon="progress"></span>Progress</button>
     </nav>
   </div>
 

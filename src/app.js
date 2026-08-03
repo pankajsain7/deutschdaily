@@ -197,12 +197,77 @@ function idsArg(ids) {
 
 // ══════════════════════════════════════════════
 // ICONS
+// 24px grid, stroke-based, inherits color + font-size from its label.
 // ══════════════════════════════════════════════
+const svg = (body, opts = '') =>
+  `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true" focusable="false"${opts}>${body}</svg>`;
+
 const ICO = {
-  speak: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
-  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
-  star: `<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  speak: svg(`<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>`),
+  check: svg(`<polyline points="20 6 9 17 4 12"/>`),
+  star: `<svg class="ico" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="m12 3 2.7 5.46 6.03.88-4.36 4.25 1.03 6L12 16.77 6.6 19.6l1.03-6-4.36-4.25 6.03-.88L12 3z"/></svg>`,
+  starOutline: svg(`<path d="m12 3 2.7 5.46 6.03.88-4.36 4.25 1.03 6L12 16.77 6.6 19.6l1.03-6-4.36-4.25 6.03-.88L12 3z"/>`),
+
+  // Navigation
+  today: svg(`<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="m9 14.5 2 2 4-4"/>`),
+  sentences: svg(`<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>`),
+  vocab: svg(`<path d="M4 17.5 9 6.5l5 11M5.8 14h6.4"/><path d="M17 10.5c2.2 0 3 1.2 3 2.6v4.4M20 13.6c-3.2 0-4.4.7-4.4 2.2 0 1 .8 1.8 2 1.8 1.4 0 2.4-1 2.4-2.3"/>`),
+  patterns: svg(`<path d="M9.5 3h5a1 1 0 0 1 1 1v1.5a1.75 1.75 0 1 0 3.5 0V4a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-1.5a1.75 1.75 0 1 0 0 3.5H20a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-5"/><path d="M9.5 3a1 1 0 0 0-1 1v1.5a1.75 1.75 0 0 1-3.5 0V4a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.5a1.75 1.75 0 0 1 0 3.5H4a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5.5"/>`),
+  kursplan: svg(`<path d="m9 4.5-6 2.4v13l6-2.4 6 2.4 6-2.4v-13L15 6.9 9 4.5z"/><path d="M9 4.5v13M15 6.9v13"/>`),
+  library: svg(`<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 0 4 21V5.5z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/>`),
+  progress: svg(`<path d="M3 20.5h18"/><rect x="5" y="11" width="3.6" height="7"  rx="1"/><rect x="10.2" y="6" width="3.6" height="12" rx="1"/><rect x="15.4" y="13.5" width="3.6" height="4.5" rx="1"/>`),
+
+  // Status / actions
+  flame: svg(`<path d="M12 2.5s5.5 4.2 5.5 9.2a5.5 5.5 0 0 1-11 0c0-1.7.7-3.2 1.6-4.5.4 1 1.2 1.8 2.1 1.8 1.2 0 1.6-1.1 1.6-2.4 0-1.5-.5-3-.5-4.1z"/><path d="M12 19.5a2.6 2.6 0 0 0 2.6-2.6c0-1.7-2.6-4-2.6-4s-2.6 2.3-2.6 4A2.6 2.6 0 0 0 12 19.5z"/>`),
+  target: svg(`<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>`),
+  repeat: svg(`<path d="M17 2.5 20.5 6 17 9.5"/><path d="M3.5 12V10a4 4 0 0 1 4-4h13"/><path d="M7 21.5 3.5 18 7 14.5"/><path d="M20.5 12v2a4 4 0 0 1-4 4h-13"/>`),
+  search: svg(`<circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.4-4.4"/>`),
+  calendar: svg(`<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>`),
+  chart: svg(`<path d="M3 20.5h18"/><path d="m5 15 4.5-5 3.5 3.5L20 6"/>`),
+  layers: svg(`<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/>`),
+  alert: svg(`<path d="M10.3 4.3 2.6 17.4a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4M12 17.2h.01"/>`),
+  book: svg(`<path d="M2.5 4.5A1 1 0 0 1 3.7 3.5c1.9.3 5.4 1.1 7 2.6v14c-1.6-1.5-5.1-2.3-7-2.6a1 1 0 0 1-.7-1V4.5z"/><path d="M21.5 4.5a1 1 0 0 0-1.2-1c-1.9.3-5.4 1.1-7 2.6v14c1.6-1.5 5.1-2.3 7-2.6a1 1 0 0 0 .7-1V4.5z"/>`),
+  database: svg(`<ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M20 12c0 1.7-3.6 3-8 3s-8-1.3-8-3"/>`),
+  upload: svg(`<path d="M21 15.5v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><path d="m7.5 8 4.5-4.5L16.5 8"/><path d="M12 3.5V15"/>`),
+  download: svg(`<path d="M21 15.5v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M12 15V3.5"/>`),
+  keyboard: svg(`<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>`),
+  inbox: svg(`<path d="M21 12.5h-5l-1.5 3h-5l-1.5-3H3"/><path d="M5.5 5.5h13l2.5 7v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5l2.5-7z"/>`),
+  pointer: svg(`<path d="M9 11.5V5a1.75 1.75 0 1 1 3.5 0v5.5"/><path d="M12.5 10.5V9a1.75 1.75 0 0 1 3.5 0v1.5"/><path d="M16 10.5V10a1.75 1.75 0 1 1 3.5 0v6a5.5 5.5 0 0 1-5.5 5.5h-1.6a5.5 5.5 0 0 1-4.4-2.2l-2.6-3.5a1.75 1.75 0 0 1 2.7-2.2L9 14.5"/>`),
+  trophy: svg(`<path d="M7.5 4h9v6a4.5 4.5 0 0 1-9 0V4z"/><path d="M7.5 6H5a2 2 0 0 0 2.5 3.5M16.5 6H19a2 2 0 0 1-2.5 3.5"/><path d="M12 14.5V18M9 20.5h6"/>`),
+  clock: svg(`<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/>`),
+  info: svg(`<circle cx="12" cy="12" r="8.5"/><path d="M12 16v-4.5M12 8.2h.01"/>`),
+
+  // Sentence topics
+  help: svg(`<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.6c0 1.7-2.5 2.3-2.5 2.3v1.2"/><path d="M12 16.6h.01"/>`),
+  landmark: svg(`<path d="M3.5 20.5h17"/><path d="M12 3.5 3.5 8h17L12 3.5z"/><path d="M6.5 11v6M10 11v6M14 11v6M17.5 11v6"/>`),
+  home: svg(`<path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.6V19a1.5 1.5 0 0 0 1.5 1.5h10a1.5 1.5 0 0 0 1.5-1.5V9.6"/><path d="M9.7 20.5v-5.6h4.6v5.6"/>`),
+  health: svg(`<rect x="3" y="6.5" width="18" height="13.5" rx="2.5"/><path d="M8.5 6.5V5.2A1.7 1.7 0 0 1 10.2 3.5h3.6a1.7 1.7 0 0 1 1.7 1.7v1.3"/><path d="M12 10.6v5.4M9.3 13.3h5.4"/>`),
+  phone: svg(`<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.4h3"/>`),
+  briefcase: svg(`<rect x="2.5" y="7" width="19" height="13.5" rx="2.5"/><path d="M8.5 7V5.2a1.7 1.7 0 0 1 1.7-1.7h3.6a1.7 1.7 0 0 1 1.7 1.7V7"/><path d="M2.5 12.5h19"/>`),
+  train: svg(`<rect x="5" y="3" width="14" height="13" rx="3"/><path d="M5 9.5h14M9.3 12.8h.01M14.7 12.8h.01"/><path d="m8.5 16-2.5 5M15.5 16l2.5 5M7 19h10"/>`),
+  package: svg(`<path d="m12 2.7 8.5 4.2v10.2L12 21.3 3.5 17.1V6.9L12 2.7z"/><path d="M3.5 6.9 12 11.1l8.5-4.2M12 11.1v10.2"/><path d="m7.75 4.8 8.5 4.2"/>`),
+  card: svg(`<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.8h19M6.2 14.6h4"/>`),
+  chat: svg(`<path d="M8 13.2H5.5a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2V7"/><path d="M9.5 7h9a2 2 0 0 1 2 2v6.2a2 2 0 0 1-2 2h-2.2L12.6 20v-2.8H9.5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>`),
+  lifebuoy: svg(`<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.6"/><path d="m5.99 5.99 3.46 3.46M18.01 5.99l-3.46 3.46M5.99 18.01l3.46-3.46M18.01 18.01l-3.46-3.46"/>`),
 };
+
+// Topic id → icon. Falls back to a neutral bubble for unmapped topics.
+const TOPIC_ICO = {
+  understand: 'help',
+  appointments: 'calendar',
+  admin: 'landmark',
+  housing: 'home',
+  health: 'health',
+  phone: 'phone',
+  work: 'briefcase',
+  transport: 'train',
+  services: 'package',
+  money: 'card',
+  social: 'chat',
+  emergency: 'lifebuoy',
+};
+
+const topicIcon = id => ICO[TOPIC_ICO[id]] || ICO.sentences;
 
 // ══════════════════════════════════════════════
 // RENDER
@@ -293,32 +358,32 @@ function renderTodaySentences() {
 
   const gc = `<div class="goal-card">
 <div class="goal-top">
-  <div><div class="goal-title">📅 Today's Practice</div><div class="goal-date">${new Date().toLocaleDateString('en-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+  <div><div class="goal-title">Today's practice</div><div class="goal-date">${new Date().toLocaleDateString('en-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
+  <div class="goal-top-actions">
     <div class="today-segmented-control" role="tablist" aria-label="Today practice category">
-      <button class="today-seg-btn" onclick="setTodayTab('vocab')" role="tab" aria-selected="false" type="button">🔤 Vocab</button>
-      <button class="today-seg-btn on" onclick="setTodayTab('sentences')" role="tab" aria-selected="true" type="button">💬 Sentences</button>
+      <button class="today-seg-btn" onclick="setTodayTab('vocab')" role="tab" aria-selected="false" type="button">Vocab</button>
+      <button class="today-seg-btn on" onclick="setTodayTab('sentences')" role="tab" aria-selected="true" type="button">Sentences</button>
     </div>
-    <button class="goal-btn" onclick="openGoalModal()">Goal: ${DB.dailyGoal} ✏️</button>
+    <button class="goal-btn" onclick="openGoalModal()" type="button">Goal: ${DB.dailyGoal}</button>
   </div>
 </div>
 <div class="goal-nums">
-  <div><div class="gnum-v" style="color:var(--green)">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-  <div><div class="gnum-v" style="color:var(--text-3)">${Math.max(0, tot - queueDone)}</div><div class="gnum-l">Remaining</div></div>
-  <div><div class="gnum-v" style="color:var(--accent)">${learnedToday}</div><div class="gnum-l">New learned</div></div>
-  <div><div class="gnum-v" style="color:var(--blue)">${reviewedToday}</div><div class="gnum-l">Reviews</div></div>
-  <div><div class="gnum-v" style="color:var(--accent)">${DB.dailyGoal}</div><div class="gnum-l">Daily goal</div></div>
+  <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
+  <div><div class="gnum-v">${Math.max(0, tot - queueDone)}</div><div class="gnum-l">Remaining</div></div>
+  <div><div class="gnum-v">${learnedToday}</div><div class="gnum-l">New learned</div></div>
+  <div><div class="gnum-v">${reviewedToday}</div><div class="gnum-l">Reviews</div></div>
+  <div><div class="gnum-v">${DB.dailyGoal}</div><div class="gnum-l">Daily goal</div></div>
 </div>
-${done ? `<div class="goal-complete">🎉 Daily goal complete. Review due cards, browse topics, or raise the goal if you want more practice.</div>` : `<div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%"></div></div>`}
+${done ? `<div class="goal-complete">${ICO.check} Daily goal complete. Review due cards, browse topics, or raise the goal if you want more practice.</div>` : `<div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%"></div></div>`}
   </div>`;
 
   return `${storageWarning}${gc}
 
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-  <div style="font-size:14px;font-weight:600;color:var(--text)">Today's ${tot} Sentences</div>
-  <div style="display:flex;gap:7px">
-    <button onclick="startPractice({ids:${idsArg(qs.map(s => s.id))}})" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🎯 Practice</button>
-    <button onclick="refreshQueue()" style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;font-weight:500">🔄 New batch</button>
+<div class="section-hdr">
+  <h2 class="section-hdr-title">Today's ${tot} sentences</h2>
+  <div class="section-hdr-actions">
+    <button class="btn btn-primary btn-sm" onclick="startPractice({ids:${idsArg(qs.map(s => s.id))}})" type="button">${ICO.target} Practice</button>
+    <button class="btn btn-secondary btn-sm" onclick="refreshQueue()" type="button">${ICO.repeat} New batch</button>
   </div>
 </div>
 
@@ -338,21 +403,21 @@ function renderTodayVocab() {
   return `<div>
 <div class="goal-card vocab-goal-card">
   <div class="goal-top">
-    <div><div class="goal-title">🔤 Today's Vocab Queue</div><div class="goal-date">${queueEntries.length} card${queueEntries.length !== 1 ? 's' : ''} ready</div></div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div><div class="goal-title">Today's vocab queue</div><div class="goal-date">${queueEntries.length} card${queueEntries.length !== 1 ? 's' : ''} ready</div></div>
+    <div class="goal-top-actions">
       <div class="today-segmented-control" role="tablist" aria-label="Today practice category">
-        <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">🔤 Vocab</button>
-        <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">💬 Sentences</button>
+        <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">Vocab</button>
+        <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">Sentences</button>
       </div>
       <button class="goal-btn" onclick="refreshFreqQueue()" type="button">New batch</button>
     </div>
   </div>
   <div class="goal-nums">
-    <div><div class="gnum-v" style="color:var(--green)">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-    <div><div class="gnum-v" style="color:var(--amber)">${dueIds.length}</div><div class="gnum-l">Due</div></div>
-    <div><div class="gnum-v" style="color:var(--accent)">${DB.freqLearned.size}</div><div class="gnum-l">Learned</div></div>
-    <div><div class="gnum-v" style="color:var(--pink)">${DB.freqFavorites.size}</div><div class="gnum-l">Saved</div></div>
-    <div><div class="gnum-v" style="color:var(--text-3)">${total - DB.freqLearned.size}</div><div class="gnum-l">Remaining</div></div>
+    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
+    <div><div class="gnum-v">${dueIds.length}</div><div class="gnum-l">Due</div></div>
+    <div><div class="gnum-v">${DB.freqLearned.size}</div><div class="gnum-l">Learned</div></div>
+    <div><div class="gnum-v">${DB.freqFavorites.size}</div><div class="gnum-l">Saved</div></div>
+    <div><div class="gnum-v">${total - DB.freqLearned.size}</div><div class="gnum-l">Remaining</div></div>
   </div>
   <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
   <div class="vocab-goal-row">
@@ -361,11 +426,11 @@ function renderTodayVocab() {
   </div>
 </div>
 
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:16px">
-  <div style="font-size:14px;font-weight:600;color:var(--text)">Today's ${queueEntries.length} Vocab Cards</div>
-  <div style="display:flex;gap:7px">
-    <button onclick="startFrequencyPractice({ids:${queueIdsJson}})" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🎯 Practice</button>
-    <button onclick="refreshFreqQueue()" style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;font-weight:500">🔄 New batch</button>
+<div class="section-hdr">
+  <h2 class="section-hdr-title">Today's ${queueEntries.length} vocab cards</h2>
+  <div class="section-hdr-actions">
+    <button class="btn btn-primary btn-sm" onclick="startFrequencyPractice({ids:${queueIdsJson}})" type="button">${ICO.target} Practice</button>
+    <button class="btn btn-secondary btn-sm" onclick="refreshFreqQueue()" type="button">${ICO.repeat} New batch</button>
   </div>
 </div>
 
@@ -394,18 +459,18 @@ function renderBrowse() {
     const tot = SENTENCES.filter(s => s.t === t.id).length;
     const done = SENTENCES.filter(s => s.t === t.id && DB.learned.has(s.id)).length;
     const pct = tot ? Math.round(done / tot * 100) : 0;
-    return `<button class="topic-card" onclick="nav('browse','${t.id}')" style="--tc:${t.color}" type="button">
-  <span class="tc-emoji">${t.emoji}</span>
-  <div class="tc-name">${t.name}</div>
-  <div class="tc-de">${t.german}</div>
-  <div class="tc-prog"><span class="tc-count">${done}/${tot}</span><div class="tc-bar-bg"><div class="tc-bar-fill" style="width:${pct}%;background:var(--tc)"></div></div></div>
+    return `<button class="topic-card" onclick="nav('browse','${t.id}')" type="button">
+  <span class="tc-emoji">${topicIcon(t.id)}</span>
+  <div class="tc-name">${esc(t.name)}</div>
+  <div class="tc-de">${esc(t.german)}</div>
+  <div class="tc-prog"><span class="tc-count">${done}/${tot}</span><div class="tc-bar-bg"><div class="tc-bar-fill" style="width:${pct}%"></div></div></div>
 </button>`;
   }).join('');
   return `<div style="padding-top:14px">
 	<h2 class="page-title">Sentences</h2>
-	<p class="page-sub">${SENTENCES.length} sentences - ${PATTERNS.length} patterns - ${TOPICS.length} topics</p>
-	<div class="search-wrap" style="margin:0 0 16px"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search all phrases, topics, and patterns..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
-	${V.query ? `<div class="sec-lbl">Search Results (${searchResults.length})</div>${searchResults.length ? searchResults.map((s, i) => renderSentenceCard(s, i, true)).join('') : `<div class="empty-state"><div class="empty-icon">🔍</div>No phrases match.</div>`}` : ''}
+	<p class="page-sub">${SENTENCES.length} sentences · ${PATTERNS.length} patterns · ${TOPICS.length} topics</p>
+	<div class="search-wrap" style="margin:0 0 16px"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search all phrases, topics, and patterns..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
+	${V.query ? `<div class="sec-lbl">Search results (${searchResults.length})</div>${searchResults.length ? searchResults.map((s, i) => renderSentenceCard(s, i, true)).join('') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No phrases match.</div>`}` : ''}
 	${V.query ? '<div class="sec-lbl">Topics</div>' : ''}
 	<div class="topic-grid">${topicCards}</div>
 	  </div>`;
@@ -424,23 +489,23 @@ function renderTopic() {
   const tot = SENTENCES.filter(s => s.t === V.topicId).length;
   const allTopicIds = JSON.stringify(SENTENCES.filter(s => s.t === V.topicId).map(s => s.id)).replace(/"/g, "'");
   const unlearnedTopicIds = JSON.stringify(SENTENCES.filter(s => s.t === V.topicId && !DB.learned.has(s.id)).map(s => s.id)).replace(/"/g, "'");
-  const practiceTopicBtn = `<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-<button onclick="startPractice({ids:${allTopicIds}})" style="flex:1;background:var(--accent);color:white;border:none;border-radius:9px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">🎯 Practice All ${tot}</button>
-${SENTENCES.filter(s => s.t === V.topicId && !DB.learned.has(s.id)).length > 0 ? `<button onclick="startPractice({ids:${unlearnedTopicIds}})" style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:9px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.15s" onmouseover="this.style.borderColor='var(--border-strong)'" onmouseout="this.style.borderColor='var(--border)'">📚 Unlearned Only (${tot - done})</button>` : ''}
+  const practiceTopicBtn = `<div class="btn-row" style="margin-bottom:16px">
+<button class="btn btn-primary" style="flex:1" onclick="startPractice({ids:${allTopicIds}})">${ICO.target} Practice all ${tot}</button>
+${SENTENCES.filter(s => s.t === V.topicId && !DB.learned.has(s.id)).length > 0 ? `<button class="btn btn-secondary" style="flex:1" onclick="startPractice({ids:${unlearnedTopicIds}})">Unlearned only (${tot - done})</button>` : ''}
   </div>`;
-  const cards = sents.length ? sents.map((s, i) => renderSentenceCard(s, i, false)).join('') : `<div class="empty-state"><div class="empty-icon">🔍</div>No sentences match.</div>`;
-  return `<button class="back-btn" onclick="nav('browse')">← All Topics</button>
+  const cards = sents.length ? sents.map((s, i) => renderSentenceCard(s, i, false)).join('') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No sentences match.</div>`;
+  return `<button class="back-btn" onclick="nav('browse')">← All topics</button>
 <div class="topic-hdr">
-  <div class="topic-hdr-em">${topic.emoji}</div>
+  <div class="topic-hdr-em">${topicIcon(topic.id)}</div>
   <div><div class="topic-hdr-name">${topic.name}</div><div class="topic-hdr-de">${topic.german}</div>
     <div class="topic-hdr-stats"><span class="topic-stat"><strong>${done}</strong> learned</span><span class="topic-stat"><strong>${tot - done}</strong> remaining</span></div>
   </div>
 </div>
 <div class="filter-row">
-  ${['all', 'unlearned', 'learned', 'favorites'].map(f => `<button class="filter-chip${V.filter === f ? ' on' : ''}" onclick="setFilter('${f}')" aria-pressed="${V.filter === f}" type="button">${f === 'all' ? 'All' : f === 'unlearned' ? 'To Learn' : f === 'learned' ? '✓ Learned' : '⭐ Saved'}</button>`).join('')}
+  ${['all', 'unlearned', 'learned', 'favorites'].map(f => `<button class="filter-chip${V.filter === f ? ' on' : ''}" onclick="setFilter('${f}')" aria-pressed="${V.filter === f}" type="button">${f === 'all' ? 'All' : f === 'unlearned' ? 'To learn' : f === 'learned' ? 'Learned' : 'Saved'}</button>`).join('')}
 </div>
 ${practiceTopicBtn}
-	<div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
+	<div class="search-wrap"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
 
 ${cards}`;
 }
@@ -508,41 +573,41 @@ function renderVocab(isToday = false) {
   const selectedTopic = vocabTopicById(V.vocabTopicId);
   const dueSection = dueCards.length ? `<div class="review-section vocab-review-section">
   <div class="review-section-hdr">
-    <div class="review-section-title">🔁 Due Vocab Review <span class="review-count-badge">${dueCards.length}</span></div>
-    <button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">Practice Now</button>
+    <div class="review-section-title">${ICO.repeat} Due vocab review <span class="review-count-badge">${dueCards.length}</span></div>
+    <button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">Practice now</button>
   </div>
   <div class="review-section-sub">These vocabulary cards are scheduled for spaced review today.</div>
 </div>` : '';
   const goalOptions = [15, 30, 45, 60].map(n => `<button class="vocab-goal-opt${DB.vocabDailyGoal === n ? ' on' : ''}" onclick="setVocabGoal(${n})" aria-pressed="${DB.vocabDailyGoal === n}" type="button">${n}</button>`).join('');
   const topicChips = [`<button class="filter-chip${!V.vocabTopicId ? ' on' : ''}" onclick="setVocabTopic(null)" aria-pressed="${!V.vocabTopicId}" type="button">All topics</button>`]
-    .concat(VOCAB_TOPICS.map(topic => `<button class="filter-chip${V.vocabTopicId === topic.id ? ' on' : ''}" onclick="setVocabTopic('${topic.id}')" aria-pressed="${V.vocabTopicId === topic.id}" type="button">${topic.emoji} ${topic.name}</button>`))
+    .concat(VOCAB_TOPICS.map(topic => `<button class="filter-chip${V.vocabTopicId === topic.id ? ' on' : ''}" onclick="setVocabTopic('${topic.id}')" aria-pressed="${V.vocabTopicId === topic.id}" type="button">${esc(topic.name)}</button>`))
     .join('');
   const cardsTitle = V.query
-    ? `Search Results (${visibleCards.length})`
+    ? `Search results (${visibleCards.length})`
     : selectedTopic
-    ? `${selectedTopic.emoji} ${selectedTopic.name} (${visibleCards.length})`
+    ? `${esc(selectedTopic.name)} (${visibleCards.length})`
     : V.vocabFilter === 'all'
-    ? `All Vocab Cards (${visibleCards.length})`
-    : `${V.vocabFilter.charAt(0).toUpperCase() + V.vocabFilter.slice(1)} Cards (${visibleCards.length})`;
+    ? `All vocab cards (${visibleCards.length})`
+    : `${V.vocabFilter.charAt(0).toUpperCase() + V.vocabFilter.slice(1)} cards (${visibleCards.length})`;
 
   const pageHeader = isToday ? '' : `<h2 class="page-title">Vocabulary</h2><p class="page-sub">Build your German vocabulary with spaced repetition.</p>`;
   const todaySwitch = isToday ? `<div class="today-segmented-control" role="tablist" aria-label="Today practice category">
-    <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">🔤 Vocab</button>
-    <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">💬 Sentences</button>
+    <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">Vocab</button>
+    <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">Sentences</button>
   </div>` : '';
 
-  const todaySectionBar = isToday ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:16px">
-  <div style="font-size:14px;font-weight:600;color:var(--text)">Today's ${queueCards.length} Vocab Cards</div>
-  <div style="display:flex;gap:7px">
-    <button onclick="startVocabPractice({ids:${queueIdsJson}})" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🎯 Practice</button>
-    <button onclick="refreshVocabQueue()" style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;font-weight:500">🔄 New batch</button>
+  const todaySectionBar = isToday ? `<div class="section-hdr">
+  <div class="section-hdr-title">Today's ${queueCards.length} vocab cards</div>
+  <div class="section-hdr-actions">
+    <button class="btn btn-primary btn-sm" onclick="startVocabPractice({ids:${queueIdsJson}})">${ICO.target} Practice</button>
+    <button class="btn btn-secondary btn-sm" onclick="refreshVocabQueue()">${ICO.repeat} New batch</button>
   </div>
 </div>` : '';
 
   const actionRow = !isToday ? `<div class="vocab-action-row">
-  ${queueCards.length ? `<button class="learned-practice-btn" onclick="startVocabPractice({ids:${queueIdsJson}})">🎯 Practice Today's ${queueCards.length}</button>` : ''}
-  ${dueCards.length ? `<button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">🔁 Practice Due ${dueCards.length}</button>` : ''}
-  ${visibleCards.length ? `<button class="act-btn vocab-visible-practice" onclick="startVocabPractice({ids:${visibleIdsJson},skipSessionFilter:true})">Practice Visible</button>` : ''}
+  ${queueCards.length ? `<button class="learned-practice-btn" onclick="startVocabPractice({ids:${queueIdsJson}})">Practice today's ${queueCards.length}</button>` : ''}
+  ${dueCards.length ? `<button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">Practice due ${dueCards.length}</button>` : ''}
+  ${visibleCards.length ? `<button class="act-btn vocab-visible-practice" onclick="startVocabPractice({ids:${visibleIdsJson},skipSessionFilter:true})">Practice visible</button>` : ''}
 </div>` : '';
 
   return `<div${isToday ? '' : ' style="padding-top:14px"'}>
@@ -551,18 +616,18 @@ ${dueSection}
 
 <div class="goal-card vocab-goal-card">
   <div class="goal-top">
-    <div><div class="goal-title">🗂️ Today's Vocab Queue</div><div class="goal-date">${queueCards.length} card${queueCards.length !== 1 ? 's' : ''} ready</div></div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div><div class="goal-title">Today's vocab queue</div><div class="goal-date">${queueCards.length} card${queueCards.length !== 1 ? 's' : ''} ready</div></div>
+    <div class="goal-top-actions">
       ${todaySwitch}
       <button class="goal-btn" onclick="refreshVocabQueue()" type="button">New batch</button>
     </div>
   </div>
   <div class="goal-nums">
-    <div><div class="gnum-v" style="color:var(--green)">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-    <div><div class="gnum-v" style="color:var(--amber)">${dueIds.length}</div><div class="gnum-l">Due</div></div>
-    <div><div class="gnum-v" style="color:var(--accent)">${learned}</div><div class="gnum-l">Learned</div></div>
-    <div><div class="gnum-v" style="color:var(--pink)">${saved}</div><div class="gnum-l">Saved</div></div>
-    <div><div class="gnum-v" style="color:var(--text-3)">${remaining}</div><div class="gnum-l">Remaining</div></div>
+    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
+    <div><div class="gnum-v">${dueIds.length}</div><div class="gnum-l">Due</div></div>
+    <div><div class="gnum-v">${learned}</div><div class="gnum-l">Learned</div></div>
+    <div><div class="gnum-v">${saved}</div><div class="gnum-l">Saved</div></div>
+    <div><div class="gnum-v">${remaining}</div><div class="gnum-l">Remaining</div></div>
   </div>
   <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
   <div class="vocab-goal-row">
@@ -574,15 +639,15 @@ ${dueSection}
 ${actionRow}
 ${todaySectionBar}
 
-${queueCards.length ? `${!isToday ? `<div class="sec-lbl">Today's New / Due Queue</div>` : ''}${queueCards.map((card, i) => renderVocabCard(card, i)).join('')}` : ''}
+${queueCards.length ? `${!isToday ? `<div class="sec-lbl">Today's new / due queue</div>` : ''}${queueCards.map((card, i) => renderVocabCard(card, i)).join('')}` : ''}
 
-${!isToday ? `<div class="search-wrap" style="margin:16px 0"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search vocab, English meaning, topic, article, plural..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
+${!isToday ? `<div class="search-wrap" style="margin:16px 0"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search vocab, English meaning, topic, article, plural..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
 <div class="filter-row vocab-topic-row">${topicChips}</div>
 <div class="filter-row">
-  ${['all', 'new', 'due', 'learned', 'saved'].map(f => `<button class="filter-chip${V.vocabFilter === f ? ' on' : ''}" onclick="setVocabFilter('${f}')" aria-pressed="${V.vocabFilter === f}" type="button">${f === 'all' ? 'All' : f === 'new' ? 'New' : f === 'due' ? 'Due' : f === 'learned' ? '✓ Learned' : '⭐ Saved'}</button>`).join('')}
+  ${['all', 'new', 'due', 'learned', 'saved'].map(f => `<button class="filter-chip${V.vocabFilter === f ? ' on' : ''}" onclick="setVocabFilter('${f}')" aria-pressed="${V.vocabFilter === f}" type="button">${f === 'all' ? 'All' : f === 'new' ? 'New' : f === 'due' ? 'Due' : f === 'learned' ? 'Learned' : 'Saved'}</button>`).join('')}
 </div>
 <div class="sec-lbl">${cardsTitle}</div>
-${visibleCards.length ? visibleCards.slice(0, (V.vocabPage || 1) * PAGE_SIZE).map((card, i) => renderVocabCard(card, i)).join('') + renderLoadMore(Math.min(visibleCards.length, (V.vocabPage || 1) * PAGE_SIZE), visibleCards.length, 'loadMoreVocab()') : `<div class="empty-state"><div class="empty-icon">🔍</div>No vocab cards match.</div>`}` : ''}
+${visibleCards.length ? visibleCards.slice(0, (V.vocabPage || 1) * PAGE_SIZE).map((card, i) => renderVocabCard(card, i)).join('') + renderLoadMore(Math.min(visibleCards.length, (V.vocabPage || 1) * PAGE_SIZE), visibleCards.length, 'loadMoreVocab()') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No vocab cards match.</div>`}` : ''}
   </div>`;
 }
 function renderVocabCard(card, i) {
@@ -595,14 +660,14 @@ function renderVocabCard(card, i) {
   const gender = card.pos === 'noun' ? `<span class="vocab-gender g-${card.gender}">${card.article} · ${card.gender}</span>` : `<span class="vocab-gender">${esc(VOCAB_POS_LABELS[card.pos] || card.pos)}</span>`;
   return `<div class="vc${learned ? ' lrn' : ''}${saved ? ' fav' : ''}" id="vc-${card.id}">
 <div class="sc-top">
-  ${topic ? `<span class="topic-label">${topic.emoji} ${topic.name}</span>` : ''}
+  ${topic ? `<span class="topic-label">${esc(topic.name)}</span>` : ''}
   <span class="lvl-tag l${card.level}">${card.level}</span>
   ${gender}
-  ${learned ? `<span class="lrn-badge">✓ Learned</span>${srsDots}` : ''}
+  ${learned ? `<span class="lrn-badge">${ICO.check} Learned</span>${srsDots}` : ''}
 </div>
 <button class="vocab-term reveal-btn" onclick="toggleVocabReveal('${card.id}')" aria-expanded="false" type="button" lang="de">${esc(vocabDisplay(card))}</button>
 <div class="vocab-meta">${esc(vocabMetaLabel(card))}</div>
-<div class="reveal-hint" id="vhn-${card.id}" onclick="toggleVocabReveal('${card.id}')" style="cursor:pointer">👆 Tap to reveal meaning and example</div>
+<div class="reveal-hint" id="vhn-${card.id}" onclick="toggleVocabReveal('${card.id}')">Tap to reveal meaning and example</div>
 <button class="vocab-en hid reveal-btn" id="ven-${card.id}" onclick="toggleVocabReveal('${card.id}')" aria-hidden="true" hidden type="button">${esc(card.en)}</button>
 <div class="vocab-details" id="vrd-${card.id}" style="display:none">
   ${card.plural ? `<div class="vocab-detail-row"><strong>Plural</strong><span lang="de">${esc(card.plural)}</span></div>` : ''}
@@ -681,16 +746,16 @@ function renderFrequency() {
     .map(([r, label]) => `<button class="filter-chip${V.freqRange === r ? ' on' : ''}" onclick="setFreqRange('${r}')" aria-pressed="${V.freqRange === r}" type="button">${esc(label)}</button>`).join('');
   const dueSection = dueEntries.length ? `<div class="review-section vocab-review-section">
   <div class="review-section-hdr">
-    <div class="review-section-title">🔁 Due Frequency Review <span class="review-count-badge">${dueEntries.length}</span></div>
-    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueIdsJson},isSRS:true})">Practice Now</button>
+    <div class="review-section-title">${ICO.repeat} Due frequency review <span class="review-count-badge">${dueEntries.length}</span></div>
+    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueIdsJson},isSRS:true})">Practice now</button>
   </div>
   <div class="review-section-sub">These frequency cards are scheduled for spaced review today.</div>
 </div>` : '';
   const goalOptions = [5, 10, 15, 20, 25, 30].map(n => `<button class="vocab-goal-opt${DB.freqDailyGoal === n ? ' on' : ''}" onclick="setFreqGoal(${n})" aria-pressed="${DB.freqDailyGoal === n}" type="button">${n}</button>`).join('');
   const cardsTitle = V.query
-    ? `Search Results (${visibleEntries.length})`
+    ? `Search results (${visibleEntries.length})`
     : V.freqRange === 'all'
-    ? `All Frequency Cards (${visibleEntries.length})`
+    ? `All frequency cards (${visibleEntries.length})`
     : `Rank ${esc(V.freqRange)} (${visibleEntries.length})`;
 
   return `<div style="padding-top:14px">
@@ -700,15 +765,15 @@ ${dueSection}
 
 <div class="goal-card vocab-goal-card">
   <div class="goal-top">
-    <div><div class="goal-title">🔤 Today's Frequency Queue</div><div class="goal-date">${queueEntries.length} card${queueEntries.length !== 1 ? 's' : ''} ready</div></div>
+    <div><div class="goal-title">Today's frequency queue</div><div class="goal-date">${queueEntries.length} card${queueEntries.length !== 1 ? 's' : ''} ready</div></div>
     <button class="goal-btn" onclick="refreshFreqQueue()" type="button">New batch</button>
   </div>
   <div class="goal-nums">
-    <div><div class="gnum-v" style="color:var(--green)">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-    <div><div class="gnum-v" style="color:var(--amber)">${dueIds.length}</div><div class="gnum-l">Due</div></div>
-    <div><div class="gnum-v" style="color:var(--accent)">${learned}</div><div class="gnum-l">Learned</div></div>
-    <div><div class="gnum-v" style="color:var(--pink)">${saved}</div><div class="gnum-l">Saved</div></div>
-    <div><div class="gnum-v" style="color:var(--text-3)">${remaining}</div><div class="gnum-l">Remaining</div></div>
+    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
+    <div><div class="gnum-v">${dueIds.length}</div><div class="gnum-l">Due</div></div>
+    <div><div class="gnum-v">${learned}</div><div class="gnum-l">Learned</div></div>
+    <div><div class="gnum-v">${saved}</div><div class="gnum-l">Saved</div></div>
+    <div><div class="gnum-v">${remaining}</div><div class="gnum-l">Remaining</div></div>
   </div>
   <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
   <div class="vocab-goal-row">
@@ -718,27 +783,27 @@ ${dueSection}
 </div>
 
 <div class="vocab-action-row">
-  ${queueEntries.length ? `<button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${queueIdsJson}})">🎯 Practice Today's ${queueEntries.length}</button>` : ''}
-  ${dueEntries.length ? `<button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueIdsJson},isSRS:true})">🔁 Practice Due ${dueEntries.length}</button>` : ''}
+  ${queueEntries.length ? `<button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${queueIdsJson}})">Practice today's ${queueEntries.length}</button>` : ''}
+  ${dueEntries.length ? `<button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueIdsJson},isSRS:true})">Practice due ${dueEntries.length}</button>` : ''}
 </div>
 
 ${queueEntries.length ? `<details class="freq-queue-preview" open>
-  <summary class="freq-queue-summary"><span class="sec-lbl freq-queue-lbl">Today's New / Due Queue</span><span class="freq-queue-toggle">Show words</span></summary>
+  <summary class="freq-queue-summary"><span class="sec-lbl freq-queue-lbl">Today's new / due queue</span><span class="freq-queue-toggle">Show words</span></summary>
   <div class="freq-chip-row">${queueEntries.map(e => `<button class="freq-chip" onclick="startFrequencyPractice({ids:['${String(e.rank)}'],skipSessionFilter:true})" type="button"><span class="freq-chip-rank">#${e.rank}</span> <span lang="de">${esc(freqDisplay(e))}</span></button>`).join('')}</div>
 </details>` : ''}
 
 <div class="freq-browse-section">
-<div class="sec-lbl freq-browse-lbl">📚 Browse Dictionary</div>
-<div class="search-wrap" style="margin:12px 0"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search German word, English meaning, or sentence..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
+<div class="sec-lbl freq-browse-lbl">Browse dictionary</div>
+<div class="search-wrap" style="margin:12px 0"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search German word, English meaning, or sentence..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
 <div class="filter-row vocab-topic-row">${rangeChips}</div>
 <div class="filter-row">
-  ${['all', 'new', 'due', 'learned', 'saved'].map(f => `<button class="filter-chip${V.freqFilter === f ? ' on' : ''}" onclick="setFreqFilter('${f}')" aria-pressed="${V.freqFilter === f}" type="button">${f === 'all' ? 'All' : f === 'new' ? 'New' : f === 'due' ? 'Due' : f === 'learned' ? '✓ Learned' : '⭐ Saved'}</button>`).join('')}
+  ${['all', 'new', 'due', 'learned', 'saved'].map(f => `<button class="filter-chip${V.freqFilter === f ? ' on' : ''}" onclick="setFreqFilter('${f}')" aria-pressed="${V.freqFilter === f}" type="button">${f === 'all' ? 'All' : f === 'new' ? 'New' : f === 'due' ? 'Due' : f === 'learned' ? 'Learned' : 'Saved'}</button>`).join('')}
 </div>
 <div class="freq-browse-hdr">
   <div class="sec-lbl freq-browse-results-lbl">${cardsTitle}</div>
-  ${visibleEntries.length ? `<button class="act-btn vocab-visible-practice" onclick="startFrequencyPractice({ids:${visibleIdsJson},skipSessionFilter:true})">🎯 Practice These</button>` : ''}
+  ${visibleEntries.length ? `<button class="act-btn vocab-visible-practice" onclick="startFrequencyPractice({ids:${visibleIdsJson},skipSessionFilter:true})">${ICO.target} Practice these</button>` : ''}
 </div>
-${visibleEntries.length ? visibleEntries.slice(0, (V.freqPage || 1) * PAGE_SIZE).map((e, i) => renderFreqCard(e, i)).join('') + renderLoadMore(Math.min(visibleEntries.length, (V.freqPage || 1) * PAGE_SIZE), visibleEntries.length, 'loadMoreFreq()') : `<div class="empty-state"><div class="empty-icon">🔍</div>No frequency cards match.</div>`}
+${visibleEntries.length ? visibleEntries.slice(0, (V.freqPage || 1) * PAGE_SIZE).map((e, i) => renderFreqCard(e, i)).join('') + renderLoadMore(Math.min(visibleEntries.length, (V.freqPage || 1) * PAGE_SIZE), visibleEntries.length, 'loadMoreFreq()') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No frequency cards match.</div>`}
 </div>
   </div>`;
 }
@@ -753,7 +818,7 @@ function renderFreqCard(entry, i) {
 <div class="sc-top">
   <span class="topic-label">Rank #${entry.rank}</span>
   <span class="lvl-tag">${esc(freqPosLabel(entry))}</span>
-  ${learned ? `<span class="lrn-badge">✓ Learned</span>${srsDots}` : ''}
+  ${learned ? `<span class="lrn-badge">${ICO.check} Learned</span>${srsDots}` : ''}
 </div>
 <button class="vocab-term reveal-btn" onclick="toggleFreqReveal('${id}')" aria-expanded="false" type="button" lang="de">${esc(freqDisplay(entry))}</button>
 <div class="freq-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
@@ -814,7 +879,7 @@ function syncFreqCardState(id) {
   if (learned) {
     const nextLabel = freqSrsNextLabel(id);
     const level = getFreqSrsLevel(id);
-    top.insertAdjacentHTML('beforeend', `<span class="lrn-badge">✓ Learned</span><span class="srs-dots" title="${esc(nextLabel)}">${SRS_INTERVALS.map((_, dot) => `<span class="srs-dot${dot < level ? ' filled' : ''}"></span>`).join('')}</span>${nextLabel ? `<span class="srs-next">${esc(nextLabel)}</span>` : ''}`);
+    top.insertAdjacentHTML('beforeend', `<span class="lrn-badge">${ICO.check} Learned</span><span class="srs-dots" title="${esc(nextLabel)}">${SRS_INTERVALS.map((_, dot) => `<span class="srs-dot${dot < level ? ' filled' : ''}"></span>`).join('')}</span>${nextLabel ? `<span class="srs-next">${esc(nextLabel)}</span>` : ''}`);
   }
 }
 function toggleFreqLearnedUi(id) {
@@ -1173,22 +1238,22 @@ function renderSentenceCard(s, i, showTopic) {
   const nextLabel = srsNextLabel(s.id);
   const srsDots = lrn ? `<span class="srs-dots" title="${esc(nextLabel)}">${SRS_INTERVALS.map((_, i) => `<span class="srs-dot${i < srsLvl ? ' filled' : ''}"></span>`).join('')}</span>${nextLabel ? `<span class="srs-next">${esc(nextLabel)}</span>` : ''}` : '';
   const matchedPattern = findMatchingPattern(s);
-  const patTag = matchedPattern ? `<span class="pattern-tag" title="This sentence uses a pattern">🧩 ${matchedPattern.template.replace(/\[.*?\]/g, '...').substring(0, 25)}</span>` : '';
+  const patTag = matchedPattern ? `<span class="pattern-tag" title="This sentence uses a pattern">${ICO.patterns} ${matchedPattern.template.replace(/\[.*?\]/g, '...').substring(0, 25)}</span>` : '';
   const variantTag = s.learn && s.learn.variants && s.learn.variants.length ? `<span class="pattern-tag" title="Includes formal and informal versions">Sie / du</span>` : '';
   const recognitionTag = isRecognitionSentence(s) ? `<span class="pattern-tag" title="Recognize this phrase and know how to respond">Recognition</span>` : '';
   return `<div class="sc${lrn ? ' lrn' : ''}${fav ? ' fav' : ''}" id="sc-${s.id}">
 <div class="sc-top">
-  ${showTopic && topic ? `<span class="topic-label">${topic.emoji} ${topic.name}</span>` : ''}
+  ${showTopic && topic ? `<span class="topic-label">${esc(topic.name)}</span>` : ''}
   <span class="lvl-tag l${s.lv}">${s.lv}</span>
-  ${gram ? `<span class="gram-tag" style="color:${gram.c};background:${gram.bg}">${gram.t}</span>` : ''}
+  ${gram ? `<span class="gram-tag">${esc(gram.t)}</span>` : ''}
   ${patTag}
   ${variantTag}
   ${recognitionTag}
-  ${lrn ? `<span class="lrn-badge">✓ Learned</span>${srsDots}` : ''}
+  ${lrn ? `<span class="lrn-badge">${ICO.check} Learned</span>${srsDots}` : ''}
 </div>
 <button class="sentence-de reveal-btn" onclick="toggleReveal('${s.id}')" aria-expanded="false" type="button" lang="de">${esc(s.de)}</button>
-<div class="sentence-ph"><span class="ph-lbl">🔊</span>${esc(s.ph)}</div>
-<div class="reveal-hint" id="hn-${s.id}" onclick="toggleReveal('${s.id}')" style="cursor:pointer">👆 Tap to reveal translation</div>
+<div class="sentence-ph"><span class="ph-lbl">${ICO.speak}</span>${esc(s.ph)}</div>
+<div class="reveal-hint" id="hn-${s.id}" onclick="toggleReveal('${s.id}')" style="cursor:pointer">Tap to reveal translation</div>
 <button class="sentence-en hid reveal-btn" id="en-${s.id}" onclick="toggleReveal('${s.id}')" aria-hidden="true" hidden type="button">${esc(s.en)}</button>
 ${renderRevealDetails(s)}
 <div class="card-actions">
@@ -1229,33 +1294,33 @@ function renderPatterns() {
   const understoodCount = active.filter(p => DB.understood.has(p.id)).length;
   const duePatternSection = duePatternIds.length ? `<div class="review-section pattern-review-section">
     <div class="review-section-hdr">
-      <div class="review-section-title">🧩 Due Pattern Review <span class="review-count-badge">${duePatternIds.length}</span></div>
-      <button class="review-practice-btn" onclick="startPatternPractice({ids:${idsArg(duePatternIds)}})">Practice Now</button>
+      <div class="review-section-title">${ICO.repeat} Due pattern review <span class="review-count-badge">${duePatternIds.length}</span></div>
+      <button class="review-practice-btn" onclick="startPatternPractice({ids:${idsArg(duePatternIds)}})">Practice now</button>
     </div>
     <div class="review-section-sub">Patterns ready for spaced review.</div>
   </div>` : '';
-  const cards = pats.length ? pats.map((p, i) => renderPatternCard(p, i)).join('') : `<div class="empty-state"><div class="empty-icon">🔍</div>No patterns match.</div>`;
+  const cards = pats.length ? pats.map((p, i) => renderPatternCard(p, i)).join('') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No patterns match.</div>`;
   const visibleIds = JSON.stringify(pats.map(p => p.id)).replace(/"/g, "'");
   const learningIds = JSON.stringify(active.filter(p => !DB.understood.has(p.id) || duePatternIds.includes(p.id)).map(p => p.id)).replace(/"/g, "'");
   const understoodIds = JSON.stringify(active.filter(p => DB.understood.has(p.id)).map(p => p.id)).replace(/"/g, "'");
   return `<div style="padding-top:14px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
-  <h2 class="page-title" style="margin-top:0">Sentence Patterns</h2>
-  <span style="font-size:12px;font-weight:500;color:var(--purple)">${undCount}/${active.length} understood</span>
+  <h2 class="page-title" style="margin-top:0">Sentence patterns</h2>
+  <span style="font-size:13px;font-weight:500;color:var(--text-2)">${undCount} of ${active.length} understood</span>
 </div>
 <p class="page-sub">Master these ${active.length} A1/A2 patterns and reuse them in real situations</p>
 ${duePatternSection}
 
-<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-  ${pats.length > 0 ? `<button onclick="startPatternPractice({ids:${visibleIds}})" style="flex:1;background:var(--purple);color:white;border:none;border-radius:9px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">🧩 Practice Visible (${pats.length})</button>` : ''}
-  ${learningCount > 0 ? `<button onclick="startPatternPractice({ids:${learningIds}})" style="flex:1;background:var(--white);border:1px solid var(--purple-border);border-radius:9px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--purple);font-family:'Inter',sans-serif;transition:all 0.15s">📚 Learning (${learningCount})</button>` : ''}
-  ${understoodCount > 0 ? `<button onclick="startPatternPractice({ids:${understoodIds}})" style="flex:1;background:var(--white);border:1px solid var(--green-border);border-radius:9px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--green);font-family:'Inter',sans-serif;transition:all 0.15s">✅ Learned (${understoodCount})</button>` : ''}
+<div class="btn-row">
+  ${pats.length > 0 ? `<button class="btn btn-primary" onclick="startPatternPractice({ids:${visibleIds}})" type="button">Practice visible (${pats.length})</button>` : ''}
+  ${learningCount > 0 ? `<button class="btn btn-secondary" onclick="startPatternPractice({ids:${learningIds}})" type="button">Learning (${learningCount})</button>` : ''}
+  ${understoodCount > 0 ? `<button class="btn btn-secondary" onclick="startPatternPractice({ids:${understoodIds}})" type="button">Understood (${understoodCount})</button>` : ''}
 </div>
 
 <div class="filter-row">
-  <button class="filter-chip${V.patFilter === 'learning' ? ' on' : ''}" onclick="setPatFilter('learning')" aria-pressed="${V.patFilter === 'learning'}" type="button">📚 Learning</button>
-  <button class="filter-chip${V.patFilter === 'due' ? ' on' : ''}" onclick="setPatFilter('due')" aria-pressed="${V.patFilter === 'due'}" type="button">🔁 Due</button>
-  <button class="filter-chip${V.patFilter === 'understood' ? ' on' : ''}" onclick="setPatFilter('understood')" aria-pressed="${V.patFilter === 'understood'}" type="button">✅ Understood</button>
+  <button class="filter-chip${V.patFilter === 'learning' ? ' on' : ''}" onclick="setPatFilter('learning')" aria-pressed="${V.patFilter === 'learning'}" type="button">Learning</button>
+  <button class="filter-chip${V.patFilter === 'due' ? ' on' : ''}" onclick="setPatFilter('due')" aria-pressed="${V.patFilter === 'due'}" type="button">Due</button>
+  <button class="filter-chip${V.patFilter === 'understood' ? ' on' : ''}" onclick="setPatFilter('understood')" aria-pressed="${V.patFilter === 'understood'}" type="button">Understood</button>
   <button class="filter-chip${V.patFilter === 'all' ? ' on' : ''}" onclick="setPatFilter('all')" aria-pressed="${V.patFilter === 'all'}" type="button">All</button>
 </div>
 
@@ -1290,24 +1355,24 @@ function renderPatternCard(p, i) {
   const tpl = p.template.replace(/\[([^\]]+)\]/g, '<span class="pat-blank">[$1]</span>');
   const informal = informalPatternExample(p);
   return `<div class="pc${und ? ' und' : ''}" id="pc-${p.id}">
-${cat ? `<span class="pat-cat-tag">${cat.icon} ${cat.label}</span>` : ''}
+${cat ? `<span class="pat-cat-tag">${esc(cat.label)}</span>` : ''}
 <div class="pat-template" lang="de">${tpl}</div>
 <div class="pat-meaning">${p.meaning}</div>
-<div class="pat-examples">${p.examples.map((e, ei) => `<div class="pat-ex"><div class="pat-de" lang="de"><button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(e.de)},'pex-${p.id}-${ei}')" title="Listen" type="button">🔊</button> ${esc(e.de)}</div><div class="pat-en">${esc(e.en)}</div></div>`).join('')}</div>
+<div class="pat-examples">${p.examples.map((e, ei) => `<div class="pat-ex"><div class="pat-de" lang="de"><button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(e.de)},'pex-${p.id}-${ei}')" aria-label="Listen" title="Listen" type="button">${ICO.speak}</button> ${esc(e.de)}</div><div class="pat-en">${esc(e.en)}</div></div>`).join('')}</div>
 ${informal ? `<div class="pat-informal">
   <div class="pat-informal-label">Informal example</div>
-  <div class="pat-informal-de" lang="de"><button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(informal.de)},'pinf-${p.id}')" title="Listen" type="button">🔊</button> ${esc(informal.de)}</div>
+  <div class="pat-informal-de" lang="de"><button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(informal.de)},'pinf-${p.id}')" aria-label="Listen" title="Listen" type="button">${ICO.speak}</button> ${esc(informal.de)}</div>
   <div class="pat-informal-en">${esc(informal.en)}</div>
 </div>` : ''}
 <div class="pat-actions">
   <button class="act-btn${und ? ' is-learned' : ''}" onclick="toggleUnderstood('${p.id}')">
-    ${ICO.check} ${und ? 'Understood ✓' : 'Mark understood'}
+    ${ICO.check} ${und ? 'Understood' : 'Mark understood'}
   </button>
   <button class="act-btn speak-btn" data-id="p${p.id}" onclick="speak(${jsArg(p.examples[0].de)},'p${p.id}')" type="button">
     ${ICO.speak} Listen
   </button>
-  <button class="act-btn" onclick="startPatternPractice({ids:['${p.id}']})" style="color:var(--purple)">
-    🧩 Practice
+  <button class="act-btn" onclick="startPatternPractice({ids:['${p.id}']})" type="button">
+    ${ICO.target} Practice
   </button>
 </div>
   </div>`;
@@ -1326,8 +1391,8 @@ function renderSaved() {
   const savedCount = showSentences ? favSents.length : favFreq.length;
   const learnedCount = showSentences ? learnedSents.length : learnedFreq.length;
   const tabs = `<div class="lib-tabs">
-<button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')">⭐ Saved (${savedCount})</button>
-<button class="lib-tab${V.libTab === 'learned' ? ' on' : ''}" onclick="setLibTab('learned')">📗 Learned (${learnedCount})</button>
+<button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')" type="button">Saved <span class="lib-tab-count">${savedCount}</span></button>
+<button class="lib-tab${V.libTab === 'learned' ? ' on' : ''}" onclick="setLibTab('learned')" type="button">Learned <span class="lib-tab-count">${learnedCount}</span></button>
   </div>`;
   const typeToggle = `<div class="lib-type-toggle" role="tablist" aria-label="Library item type">
 <button class="lib-type-btn${showSentences ? ' on' : ''}" onclick="setLibType('sentences')" role="tab" aria-selected="${showSentences}" type="button">Sentences</button>
@@ -1341,41 +1406,41 @@ function renderSaved() {
     const ids = JSON.stringify(reviewSents.map(s => s.id)).replace(/"/g, "'");
     return `<div class="review-section">
   <div class="review-section-hdr">
-    <div class="review-section-title">🔁 Due for Review <span class="review-count-badge">${reviewSents.length}</span></div>
-    <button class="review-practice-btn" onclick="startPractice({ids:${ids},isSRS:true})">Practice Now</button>
+    <div class="review-section-title">${ICO.repeat} Due for review <span class="review-count-badge">${reviewSents.length}</span></div>
+    <button class="review-practice-btn" onclick="startPractice({ids:${ids},isSRS:true})">Practice now</button>
   </div>
-  <div class="review-section-sub">These sentences are scheduled for review today - spaced repetition in action!</div>
+  <div class="review-section-sub">These sentences are scheduled for review today — spaced repetition in action.</div>
 </div>`;
   })() : '';
   const reviewFreqIds = getFreqReviewIds();
   const reviewFreq = reviewFreqIds.map(id => freqById(id)).filter(Boolean);
   const frequencyReviewSection = reviewFreq.length ? `<div class="review-section">
   <div class="review-section-hdr">
-    <div class="review-section-title">🔁 Due for Review <span class="review-count-badge">${reviewFreq.length}</span></div>
-    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${idsArg(reviewFreqIds)},isSRS:true})">Practice Now</button>
+    <div class="review-section-title">${ICO.repeat} Due for review <span class="review-count-badge">${reviewFreq.length}</span></div>
+    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${idsArg(reviewFreqIds)},isSRS:true})">Practice now</button>
   </div>
   <div class="review-section-sub">These vocabulary cards are scheduled for review today.</div>
 </div>` : '';
   const reviewSection = showSentences ? sentenceReviewSection : frequencyReviewSection;
 
   if (V.libTab === 'learned') return renderLearnedTab(`${tabs}${typeToggle}`, showSentences ? learnedSents : [], showSentences ? [] : learnedFreq, showSentences);
-  if (!savedCount) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">⭐</div>No saved ${showSentences ? 'sentences' : 'vocabulary'} yet.<br><span style="font-size:13px">Tap Save on any ${showSentences ? 'sentence' : 'vocabulary'} card.</span></div></div>`;
+  if (!savedCount) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">${ICO.starOutline}</div>No saved ${showSentences ? 'sentences' : 'vocabulary'} yet.<br><span style="font-size:13px">Tap Save on any ${showSentences ? 'sentence' : 'vocabulary'} card.</span></div></div>`;
   const favIds = JSON.stringify(favSents.map(s => s.id)).replace(/"/g, "'");
   const favFreqIds = idsArg(favFreq.map(entry => String(entry.rank)));
   const sentenceSection = favSents.length ? `<div class="learned-cta">
   <div class="learned-cta-info">
-    <div class="learned-cta-title">⭐ ${favSents.length} saved sentence${favSents.length !== 1 ? 's' : ''}</div>
+    <div class="learned-cta-title">${favSents.length} saved sentence${favSents.length !== 1 ? 's' : ''}</div>
     <div class="learned-cta-sub">Practice your saved sentences</div>
   </div>
-  <button class="learned-practice-btn" onclick="startPractice({ids:${favIds}})">🎯 Practice All</button>
+  <button class="learned-practice-btn" onclick="startPractice({ids:${favIds}})">Practice all</button>
 </div>
 ${favSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}` : '';
   const frequencySection = favFreq.length ? `<div class="learned-cta">
   <div class="learned-cta-info">
-    <div class="learned-cta-title">⭐ ${favFreq.length} saved frequency word${favFreq.length !== 1 ? 's' : ''}</div>
+    <div class="learned-cta-title">${favFreq.length} saved frequency word${favFreq.length !== 1 ? 's' : ''}</div>
     <div class="learned-cta-sub">Practice your saved vocabulary</div>
   </div>
-  <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${favFreqIds},skipSessionFilter:true})">🎯 Practice All</button>
+  <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${favFreqIds},skipSessionFilter:true})">Practice all</button>
 </div>
 ${favFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}` : '';
   return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}
@@ -1383,7 +1448,7 @@ ${showSentences ? sentenceSection : frequencySection}</div>`;
 }
 
 function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
-  if (!learnedSents.length && !learnedFreq.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">📗</div>No learned items yet.<br><span style="font-size:13px">Mark a sentence or vocabulary card learned to track it here.</span></div></div>`;
+  if (!learnedSents.length && !learnedFreq.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">${ICO.book}</div>No learned items yet.<br><span style="font-size:13px">Mark a sentence or vocabulary card learned to track it here.</span></div></div>`;
 
   // SRS due sentences (filtered to the currently selected library type)
   const dueIds = showSentences ? getSrsReviewIds() : [];
@@ -1405,47 +1470,47 @@ function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
   const sentenceDueSection = dueSents.length ? `
     <div class="review-section">
       <div class="review-section-hdr">
-        <div class="review-section-title">🔁 Due for Review <span class="review-count-badge">${dueSents.length}</span></div>
-        <button class="review-practice-btn" onclick="startPractice({ids:${dueIdsJson},isSRS:true})">🎯 Practice Due</button>
+        <div class="review-section-title">${ICO.repeat} Due for review <span class="review-count-badge">${dueSents.length}</span></div>
+        <button class="review-practice-btn" onclick="startPractice({ids:${dueIdsJson},isSRS:true})">Practice due</button>
       </div>
-      <div class="review-section-sub">These sentences are scheduled for review today — spaced repetition in action!</div>
+      <div class="review-section-sub">These sentences are scheduled for review today — spaced repetition in action.</div>
     </div>
     ${dueSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}
   ` : '';
   const frequencyDueSection = dueFreq.length ? `
     <div class="review-section">
       <div class="review-section-hdr">
-        <div class="review-section-title">🔁 Due Frequency Review <span class="review-count-badge">${dueFreq.length}</span></div>
-        <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueFreqIdsJson},isSRS:true})">🎯 Practice Due</button>
+        <div class="review-section-title">${ICO.repeat} Due frequency review <span class="review-count-badge">${dueFreq.length}</span></div>
+        <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueFreqIdsJson},isSRS:true})">Practice due</button>
       </div>
       <div class="review-section-sub">These vocabulary cards are scheduled for review today.</div>
     </div>
     ${dueFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}
   ` : '';
-  const dueSection = sentenceDueSection || frequencyDueSection ? `${sentenceDueSection}${frequencyDueSection}` : `<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:14px;padding:18px;margin-bottom:16px;text-align:center">
-      <div style="font-size:15px;font-weight:700;color:var(--green)">✅ All caught up!</div>
-      <div style="font-size:12px;color:var(--text-3);margin-top:4px">No items due for review right now. Check back later!</div>
+  const dueSection = sentenceDueSection || frequencyDueSection ? `${sentenceDueSection}${frequencyDueSection}` : `<div class="callout callout-success">
+      <div class="callout-title">${ICO.check} All caught up</div>
+      <div class="callout-sub">No items due for review right now. Check back later.</div>
     </div>`;
 
   // Reviewed today section
   const reviewedSection = reviewedTodaySents.length ? `
-    <div class="sec-lbl">✅ Reviewed Today (${reviewedTodaySents.length})</div>
+    <div class="sec-lbl">Reviewed today (${reviewedTodaySents.length})</div>
     ${reviewedTodaySents.map((s, i) => renderSentenceCard(s, i, true)).join('')}
   ` : '';
 
   // All learned section
   const allSentenceSection = learnedSents.length ? `
-    <div class="sec-lbl">📗 All Learned (${learnedSents.length})</div>
+    <div class="sec-lbl">All learned (${learnedSents.length})</div>
     ${learnedSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}
   ` : '';
   const learnedFreqIds = idsArg(learnedFreq.map(entry => String(entry.rank)));
   const allFrequencySection = learnedFreq.length ? `
     <div class="learned-cta">
       <div class="learned-cta-info">
-        <div class="learned-cta-title">🔤 ${learnedFreq.length} learned frequency word${learnedFreq.length !== 1 ? 's' : ''}</div>
+        <div class="learned-cta-title">${learnedFreq.length} learned frequency word${learnedFreq.length !== 1 ? 's' : ''}</div>
         <div class="learned-cta-sub">Review your learned vocabulary</div>
       </div>
-      <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${learnedFreqIds},skipSessionFilter:true})">🎯 Practice All</button>
+      <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${learnedFreqIds},skipSessionFilter:true})">Practice all</button>
     </div>
     ${learnedFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}
   ` : '';
@@ -1544,69 +1609,69 @@ ${histRows.map(r => {
     return `<div class="hist-col"><div class="hist-bar-wrap"><div class="hist-bar-inner${r.isToday ? ' today' : ''}${r.cnt === 0 ? ' zero' : ''}" style="height:${heightPct}%">${r.cnt > 0 ? `<span class="hist-bar-num">${r.cnt}</span>` : ''}</div></div><div class="hist-day-lbl${r.isToday ? ' today' : ''}">${r.label}</div></div>`;
   }).join('')}
   </div>`;
-  const forecastChart = `<div class="stats-chart-title"><strong>Review Forecast</strong><span>Next 7 days of scheduled sentence reviews</span></div>
-  <div class="forecast-row">${forecast.map(r => `<div class="forecast-day"><div class="forecast-count">${r.count}</div><div class="forecast-bar"><span style="height:${Math.max(8, Math.round(r.count / maxForecast * 100))}%"></span></div><div class="forecast-label">${r.label}</div></div>`).join('')}</div>`;
+  const forecastChart = `<div class="stats-chart-title"><strong>Review forecast</strong><span>Next 7 days of scheduled sentence reviews</span></div>
+  <div class="forecast-row">${forecast.map(r => `<div class="forecast-day"><div class="forecast-count">${r.count}</div><div class="forecast-bar"><span class="${r.count ? '' : 'zero'}" style="height:${Math.max(8, Math.round(r.count / maxForecast * 100))}%"></span></div><div class="forecast-label">${r.label}</div></div>`).join('')}</div>`;
 
   return `<div class="progress-body">
 <div class="stats-grid">
-  <div class="stat-box"><div class="stat-lbl">Sentences Learned</div><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-sub">of ${tot} sentences</div></div>
-  <div class="stat-box"><div class="stat-lbl">Completion</div><div class="stat-num" style="color:var(--accent)">${completion}%</div><div class="stat-sub">overall progress</div></div>
-  <div class="stat-box"><div class="stat-lbl">Streak</div><div class="stat-num">🔥 ${DB.streak}</div><div class="stat-sub">study days in a row</div></div>
-  <div class="stat-box"><div class="stat-lbl">Days Studied</div><div class="stat-num" style="color:var(--blue)">${studiedDates.size}</div><div class="stat-sub">with activity</div></div>
+  <div class="stat-box"><div class="stat-lbl">Sentences learned</div><div class="stat-num">${done}</div><div class="stat-sub">of ${tot} sentences</div></div>
+  <div class="stat-box"><div class="stat-lbl">Completion</div><div class="stat-num">${completion}%</div><div class="stat-sub">overall progress</div></div>
+  <div class="stat-box"><div class="stat-lbl">Streak</div><div class="stat-num">${DB.streak}</div><div class="stat-sub">study days in a row</div></div>
+  <div class="stat-box"><div class="stat-lbl">Days studied</div><div class="stat-num">${studiedDates.size}</div><div class="stat-sub">with activity</div></div>
 </div>
 <div class="stats-grid stats-grid-three">
-  <div class="stat-box"><div class="stat-lbl">New Today</div><div class="stat-num" style="color:var(--green)">${newToday}</div><div class="stat-sub">sentences learned</div></div>
-  <div class="stat-box"><div class="stat-lbl">Reviews Today</div><div class="stat-num" style="color:var(--amber)">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
-  <div class="stat-box"><div class="stat-lbl">Patterns</div><div class="stat-num" style="color:var(--purple)">${und}</div><div class="stat-sub">${patternDue} due</div></div>
-  <div class="stat-box"><div class="stat-lbl">Vocab</div><div class="stat-num" style="color:var(--blue)">${vocabDone}</div><div class="stat-sub">${vocabDue} due of ${VOCAB_CARDS.length}</div></div>
-  <div class="stat-box"><div class="stat-lbl">Frequency</div><div class="stat-num" style="color:var(--accent)">${freqDone}</div><div class="stat-sub">${freqDue} due of ${FREQUENCY_DICTIONARY_SIZE}</div></div>
+  <div class="stat-box"><div class="stat-lbl">New today</div><div class="stat-num">${newToday}</div><div class="stat-sub">sentences learned</div></div>
+  <div class="stat-box"><div class="stat-lbl">Reviews today</div><div class="stat-num">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
+  <div class="stat-box"><div class="stat-lbl">Patterns</div><div class="stat-num">${und}</div><div class="stat-sub">${patternDue} due</div></div>
+  <div class="stat-box"><div class="stat-lbl">Vocab</div><div class="stat-num">${vocabDone}</div><div class="stat-sub">${vocabDue} due of ${VOCAB_CARDS.length}</div></div>
+  <div class="stat-box"><div class="stat-lbl">Frequency</div><div class="stat-num">${freqDone}</div><div class="stat-sub">${freqDue} due of ${FREQUENCY_DICTIONARY_SIZE}</div></div>
 </div>
 
-<div class="stats-sec-hdr">🔁 Spaced Repetition</div>
+<div class="stats-sec-hdr">Spaced repetition</div>
 <div class="stats-grid stats-grid-three">
-  <div class="stat-box"><div class="stat-lbl">Due Today</div><div class="stat-num" style="color:${reviewDue > 0 ? 'var(--amber)' : 'var(--green)'}">${reviewDue}</div><div class="stat-sub">sentence reviews</div></div>
-  <div class="stat-box"><div class="stat-lbl">Overdue</div><div class="stat-num" style="color:${overdue > 0 ? 'var(--red)' : 'var(--green)'}">${overdue}</div><div class="stat-sub">before today</div></div>
-  <div class="stat-box"><div class="stat-lbl">Mastered</div><div class="stat-num" style="color:var(--green)">${srsLvl5plus}</div><div class="stat-sub">of ${srsTotal} scheduled</div></div>
+  <div class="stat-box"><div class="stat-lbl">Due today</div><div class="stat-num${reviewDue > 0 ? ' is-warn' : ''}">${reviewDue}</div><div class="stat-sub">sentence reviews</div></div>
+  <div class="stat-box"><div class="stat-lbl">Overdue</div><div class="stat-num${overdue > 0 ? ' is-danger' : ''}">${overdue}</div><div class="stat-sub">before today</div></div>
+  <div class="stat-box"><div class="stat-lbl">Mastered</div><div class="stat-num">${srsLvl5plus}</div><div class="stat-sub">of ${srsTotal} scheduled</div></div>
 </div>
 ${forecastChart}
 
-	<div class="stats-sec-hdr">📅 Practice Activity - Past 7 Days</div>
+<div class="stats-sec-hdr">Practice activity — past 7 days</div>
 ${barChart}
 
-<div class="stats-sec-hdr">🎯 Accuracy By Direction</div>
+<div class="stats-sec-hdr">Accuracy by direction</div>
 ${['de2en', 'en2de', 'type'].map(dir => {
     const row = dirAgg[dir] || { got: 0, total: 0 };
     const label = dir === 'de2en' ? 'German → English' : dir === 'en2de' ? 'English → German' : 'Typed German';
-    return `<div class="prog-row"><div class="prog-lbl" style="min-width:130px">${label}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct(row.got, row.total)}%;background:var(--blue)"></div></div><div class="prog-pct">${pct(row.got, row.total)}%</div><div class="prog-cnt">${row.got}/${row.total}</div></div>`;
+    return `<div class="prog-row"><div class="prog-lbl" style="min-width:130px">${label}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct(row.got, row.total)}%"></div></div><div class="prog-pct">${pct(row.got, row.total)}%</div><div class="prog-cnt">${row.got}/${row.total}</div></div>`;
   }).join('')}
 
-<div class="stats-sec-hdr">⚠️ Needs Attention</div>
+<div class="stats-sec-hdr">Needs attention</div>
 ${weakSentences.length ? weakSentences.map(w => {
     const s = SENTENCES.find(x => x.id === w.id);
     return s ? `<div class="insight-row"><div><strong lang="de">${esc(s.de)}</strong><span>${esc(s.en)}</span></div><button onclick="startPractice({ids:['${w.id}'],skipSessionFilter:true})">Practice</button></div>` : '';
   }).join('') : '<div class="empty-mini">No weak sentence data yet. Practice a few sessions first.</div>'}
 
-<div class="stats-sec-hdr">📊 Weak Topics</div>
-${topicRows.length ? topicRows.map(r => `<div class="prog-row"><div class="prog-lbl" style="min-width:130px">${r.topic.emoji} ${r.topic.name}</div><div class="prog-bar"><div class="prog-fill" style="width:${r.acc}%;background:var(--amber)"></div></div><div class="prog-pct">${r.acc}%</div><div class="prog-cnt">${r.got}/${r.total}</div></div>`).join('') : '<div class="empty-mini">Topic accuracy appears after practice attempts.</div>'}
+<div class="stats-sec-hdr">Weak topics</div>
+${topicRows.length ? topicRows.map(r => `<div class="prog-row"><div class="prog-lbl" style="min-width:130px">${esc(r.topic.name)}</div><div class="prog-bar"><div class="prog-fill" style="width:${r.acc}%"></div></div><div class="prog-pct">${r.acc}%</div><div class="prog-cnt">${r.got}/${r.total}</div></div>`).join('') : '<div class="empty-mini">Topic accuracy appears after practice attempts.</div>'}
 
-<div class="stats-sec-hdr">🧩 Hardest Patterns</div>
+<div class="stats-sec-hdr">Hardest patterns</div>
 ${weakPatterns.length ? weakPatterns.map(w => {
     const p = PATTERNS.find(x => x.id === w.id);
     return p ? `<div class="insight-row"><div><strong lang="de">${esc(p.template)}</strong><span>${esc(p.meaning)} · ${w.acc}% accuracy</span></div><button onclick="startPatternPractice({ids:['${w.id}']})">Practice</button></div>` : '';
   }).join('') : '<div class="empty-mini">Pattern accuracy appears after pattern practice.</div>'}
 
-<div class="stats-sec-hdr">📊 By Level</div>
+<div class="stats-sec-hdr">By level</div>
 ${byLevel.map(l => `<div class="prog-row">
-  <div class="prog-lbl" style="color:${lvColors[l.lv]};font-weight:700">${l.lv}</div>
-  <div class="prog-bar"><div class="prog-fill" style="width:${l.pct}%;background:${lvColors[l.lv]}"></div></div>
-  <div class="prog-pct" style="color:${lvColors[l.lv]};font-weight:600">${l.pct}%</div>
+  <div class="prog-lbl">${l.lv}</div>
+  <div class="prog-bar"><div class="prog-fill" style="width:${l.pct}%"></div></div>
+  <div class="prog-pct">${l.pct}%</div>
   <div class="prog-cnt">${l.done}/${l.tot}</div>
 </div>`).join('')}
 
-	<div class="stats-sec-hdr">💾 Data</div>
-	<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
-	  <button onclick="exportData()" style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.15s">📤 Export Backup</button>
-  <button onclick="importData()" style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.15s">📥 Import Backup</button>
+<div class="stats-sec-hdr">Data</div>
+<div class="btn-row" style="margin-bottom:20px">
+  <button class="btn btn-secondary" onclick="exportData()" type="button">${ICO.upload} Export backup</button>
+  <button class="btn btn-secondary" onclick="importData()" type="button">${ICO.download} Import backup</button>
 </div>
   </div>`;
 }
@@ -1648,7 +1713,7 @@ function toggleLearned(id) {
     const btn = document.getElementById('lrn-btn-' + id);
     if (btn) { btn.className = DB.learned.has(id) ? 'act-btn is-learned' : 'act-btn'; btn.innerHTML = ICO.check + (DB.learned.has(id) ? ' Learned' : ' Mark done'); }
     const badge = card.querySelector('.lrn-badge');
-    if (DB.learned.has(id) && !badge) { const top = card.querySelector('.sc-top'); if (top) { const s = document.createElement('span'); s.className = 'lrn-badge'; s.textContent = '✓ Learned'; top.appendChild(s); } }
+    if (DB.learned.has(id) && !badge) { const top = card.querySelector('.sc-top'); if (top) { const s = document.createElement('span'); s.className = 'lrn-badge'; s.innerHTML = ICO.check + ' Learned'; top.appendChild(s); } }
     else if (!DB.learned.has(id) && badge) badge.remove();
   }
   updateHeader();
@@ -1714,7 +1779,7 @@ function toggleUnderstood(id) {
   if (card) {
     card.classList.toggle('und', DB.understood.has(id));
     const btn = card.querySelector('.act-btn');
-    if (btn) { btn.className = DB.understood.has(id) ? 'act-btn is-learned' : 'act-btn'; btn.innerHTML = ICO.check + (DB.understood.has(id) ? ' Understood ✓' : ' Mark understood'); }
+    if (btn) { btn.className = DB.understood.has(id) ? 'act-btn is-learned' : 'act-btn'; btn.innerHTML = ICO.check + (DB.understood.has(id) ? ' Understood' : ' Mark understood'); }
   }
 }
 
@@ -1962,7 +2027,7 @@ function startPractice(opts) {
     // All cards already done in this session
     const toast = document.createElement('div');
     toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--green);color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
-    toast.textContent = '✅ All cards mastered this session. Review saved phrases or start a new batch when ready.';
+    toast.textContent = 'All cards mastered this session. Review saved phrases or start a new batch when ready.';
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
     return;
@@ -1985,6 +2050,33 @@ function effectivePracticeDirection(sentence) {
   return isRecognitionSentence(sentence) ? 'de2en' : P.dir;
 }
 
+// Shared fragments for the practice overlay cards.
+function practiceTopicLabel(topic, s, gram) {
+  if (!topic) return '';
+  return `<div class="practice-topic-lbl">${esc(topic.name)}<span class="lvl-tag l${s.lv}">${s.lv}</span>${gram ? `<span class="gram-tag">${esc(gram.t)}</span>` : ''}</div>`;
+}
+function practiceFavButton(s) {
+  const on = DB.favorites.has(s.id);
+  return `<button class="prac-fav-btn${on ? ' on' : ''}" id="prac-fav-${s.id}" onclick="practiceFav('${s.id}')" type="button" aria-pressed="${on}" title="${on ? 'Remove from saved' : 'Save sentence'}">${ICO.star}</button>`;
+}
+function practicePatternHint(s) {
+  const mp = findMatchingPattern(s);
+  if (!mp) return '';
+  const others = mp.examples.filter(e => e.de !== s.de).slice(0, 2);
+  return `<div class="prac-pattern-hint">
+    <div class="prac-pattern-hint-title">Pattern · ${esc(mp.template)}</div>
+    <div class="prac-pattern-hint-meaning">${esc(mp.meaning)}</div>
+    ${others.map(e => `<div class="prac-pattern-hint-ex"><strong lang="de">${esc(e.de)}</strong> — ${esc(e.en)}</div>`).join('')}
+  </div>`;
+}
+function practiceSpeakButton(s, safeDE, label) {
+  return `<div class="practice-speak-row">
+      <button class="act-btn speak-btn" data-id="prac-${s.id}" onclick="speak(${safeDE},'prac-${s.id}')" type="button">
+        ${ICO.speak} <span id="prac-speak-lbl">${label}</span>
+      </button>
+    </div>`;
+}
+
 function renderPractice() {
   const existing = document.getElementById('practice-overlay');
   if (existing) existing.remove();
@@ -2005,27 +2097,27 @@ function renderPractice() {
   </div>
   <div class="practice-body">
     <div class="dir-choice-wrap">
-      <div class="dir-choice-title">Choose Practice Mode</div>
+      <div class="dir-choice-title">Choose practice mode</div>
       <div class="dir-choice-sub">How do you want to drill these cards?</div>
       <button class="dir-btn primary" onclick="setPracticeDir('de2en')">
-        <span class="dir-btn-icon">🇩🇪</span>
+        <span class="dir-btn-icon">DE</span>
         <div>
           <div class="dir-btn-title">German → English</div>
           <div class="dir-btn-sub">See German, recall the translation</div>
         </div>
       </button>
       <button class="dir-btn" onclick="setPracticeDir('en2de')">
-        <span class="dir-btn-icon">🇬🇧</span>
+        <span class="dir-btn-icon">EN</span>
         <div>
-          <div class="dir-btn-title" style="color:var(--text)">English → German</div>
-          <div class="dir-btn-sub" style="color:var(--text-3)">See English, recall the German sentence</div>
+          <div class="dir-btn-title">English → German</div>
+          <div class="dir-btn-sub">See English, recall the German sentence</div>
         </div>
       </button>
       <button class="dir-btn" onclick="setPracticeDir('type')">
-        <span class="dir-btn-icon">⌨️</span>
+        <span class="dir-btn-icon">${ICO.keyboard}</span>
         <div>
-          <div class="dir-btn-title" style="color:var(--text)">Type German</div>
-          <div class="dir-btn-sub" style="color:var(--text-3)">Write the sentence and get quick feedback</div>
+          <div class="dir-btn-title">Type German</div>
+          <div class="dir-btn-sub">Write the sentence and get quick feedback</div>
         </div>
       </button>
     </div>
@@ -2039,34 +2131,29 @@ function renderPractice() {
     const total = P.queue.length;
     const answeredCount = Object.keys(P.answered).length;
     const pct = answeredCount ? Math.round(P.got / answeredCount * 100) : 0;
-    const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '💪';
-    const title = pct >= 80 ? 'Excellent work!' : pct >= 50 ? 'Good progress!' : 'Keep practicing!';
+    const title = pct >= 80 ? 'Excellent work' : pct >= 50 ? 'Good progress' : 'Keep practicing';
     const retryIds = JSON.stringify(P.queue.map(s => s.id)).replace(/"/g, "'");
     const missedIds = [...new Set(P.missedIds)];
     const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startPractice({ids:${idsArg(missedIds)},skipSessionFilter:true})">Review misses</button>` : '';
-    const srsMsg = P.isSRS ? `<div style="font-size:12px;color:var(--text-3);margin-bottom:16px">📅 SRS intervals updated - next reviews scheduled.</div>` : '';
-    const modeTag = P.dir === 'type'
-      ? `<div style="font-size:11px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:99px;display:inline-block;padding:3px 10px;margin-bottom:12px">⌨️ Typed recall mode</div>`
-      : P.dir === 'en2de'
-      ? `<div style="font-size:11px;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:99px;display:inline-block;padding:3px 10px;margin-bottom:12px">🇬🇧 English → German mode</div>`
-      : `<div style="font-size:11px;color:var(--accent);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:99px;display:inline-block;padding:3px 10px;margin-bottom:12px">🇩🇪 German → English mode</div>`;
+    const srsMsg = P.isSRS ? `<div class="prac-sum-note">Review intervals updated — next reviews scheduled.</div>` : '';
+    const modeTag = `<div class="prac-mode-tag">${P.dir === 'type' ? 'Typed recall' : P.dir === 'en2de' ? 'English → German' : 'German → English'}</div>`;
     ov.innerHTML = `
-  <div class="practice-hdr"><span style="font-size:16px;font-weight:700;color:var(--text)">Practice Complete</span></div>
+  <div class="practice-hdr"><span style="font-size:16px;font-weight:600;color:var(--text)">Practice complete</span></div>
   <div class="practice-body">
     <div class="prac-summary">
-      <div class="prac-sum-icon">${emoji}</div>
+      <div class="prac-sum-icon">${ICO.trophy}</div>
       <div class="prac-sum-title">${title}</div>
       <div class="prac-sum-sub">You reviewed ${total} sentence${total !== 1 ? 's' : ''}</div>
       ${modeTag}
       ${srsMsg}
       <div class="prac-sum-stats">
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${P.got}</div><div class="prac-sum-l">Got it</div></div>
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${P.again}</div><div class="prac-sum-l">Still learning</div></div>
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--text-3)">${P.skipped}</div><div class="prac-sum-l">Skipped</div></div>
+        <div class="prac-sum-stat"><div class="prac-sum-n">${P.got}</div><div class="prac-sum-l">Got it</div></div>
+        <div class="prac-sum-stat"><div class="prac-sum-n">${P.again}</div><div class="prac-sum-l">Still learning</div></div>
+        <div class="prac-sum-stat"><div class="prac-sum-n">${P.skipped}</div><div class="prac-sum-l">Skipped</div></div>
       </div>
       <div class="prac-sum-actions">
         ${missedBtn}
-        <button class="prac-sum-retry" onclick="startPractice({ids:${retryIds},isSRS:${P.isSRS}})">Practice Again</button>
+        <button class="prac-sum-retry" onclick="startPractice({ids:${retryIds},isSRS:${P.isSRS}})">Practice again</button>
         <button class="prac-sum-done" onclick="closePractice()">Done</button>
       </div>
     </div>
@@ -2082,98 +2169,77 @@ function renderPractice() {
     const recognitionMode = isRecognitionSentence(s);
     const effectiveDir = effectivePracticeDirection(s);
 
-    const dirLabel = recognitionMode
-      ? `<span style="font-size:11px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:99px;padding:2px 9px;font-weight:600">Recognition</span>`
-      : P.dir === 'type'
-      ? `<span style="font-size:11px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:99px;padding:2px 9px;font-weight:600">⌨️ Type</span>`
-      : P.dir === 'en2de'
-      ? `<span style="font-size:11px;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:99px;padding:2px 9px;font-weight:600">🇬🇧→🇩🇪</span>`
-      : `<span style="font-size:11px;color:var(--accent);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:99px;padding:2px 9px;font-weight:600">🇩🇪→🇬🇧</span>`;
+    const dirLabel = `<span class="prac-tag">${recognitionMode ? 'Recognition' : P.dir === 'type' ? 'Type' : P.dir === 'en2de' ? 'EN → DE' : 'DE → EN'}</span>`;
 
     let cardBody;
     if (effectiveDir === 'de2en') {
       // Front: German + phonetics. Back: English + usage
-      const isFav0 = DB.favorites.has(s.id);
       const recognitionReply = recognitionMode && s.learn
         ? `<div class="practice-use"><strong>You can answer:</strong> ${esc(s.learn.learnerReply || s.learn.expectedReply)}</div>`
         : '';
       cardBody = `
     <div class="practice-card">
-      <button class="prac-fav-btn${isFav0 ? ' on' : ''}" id="prac-fav-${s.id}" onclick="practiceFav('${s.id}')" title="${isFav0 ? 'Remove from saved' : 'Save sentence'}">⭐</button>
-      ${topic ? `<div class="practice-topic-lbl">${topic.emoji} ${topic.name} - <span class="lvl-tag l${s.lv}" style="display:inline">${s.lv}</span>${gram ? ` - <span class="gram-tag" style="color:${gram.c};background:${gram.bg}">${gram.t}</span>` : ''}</div>` : ''}
+      ${practiceFavButton(s)}
+      ${practiceTopicLabel(topic, s, gram)}
       <div class="practice-de" lang="de">${esc(s.de)}</div>
-      <div class="practice-ph">🔊 ${esc(s.ph)}</div>
+      <div class="practice-ph">${ICO.speak} ${esc(s.ph)}</div>
       ${P.revealed
-          ? `<div class="practice-en">${esc(s.en)}</div><div class="practice-use">💬 ${esc(s.use)}</div>${recognitionReply}${(() => { const mp = findMatchingPattern(s); return mp ? `<div style="margin-top:8px;padding:10px 12px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:8px"><div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:4px">🧩 Pattern: ${esc(mp.template)}</div><div style="font-size:11px;color:var(--text-2);margin-bottom:6px">${esc(mp.meaning)}</div><div style="font-size:11px;color:var(--text-2)">${mp.examples.filter(e => e.de !== s.de).slice(0, 2).map(e => `<div style="padding:2px 0"><strong style="color:var(--text)" lang="de">${esc(e.de)}</strong> — ${esc(e.en)}</div>`).join('')}</div></div>` : '' })()}${renderRevealDetails(s, true, 'pgd-')}`
+          ? `<div class="practice-en">${esc(s.en)}</div><div class="practice-use">${esc(s.use)}</div>${recognitionReply}${practicePatternHint(s)}${renderRevealDetails(s, true, 'pgd-')}`
           : `<button class="practice-reveal-hint" onclick="practiceReveal()" type="button">${recognitionMode ? 'Tap to reveal meaning and response' : 'Tap to reveal translation'}</button>`}
     </div>
-    <div style="display:flex;justify-content:center;margin:10px 0">
-      <button class="act-btn speak-btn" data-id="prac-${s.id}" onclick="speak(${safeDE},'prac-${s.id}')" style="font-size:13px;padding:8px 18px" type="button">
-        ${ICO.speak} <span id="prac-speak-lbl">Listen</span>
-      </button>
-    </div>
+    ${practiceSpeakButton(s, safeDE, 'Listen')}
     ${P.revealed ? `
       <div class="practice-btns">
         <button class="prac-again-btn" onclick="practiceAnswer(false)">Still learning</button>
-        <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it!</button>
+        <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it</button>
       </div>` : ''}
-    <div class="kbd-hint" style="margin-top:10px">
+    <div class="kbd-hint">
       <span class="kbd">Space</span> show/hide &nbsp;
       <span class="kbd">←</span> prev &nbsp;
       <span class="kbd">→</span> skip
     </div>`;
     } else if (effectiveDir === 'en2de') {
       // en2de — Front: English. Back: German + phonetics + usage
-      const isFav1 = DB.favorites.has(s.id);
       cardBody = `
     <div class="practice-card">
-      <button class="prac-fav-btn${isFav1 ? ' on' : ''}" id="prac-fav-${s.id}" onclick="practiceFav('${s.id}')" title="${isFav1 ? 'Remove from saved' : 'Save sentence'}">⭐</button>
-      ${topic ? `<div class="practice-topic-lbl">${topic.emoji} ${topic.name} - <span class="lvl-tag l${s.lv}" style="display:inline">${s.lv}</span>${gram ? ` - <span class="gram-tag" style="color:${gram.c};background:${gram.bg}">${gram.t}</span>` : ''}</div>` : ''}
-      <div class="practice-de" style="font-size:19px;font-weight:700;color:var(--text);letter-spacing:-0.2px">${esc(s.en)}</div>
+      ${practiceFavButton(s)}
+      ${practiceTopicLabel(topic, s, gram)}
+      <div class="practice-de practice-prompt-en">${esc(s.en)}</div>
       ${P.revealed
-          ? `<div class="practice-ph" style="margin-bottom:4px">🔊 ${esc(s.ph)}</div><div class="practice-en" style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px" lang="de">${esc(s.de)}</div><div class="practice-use">💬 ${esc(s.use)}</div>${(() => { const mp = findMatchingPattern(s); return mp ? `<div style="margin-top:8px;padding:10px 12px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:8px"><div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:4px">🧩 Pattern: ${esc(mp.template)}</div><div style="font-size:11px;color:var(--text-2);margin-bottom:6px">${esc(mp.meaning)}</div><div style="font-size:11px;color:var(--text-2)">${mp.examples.filter(e => e.de !== s.de).slice(0, 2).map(e => `<div style="padding:2px 0"><strong style="color:var(--text)" lang="de">${esc(e.de)}</strong> — ${esc(e.en)}</div>`).join('')}</div></div>` : '' })()}${renderRevealDetails(s, true, 'pgd-')}`
+          ? `<div class="practice-ph">${ICO.speak} ${esc(s.ph)}</div><div class="practice-answer-de" lang="de">${esc(s.de)}</div><div class="practice-use">${esc(s.use)}</div>${practicePatternHint(s)}${renderRevealDetails(s, true, 'pgd-')}`
           : `<button class="practice-reveal-hint" onclick="practiceReveal()" type="button">Tap to reveal German</button>`}
     </div>
-    <div style="display:flex;justify-content:center;margin:10px 0">
-      <button class="act-btn speak-btn" data-id="prac-${s.id}" onclick="speak(${safeDE},'prac-${s.id}')" style="font-size:13px;padding:8px 18px" type="button">
-        ${ICO.speak} <span id="prac-speak-lbl">${P.revealed ? 'Listen' : 'Hint (audio)'}</span>
-      </button>
-    </div>
+    ${practiceSpeakButton(s, safeDE, P.revealed ? 'Listen' : 'Audio hint')}
     ${P.revealed ? `
       <div class="practice-btns">
         <button class="prac-again-btn" onclick="practiceAnswer(false)">Still learning</button>
-        <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it!</button>
+        <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it</button>
       </div>` : ''}
-      <div class="kbd-hint" style="margin-top:10px">
+    <div class="kbd-hint">
       <span class="kbd">Space</span> show/hide &nbsp;
       <span class="kbd">←</span> prev &nbsp;
       <span class="kbd">→</span> skip
     </div>`;
     } else {
-      const isFav2 = DB.favorites.has(s.id);
       const feedback = P.typedFeedback ? `<div class="typed-feedback ${P.typedFeedback.ok ? 'ok' : 'warn'}">${P.typedFeedback.messages.map(esc).join('<br>')}</div>` : '';
       cardBody = `
     <div class="practice-card">
-      <button class="prac-fav-btn${isFav2 ? ' on' : ''}" id="prac-fav-${s.id}" onclick="practiceFav('${s.id}')" title="${isFav2 ? 'Remove from saved' : 'Save sentence'}">⭐</button>
-      ${topic ? `<div class="practice-topic-lbl">${topic.emoji} ${topic.name} - <span class="lvl-tag l${s.lv}" style="display:inline">${s.lv}</span>${gram ? ` - <span class="gram-tag" style="color:${gram.c};background:${gram.bg}">${gram.t}</span>` : ''}</div>` : ''}
-      <div class="practice-de" style="font-size:19px;font-weight:700;color:var(--text);letter-spacing:-0.2px">${esc(s.en)}</div>
+      ${practiceFavButton(s)}
+      ${practiceTopicLabel(topic, s, gram)}
+      <div class="practice-de practice-prompt-en">${esc(s.en)}</div>
       ${P.revealed
-          ? `${feedback}<div class="practice-ph" style="margin-bottom:4px">🔊 ${esc(s.ph)}</div><div class="practice-en" style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px" lang="de">${esc(s.de)}</div><div class="practice-use">💬 ${esc(s.use)}</div>${renderRevealDetails(s, true, 'pgd-')}`
-          : `<input id="typed-answer" class="typed-answer" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the German sentence..." onkeydown="if(event.key==='Enter') checkTypedAnswer()" autofocus>
-             <button class="practice-reveal-hint" onclick="checkTypedAnswer()" style="width:100%;margin-top:10px" type="button">Check answer</button>
+          ? `${feedback}<div class="practice-ph">${ICO.speak} ${esc(s.ph)}</div><div class="practice-answer-de" lang="de">${esc(s.de)}</div><div class="practice-use">${esc(s.use)}</div>${renderRevealDetails(s, true, 'pgd-')}`
+          : `<input id="typed-answer" class="typed-answer" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the German sentence…" onkeydown="if(event.key==='Enter') checkTypedAnswer()" autofocus>
+             <button class="practice-reveal-hint practice-reveal-block" onclick="checkTypedAnswer()" type="button">Check answer</button>
              <button class="practice-skip-reveal" onclick="practiceReveal()" type="button">Reveal without typing</button>`}
     </div>
-    <div style="display:flex;justify-content:center;margin:10px 0">
-      <button class="act-btn speak-btn" data-id="prac-${s.id}" onclick="speak(${safeDE},'prac-${s.id}')" style="font-size:13px;padding:8px 18px" type="button">
-        ${ICO.speak} <span id="prac-speak-lbl">${P.revealed ? 'Listen' : 'Audio hint'}</span>
-      </button>
-    </div>
+    ${practiceSpeakButton(s, safeDE, P.revealed ? 'Listen' : 'Audio hint')}
     ${P.revealed ? `
       <div class="practice-btns">
         <button class="prac-again-btn" onclick="practiceAnswer(false)">Still learning</button>
-        <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it!</button>
+        <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it</button>
       </div>` : ''}
-    <div class="kbd-hint" style="margin-top:10px">
+    <div class="kbd-hint">
       <span class="kbd">Enter</span> check &nbsp;
       <span class="kbd">←</span> prev &nbsp;
       <span class="kbd">→</span> skip
@@ -2401,20 +2467,20 @@ function renderVocabPractice() {
   </div>
   <div class="practice-body">
     <div class="dir-choice-wrap">
-      <div class="dir-choice-title">Choose Vocab Direction</div>
+      <div class="dir-choice-title">Choose vocab direction</div>
       <div class="dir-choice-sub">Pick which side appears first.</div>
       <button class="dir-btn primary" onclick="setVocabPracticeDir('de2en')">
-        <span class="dir-btn-icon">🇩🇪</span>
+        <span class="dir-btn-icon">DE</span>
         <div>
           <div class="dir-btn-title">German → English</div>
           <div class="dir-btn-sub">See the German word, recall the meaning</div>
         </div>
       </button>
       <button class="dir-btn" onclick="setVocabPracticeDir('en2de')">
-        <span class="dir-btn-icon">🇬🇧</span>
+        <span class="dir-btn-icon">EN</span>
         <div>
-          <div class="dir-btn-title" style="color:var(--text)">English → German</div>
-          <div class="dir-btn-sub" style="color:var(--text-3)">See the meaning, recall the German word and article</div>
+          <div class="dir-btn-title">English → German</div>
+          <div class="dir-btn-sub">See the meaning, recall the German word and article</div>
         </div>
       </button>
     </div>
@@ -2430,15 +2496,13 @@ function renderVocabPractice() {
     const pct = answeredCount ? Math.round(strong / answeredCount * 100) : 0;
     const retryIds = idsArg(VP.queue.map(card => card.id));
     const missedIds = [...new Set(VP.missedIds)];
-    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startVocabPractice({ids:${idsArg(missedIds)},skipSessionFilter:true,dir:'${VP.dir}'})">Review Again</button>` : '';
-    const modeTag = VP.dir === 'en2de'
-      ? `<div style="font-size:11px;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:99px;display:inline-block;padding:3px 10px;margin-bottom:12px">🇬🇧 English → German</div>`
-      : `<div style="font-size:11px;color:var(--accent);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:99px;display:inline-block;padding:3px 10px;margin-bottom:12px">🇩🇪 German → English</div>`;
+    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startVocabPractice({ids:${idsArg(missedIds)},skipSessionFilter:true,dir:'${VP.dir}'})">Review again</button>` : '';
+    const modeTag = `<div class="prac-mode-tag">${VP.dir === 'en2de' ? 'English → German' : 'German → English'}</div>`;
     ov.innerHTML = `
-  <div class="practice-hdr"><span style="font-size:16px;font-weight:700;color:var(--text)">Vocab Practice Complete</span></div>
+  <div class="practice-hdr"><span class="practice-hdr-title">Vocab practice complete</span></div>
   <div class="practice-body">
     <div class="prac-summary">
-      <div class="prac-sum-icon">🗂️</div>
+      <div class="prac-sum-icon">${ICO.layers}</div>
       <div class="prac-sum-title">${pct >= 80 ? 'Strong recall' : pct >= 50 ? 'Good progress' : 'Keep reviewing'}</div>
       <div class="prac-sum-sub">You reviewed ${total} vocab card${total !== 1 ? 's' : ''}</div>
       ${modeTag}
@@ -2446,11 +2510,11 @@ function renderVocabPractice() {
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--red)">${VP.again}</div><div class="prac-sum-l">Again</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${VP.hard}</div><div class="prac-sum-l">Hard</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${VP.good}</div><div class="prac-sum-l">Good</div></div>
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--blue)">${VP.easy}</div><div class="prac-sum-l">Easy</div></div>
+        <div class="prac-sum-stat"><div class="prac-sum-n">${VP.easy}</div><div class="prac-sum-l">Easy</div></div>
       </div>
       <div class="prac-sum-actions">
         ${missedBtn}
-        <button class="prac-sum-retry" onclick="startVocabPractice({ids:${retryIds},isSRS:${VP.isSRS},dir:'${VP.dir}'})">Practice Again</button>
+        <button class="prac-sum-retry" onclick="startVocabPractice({ids:${retryIds},isSRS:${VP.isSRS},dir:'${VP.dir}'})">Practice again</button>
         <button class="prac-sum-done" onclick="closePractice()">Done</button>
       </div>
     </div>
@@ -2464,7 +2528,7 @@ function renderVocabPractice() {
   const total = VP.queue.length;
   const pct = Math.round(VP.idx / total * 100);
   const germanFront = VP.dir === 'de2en';
-  const dirLabel = germanFront ? '🇩🇪→🇬🇧' : '🇬🇧→🇩🇪';
+  const dirLabel = `<span class="prac-tag">${germanFront ? 'DE → EN' : 'EN → DE'}</span>`;
   const frontHtml = germanFront
     ? `<div class="practice-de vocab-practice-term" lang="de">${esc(vocabDisplay(card))}</div><div class="practice-ph">${esc(vocabMetaLabel(card))}</div>`
     : `<div class="practice-de vocab-practice-term">${esc(card.en)}</div><div class="practice-ph">Recall the German term${card.pos === 'noun' ? ', article, and gender' : ''}</div>`;
@@ -2491,7 +2555,7 @@ function renderVocabPractice() {
   </div>
   <div class="practice-body">
     <div class="practice-card vocab-practice-card">
-      ${topic ? `<div class="practice-topic-lbl">${topic.emoji} ${topic.name} - <span class="lvl-tag l${card.level}" style="display:inline">${card.level}</span></div>` : ''}
+      ${topic ? `<div class="practice-topic-lbl">${esc(topic.name)} <span class="lvl-tag l${card.level}">${card.level}</span></div>` : ''}
       ${frontHtml}
       ${VP.revealed ? `
         ${revealedHtml}
@@ -2608,23 +2672,23 @@ function renderFrequencyPractice() {
     const pct = answeredCount ? Math.round(strong / answeredCount * 100) : 0;
     const retryIds = idsArg(FP.queue.map(e => String(e.rank)));
     const missedIds = [...new Set(FP.missedIds)];
-    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(missedIds)},skipSessionFilter:true})">Review Again</button>` : '';
+    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(missedIds)},skipSessionFilter:true})">Review again</button>` : '';
     ov.innerHTML = `
-  <div class="practice-hdr"><span style="font-size:16px;font-weight:700;color:var(--text)">Frequency Practice Complete</span></div>
+  <div class="practice-hdr"><span class="practice-hdr-title">Frequency practice complete</span></div>
   <div class="practice-body">
     <div class="prac-summary">
-      <div class="prac-sum-icon">🔤</div>
+      <div class="prac-sum-icon">${ICO.vocab}</div>
       <div class="prac-sum-title">${pct >= 80 ? 'Strong recall' : pct >= 50 ? 'Good progress' : 'Keep reviewing'}</div>
       <div class="prac-sum-sub">You reviewed ${total} frequency card${total !== 1 ? 's' : ''}</div>
       <div class="prac-sum-stats vocab-sum-stats">
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--red)">${FP.again}</div><div class="prac-sum-l">Again</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${FP.hard}</div><div class="prac-sum-l">Hard</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${FP.good}</div><div class="prac-sum-l">Good</div></div>
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--blue)">${FP.easy}</div><div class="prac-sum-l">Easy</div></div>
+        <div class="prac-sum-stat"><div class="prac-sum-n">${FP.easy}</div><div class="prac-sum-l">Easy</div></div>
       </div>
       <div class="prac-sum-actions">
         ${missedBtn}
-        <button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${retryIds},isSRS:${FP.isSRS})">Practice Again</button>
+        <button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${retryIds},isSRS:${FP.isSRS})">Practice again</button>
         <button class="prac-sum-done" onclick="closePractice()">Done</button>
       </div>
     </div>
@@ -2755,24 +2819,23 @@ function renderPatternPractice() {
     const total = PP.queue.length;
     const answeredCount = Object.keys(PP.answered).length;
     const pct = answeredCount ? Math.round(PP.got / answeredCount * 100) : 0;
-    const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '💪';
-    const title = pct >= 80 ? 'Pattern master!' : pct >= 50 ? 'Good progress!' : 'Keep practicing!';
+    const title = pct >= 80 ? 'Pattern master' : pct >= 50 ? 'Good progress' : 'Keep practicing';
     const retryIds = JSON.stringify(PP.queue.map(p => p.id)).replace(/"/g, "'");
     ov.innerHTML = `
-  <div class="practice-hdr"><span style="font-size:16px;font-weight:700;color:var(--text)">Pattern Practice Complete</span></div>
+  <div class="practice-hdr"><span class="practice-hdr-title">Pattern practice complete</span></div>
   <div class="practice-body">
     <div class="prac-summary">
-      <div class="prac-sum-icon">${emoji}</div>
+      <div class="prac-sum-icon">${ICO.trophy}</div>
       <div class="prac-sum-title">${title}</div>
       <div class="prac-sum-sub">You reviewed ${total} pattern${total !== 1 ? 's' : ''}</div>
-      <div style="font-size:11px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:99px;display:inline-block;padding:3px 10px;margin-bottom:12px">🧩 Pattern Practice</div>
+      <div class="prac-mode-tag">Pattern practice</div>
       <div class="prac-sum-stats">
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${PP.got}</div><div class="prac-sum-l">Got it</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${PP.again}</div><div class="prac-sum-l">Still learning</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--text-3)">${PP.skipped}</div><div class="prac-sum-l">Skipped</div></div>
       </div>
       <div class="prac-sum-actions">
-        <button class="prac-sum-retry" style="background:var(--purple)" onclick="startPatternPractice({ids:${retryIds}})">Practice Again</button>
+        <button class="prac-sum-retry" onclick="startPatternPractice({ids:${retryIds}})">Practice again</button>
         <button class="prac-sum-done" onclick="closePractice()">Done</button>
       </div>
     </div>
@@ -2790,37 +2853,37 @@ function renderPatternPractice() {
   <div class="practice-hdr">
     <button class="practice-exit" onclick="closePractice()">Exit</button>
     <div class="practice-prog-wrap">
-      <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%;background:var(--purple)"></div></div>
-      <div class="practice-prog-lbl">${PP.idx + 1}/${total} · <span style="color:var(--purple)">🧩 Patterns</span> · Got ${PP.got} · Learning ${PP.again}</div>
+      <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
+      <div class="practice-prog-lbl">${PP.idx + 1}/${total} · <span class="prac-tag">Patterns</span> · Got ${PP.got} · Learning ${PP.again}</div>
     </div>
   </div>
   <div class="practice-body">
     <div class="practice-card">
-      ${cat ? `<div class="practice-topic-lbl">${cat.icon} ${cat.label}</div>` : ''}
-      <div style="font-size:14px;color:var(--text-3);margin-bottom:12px;font-style:italic">What German pattern would you use for this situation?</div>
-      <div style="font-size:17px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:10px;padding:14px;background:var(--bg);border-radius:10px;border-left:3px solid var(--purple-border)">${esc(p.meaning)}</div>
+      ${cat ? `<div class="practice-topic-lbl">${esc(cat.label)}</div>` : ''}
+      <div class="pat-prac-question">What German pattern would you use for this situation?</div>
+      <div class="pat-prac-meaning">${esc(p.meaning)}</div>
       ${PP.revealed
-        ? `<div style="padding-top:12px;border-top:1px solid var(--border)">
-	            <div style="font-size:22px;font-weight:800;color:var(--purple);margin-bottom:6px;letter-spacing:-0.3px" lang="de">${tpl}</div>
-	            <div style="font-size:13px;color:var(--text-2);margin-bottom:14px">${esc(p.meaning)}</div>
-	            <div style="font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Examples</div>
-	            <div style="display:flex;flex-direction:column;gap:6px">
-	              ${p.examples.map((e, ei) => `<div class="pat-ex"><div class="pat-de" lang="de"><button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(e.de)},'ppex-${p.id}-${ei}')" title="Listen" type="button">🔊</button> ${esc(e.de)}</div><div class="pat-en">${esc(e.en)}</div></div>`).join('')}
+        ? `<div class="practice-reveal-block">
+	            <div class="pat-prac-tpl" lang="de">${tpl}</div>
+	            <div class="pat-prac-sub">${esc(p.meaning)}</div>
+	            <div class="pat-prac-ex-lbl">Examples</div>
+	            <div class="pat-prac-ex-list">
+	              ${p.examples.map((e, ei) => `<div class="pat-ex"><div class="pat-de" lang="de"><button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(e.de)},'ppex-${p.id}-${ei}')" title="Listen" aria-label="Listen" type="button">${ICO.speak}</button> ${esc(e.de)}</div><div class="pat-en">${esc(e.en)}</div></div>`).join('')}
 	            </div>
 	          </div>`
-        : `<button class="practice-reveal-hint" onclick="patternPracticeReveal()" style="border-color:var(--purple-border);color:var(--purple)" type="button">Tap to reveal the pattern</button>`}
+        : `<button class="practice-reveal-hint" onclick="patternPracticeReveal()" type="button">Tap to reveal the pattern</button>`}
     </div>
     ${PP.revealed ? `
-      <div style="display:flex;justify-content:center;margin:10px 0">
-        <button class="act-btn speak-btn" data-id="pprac-${p.id}" onclick="speak(${safeDE},'pprac-${p.id}')" style="font-size:13px;padding:8px 18px" type="button">
+      <div class="practice-speak-row">
+        <button class="act-btn speak-btn" data-id="pprac-${p.id}" onclick="speak(${safeDE},'pprac-${p.id}')" type="button">
           ${ICO.speak} Listen to example
         </button>
       </div>
       <div class="practice-btns">
         <button class="prac-again-btn" onclick="patternPracticeAnswer(false)">Still learning</button>
-        <button class="prac-got-btn" onclick="patternPracticeAnswer(true)">Got it!</button>
+        <button class="prac-got-btn" onclick="patternPracticeAnswer(true)">Got it</button>
       </div>` : ''}
-    <div class="kbd-hint" style="margin-top:10px">
+    <div class="kbd-hint">
       <span class="kbd">Space</span> show/hide &nbsp;
       <span class="kbd">←</span> prev &nbsp;
       <span class="kbd">→</span> skip
@@ -3025,28 +3088,28 @@ function exportData() {
   modal.setAttribute('aria-label', 'Export Progress');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px';
   modal.innerHTML = `
-<div style="background:#fff;border-radius:16px;padding:22px;width:100%;max-width:500px;max-height:85vh;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
-  <div style="display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:16px;font-weight:700">📤 Export Progress</div>
-    <button onclick="document.getElementById('dd-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#A8A29E;line-height:1">×</button>
+<div class="data-modal">
+  <div class="data-modal-hdr">
+    <div class="data-modal-title">Export progress</div>
+    <button class="data-modal-close" onclick="document.getElementById('dd-modal').remove()" aria-label="Close">×</button>
   </div>
-  <div style="font-size:13px;color:#57534E">Download as a file <strong>or</strong> copy the JSON text to paste anywhere.</div>
-  <textarea id="export-ta" readonly style="flex:1;min-height:160px;font-family:monospace;font-size:11px;border:1px solid #E2DFD9;border-radius:8px;padding:10px;resize:none;color:#1C1917;background:#F4F2EE;outline:none"></textarea>
-  <div style="display:flex;gap:8px">
-    <button onclick="
+  <div class="data-modal-sub">Download as a file <strong>or</strong> copy the JSON text to paste anywhere.</div>
+  <textarea id="export-ta" class="data-modal-ta" readonly></textarea>
+  <div class="btn-row">
+    <button class="btn btn-primary" style="flex:1" onclick="
       const json = document.getElementById('export-ta').value;
       const blob = new Blob([json],{type:'application/json'});
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'deutschdaily-backup-${new Date().toISOString().slice(0, 10)}.json';
       a.click(); URL.revokeObjectURL(a.href);
-    " style="flex:1;background:#2563EB;color:white;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">💾 Download File</button>
-    <button id="copy-export-btn" onclick="
+    ">Download file</button>
+    <button id="copy-export-btn" class="btn btn-secondary" style="flex:1" onclick="
       const btn = document.getElementById('copy-export-btn');
       navigator.clipboard.writeText(document.getElementById('export-ta').value)
-        .then(()=>{ if(btn) btn.textContent='✅ Copied!'; setTimeout(()=>{ const b=document.getElementById('copy-export-btn'); if(b) b.textContent='📋 Copy Text'; },2000); })
-        .catch(()=>{ document.getElementById('export-ta').select(); document.execCommand('copy'); if(btn) btn.textContent='✅ Copied!'; setTimeout(()=>{ const b=document.getElementById('copy-export-btn'); if(b) b.textContent='📋 Copy Text'; },2000); });
-    " style="flex:1;background:#F4F2EE;border:1px solid #E2DFD9;border-radius:8px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">📋 Copy Text</button>
+        .then(()=>{ if(btn) btn.textContent='Copied'; setTimeout(()=>{ const b=document.getElementById('copy-export-btn'); if(b) b.textContent='Copy text'; },2000); })
+        .catch(()=>{ document.getElementById('export-ta').select(); document.execCommand('copy'); if(btn) btn.textContent='Copied'; setTimeout(()=>{ const b=document.getElementById('copy-export-btn'); if(b) b.textContent='Copy text'; },2000); });
+    ">Copy text</button>
   </div>
 </div>`;
   document.body.appendChild(modal);
@@ -3064,17 +3127,17 @@ function importData() {
   modal.setAttribute('aria-label', 'Import Progress');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px';
   modal.innerHTML = `
-<div style="background:#fff;border-radius:16px;padding:22px;width:100%;max-width:500px;max-height:85vh;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
-  <div style="display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:16px;font-weight:700">📥 Import Progress</div>
-    <button onclick="document.getElementById('dd-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#A8A29E;line-height:1">×</button>
+<div class="data-modal">
+  <div class="data-modal-hdr">
+    <div class="data-modal-title">Import progress</div>
+    <button class="data-modal-close" onclick="document.getElementById('dd-modal').remove()" aria-label="Close">×</button>
   </div>
-  <div style="font-size:13px;color:#57534E">Pick a backup file <strong>or</strong> paste JSON text directly below. Your current progress will be <strong>merged</strong> (not overwritten).</div>
-  <textarea id="import-ta" placeholder="Paste your backup JSON here..." style="flex:1;min-height:160px;font-family:monospace;font-size:11px;border:1px solid #E2DFD9;border-radius:8px;padding:10px;resize:none;color:#1C1917;background:#F4F2EE;outline:none"></textarea>
-  <div id="import-err" style="font-size:12px;color:#DC2626;display:none"></div>
-  <div style="display:flex;gap:8px">
-    <button onclick="document.getElementById('dd-file-input').click()" style="flex:1;background:#F4F2EE;border:1px solid #E2DFD9;border-radius:8px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">📂 Choose File</button>
-    <button onclick="applyImport(document.getElementById('import-ta').value)" style="flex:1;background:#2563EB;color:white;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">✅ Import</button>
+  <div class="data-modal-sub">Pick a backup file <strong>or</strong> paste JSON text directly below. Your current progress will be <strong>merged</strong> (not overwritten).</div>
+  <textarea id="import-ta" class="data-modal-ta" placeholder="Paste your backup JSON here..."></textarea>
+  <div id="import-err" class="data-modal-err"></div>
+  <div class="btn-row">
+    <button class="btn btn-secondary" style="flex:1" onclick="document.getElementById('dd-file-input').click()">Choose file</button>
+    <button class="btn btn-primary" style="flex:1" onclick="applyImport(document.getElementById('import-ta').value)">Import</button>
   </div>
   <input id="dd-file-input" type="file" accept=".json,application/json" style="display:none" onchange="
     const file = this.files[0]; if(!file) return;
@@ -3151,10 +3214,10 @@ function mergeGrammarScores(currentScores = {}, importedScores = {}) {
 function applyImport(text) {
   const errEl = document.getElementById('import-err');
   const show = msg => { if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; } };
-  if (!text.trim()) { show('❌ Nothing to import — paste or load a file first.'); return; }
+  if (!text.trim()) { show('Nothing to import — paste or load a file first.'); return; }
   let parsed;
-  try { parsed = JSON.parse(text); } catch (e) { show('❌ Invalid JSON. Make sure you copied the full text without changes.'); return; }
-  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.vocabLearned) && !Array.isArray(parsed.freqLearned) && !Array.isArray(parsed.grammarStudied) && !parsed.streak && !parsed.srs && !parsed.vocabSrs && !parsed.freqSrs && !parsed.grammarScores && !parsed.attempts && !parsed.vocabAttempts && !parsed.freqAttempts)) { show('❌ This doesn\'t look like a DeutschDaily backup file.'); return; }
+  try { parsed = JSON.parse(text); } catch (e) { show('Invalid JSON. Make sure you copied the full text without changes.'); return; }
+  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.vocabLearned) && !Array.isArray(parsed.freqLearned) && !Array.isArray(parsed.grammarStudied) && !parsed.streak && !parsed.srs && !parsed.vocabSrs && !parsed.freqSrs && !parsed.grammarScores && !parsed.attempts && !parsed.vocabAttempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
   const imported = normalizeDb(parsed);
   const current = dbToObj();
   const mergeHistoryWords = (a, b) => {
@@ -3206,7 +3269,7 @@ function applyImport(text) {
   // Show success toast
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#16A34A;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
-  toast.textContent = `✅ Imported! ${merged.learned.length} sentences · ${merged.vocabLearned.length} vocab · ${merged.freqLearned.length} frequency words · ${merged.grammarStudied.length} grammar topics`;
+  toast.textContent = `Imported ${merged.learned.length} sentences · ${merged.vocabLearned.length} vocab · ${merged.freqLearned.length} frequency words · ${merged.grammarStudied.length} grammar topics`;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
@@ -3337,7 +3400,7 @@ function historyRecentMissedPatternIds(daysBack = 14, limit = 8) {
 function historyTopicPills(topTopics, max = 3) {
   const topics = topTopics.slice(0, max);
   if (!topics.length) return '';
-  return `<div class="history-topic-pills">${topics.map(({ topic, count }) => `<span class="history-topic-pill" style="--topic-color:${esc(topic.color)}">${topic.emoji} ${esc(topic.name)}${count > 1 ? ` ${count}` : ''}</span>`).join('')}</div>`;
+  return `<div class="history-topic-pills">${topics.map(({ topic, count }) => `<span class="history-topic-pill" style="--topic-color:${esc(topic.color)}">${esc(topic.name)}${count > 1 ? ` ${count}` : ''}</span>`).join('')}</div>`;
 }
 
 function renderHistoryStat(label, value, sub, color = 'var(--text)') {
@@ -3418,7 +3481,7 @@ function renderHistoryTopicFocus(days) {
   return `<div class="history-panel">
     <div class="history-panel-title"><strong>Recent focus</strong><span>Topics touched in the last 30 days</span></div>
     ${rows.map(r => `<div class="history-topic-row">
-      <div class="history-topic-label">${r.topic.emoji} ${esc(r.topic.name)}</div>
+      <div class="history-topic-label">${esc(r.topic.name)}</div>
       <div class="history-topic-bar"><div class="history-topic-fill" style="--topic-color:${esc(r.topic.color)};width:${Math.max(8, Math.round(r.count / max * 100))}%"></div></div>
       <div class="history-topic-count">${r.count}</div>
     </div>`).join('')}
@@ -3551,8 +3614,8 @@ function renderProgress() {
     <h2 class="page-title">Progress</h2>
     <p class="page-sub">Stats, streaks, and your day-by-day learning history in one place</p>
     <div class="progress-tabs" role="tablist" aria-label="Progress sections">
-      <button class="progress-tab${tab === 'overview' ? ' on' : ''}" role="tab" aria-selected="${tab === 'overview'}" onclick="setProgressTab('overview')" type="button">📊 Overview</button>
-      <button class="progress-tab${tab === 'activity' ? ' on' : ''}" role="tab" aria-selected="${tab === 'activity'}" onclick="setProgressTab('activity')" type="button">🗓️ Activity</button>
+      <button class="progress-tab${tab === 'overview' ? ' on' : ''}" role="tab" aria-selected="${tab === 'overview'}" onclick="setProgressTab('overview')" type="button">Overview</button>
+      <button class="progress-tab${tab === 'activity' ? ' on' : ''}" role="tab" aria-selected="${tab === 'activity'}" onclick="setProgressTab('activity')" type="button">Activity</button>
     </div>
     ${tab === 'activity' ? renderProgressActivity() : renderProgressOverview()}
   </div>`;
@@ -3583,7 +3646,7 @@ function renderProgressActivity() {
     ${renderHistoryHeatmap(days)}
     ${renderHistoryTopicFocus(days)}
     <div class="history-section-label"><span>Recent activity</span><span>${activeDays} active day${activeDays !== 1 ? 's' : ''}</span></div>
-    ${timelineDays.length ? timelineDays.map(renderHistoryDayRow).join('') : '<div class="empty-state"><div class="empty-icon">🗓️</div>No history yet.<br><span style="font-size:13px">Complete practice or mark sentences learned to fill this tab.</span></div>'}
+    ${timelineDays.length ? timelineDays.map(renderHistoryDayRow).join('') : `<div class="empty-state"><div class="empty-icon">${ICO.calendar}</div>No history yet.<br><span class="empty-sub">Complete practice or mark sentences learned to fill this tab.</span></div>`}
   </div>`;
 }
 
@@ -3618,7 +3681,7 @@ function renderHistoryDay() {
   if (!hasActivity) {
     return `<button class="back-btn" onclick="backToActivity()">← Progress</button>
       ${hero}
-      <div class="empty-state"><div class="empty-icon">📭</div>No activity recorded for this day.</div>`;
+      <div class="empty-state"><div class="empty-icon">${ICO.inbox}</div>No activity recorded for this day.</div>`;
   }
 
   return `<button class="back-btn" onclick="backToActivity()">← Progress</button>
@@ -3633,6 +3696,15 @@ if (window.addEventListener) {
   window.addEventListener('popstate', () => { applyUrlState(); render(); });
 }
 
+// Static chrome (sidebar, header, mobile nav) declares icons via data-icon.
+function hydrateIcons(scope = document) {
+  scope.querySelectorAll('[data-icon]').forEach(el => {
+    const markup = ICO[el.dataset.icon];
+    if (markup) el.innerHTML = markup;
+  });
+}
+
 if (!window.__DD_SKIP_AUTO_INIT) {
+  hydrateIcons();
   load().then(() => { applyUrlState(); commitState({ replace: true }); });
 }
