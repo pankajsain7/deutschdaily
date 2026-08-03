@@ -227,9 +227,12 @@ function render() {
 }
 
 function updateHeader() {
-  const tot = SENTENCES.length, done = DB.learned.size, pct = tot ? Math.round(done / tot * 100) : 0;
+  const showVocab = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'vocab';
+  const tot = showVocab ? (typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length) : SENTENCES.length;
+  const done = showVocab ? DB.freqLearned.size : DB.learned.size;
+  const pct = tot ? Math.round(done / tot * 100) : 0;
   document.getElementById('hpf').style.width = pct + '%';
-  document.getElementById('hpl').textContent = `${done} / ${tot} sentences learned`;
+  document.getElementById('hpl').textContent = `${done} / ${tot} ${showVocab ? 'vocab' : 'sentences'} learned`;
   document.getElementById('stk-n').textContent = DB.streak;
 }
 function updateNavBtns() {
@@ -254,7 +257,10 @@ function updateNavBtns() {
   const mProgBtn = document.getElementById('mnb-progress');
   if (mProgBtn) mProgBtn.className = 'mnb' + (progressActive ? ' on' : '');
   const sc = document.getElementById('sb-learned-count');
-  if (sc) sc.textContent = DB.learned.size;
+  const scLbl = document.getElementById('sb-learned-lbl');
+  const showVocabStat = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'vocab';
+  if (sc) sc.textContent = showVocabStat ? DB.freqLearned.size : DB.learned.size;
+  if (scLbl) scLbl.textContent = showVocabStat ? 'vocab learned' : 'sentences learned';
 }
 
 // ─── KURSPLAN ─────────────────────────────────
