@@ -1352,7 +1352,7 @@ function renderSaved() {
 </div>` : '';
   const reviewSection = showSentences ? sentenceReviewSection : frequencyReviewSection;
 
-  if (V.libTab === 'learned') return renderLearnedTab(`${tabs}${typeToggle}`, showSentences ? learnedSents : [], showSentences ? [] : learnedFreq);
+  if (V.libTab === 'learned') return renderLearnedTab(`${tabs}${typeToggle}`, showSentences ? learnedSents : [], showSentences ? [] : learnedFreq, showSentences);
   if (!savedCount) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">⭐</div>No saved ${showSentences ? 'sentences' : 'vocabulary'} yet.<br><span style="font-size:13px">Tap Save on any ${showSentences ? 'sentence' : 'vocabulary'} card.</span></div></div>`;
   const favIds = JSON.stringify(favSents.map(s => s.id)).replace(/"/g, "'");
   const favFreqIds = idsArg(favFreq.map(entry => String(entry.rank)));
@@ -1376,21 +1376,21 @@ ${favFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}` : '';
 ${showSentences ? sentenceSection : frequencySection}</div>`;
 }
 
-function renderLearnedTab(tabs, learnedSents, learnedFreq) {
+function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
   if (!learnedSents.length && !learnedFreq.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">📗</div>No learned items yet.<br><span style="font-size:13px">Mark a sentence or vocabulary card learned to track it here.</span></div></div>`;
 
-  // SRS due sentences
-  const dueIds = getSrsReviewIds();
+  // SRS due sentences (filtered to the currently selected library type)
+  const dueIds = showSentences ? getSrsReviewIds() : [];
   const dueSents = dueIds.map(id => SENTENCES.find(s => s.id === id)).filter(Boolean);
-  const dueFreqIds = getFreqReviewIds();
+  const dueFreqIds = showSentences ? [] : getFreqReviewIds();
   const dueFreq = dueFreqIds.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
 
   // Sentences reviewed today (practiced via SRS today, now scheduled for future)
   const td = todayISO();
-  const reviewedTodaySents = learnedSents.filter(s => {
+  const reviewedTodaySents = showSentences ? learnedSents.filter(s => {
     const srs = DB.srs[s.id];
     return srs && srs.lastReview === td && !dueIds.includes(s.id);
-  });
+  }) : [];
 
   const dueIdsJson = JSON.stringify(dueSents.map(s => s.id)).replace(/"/g, "'");
   const dueFreqIdsJson = idsArg(dueFreqIds);
