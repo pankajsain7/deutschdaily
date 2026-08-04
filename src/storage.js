@@ -47,8 +47,6 @@ let DB = {
   freqDailyQueue: [],
   freqDailyQueueDate: null,
   freqDailyQueueDone: new Set(),
-  grammarStudied: new Set(),
-  grammarScores: {},
   attempts: [],
   patternAttempts: [],
   settings: { ...DEFAULT_SETTINGS },
@@ -57,7 +55,6 @@ let DB = {
 function validSentenceIdSet() { return new Set(SENTENCES.map(s => s.id)); }
 function validPatternIdSet() { return new Set(PATTERNS.map(p => p.id)); }
 function validVocabIdSet() { return new Set(VOCAB_CARDS.map(v => v.id)); }
-function validGrammarLessonIdSet() { return new Set(); }
 function validFrequencyRankSet() { return new Set(Array.from({ length: FREQUENCY_DICTIONARY_SIZE }, (_, index) => String(index + 1))); }
 
 function dateKey(date = new Date()) {
@@ -101,9 +98,10 @@ function clampNumber(v, min, max, fallback) {
 function uniqueValidIds(value, validIds) {
   if (!Array.isArray(value)) return [];
   const out = [];
+  const seen = new Set();
   value.forEach(id => {
     const sid = String(id);
-    if (validIds.has(sid) && !out.includes(sid)) out.push(sid);
+    if (validIds.has(sid) && !seen.has(sid)) { seen.add(sid); out.push(sid); }
   });
   return out;
 }
@@ -164,7 +162,7 @@ function normalizeAttemptDirection(direction) {
 }
 function normalizeAttempts(value, validIds) {
   if (!Array.isArray(value)) return [];
-  return value.slice(-1000).map(raw => {
+  return value.map(raw => {
     if (!raw || typeof raw !== 'object' || !validIds.has(String(raw.id))) return null;
     const direction = normalizeAttemptDirection(raw.direction);
     return {
@@ -179,11 +177,11 @@ function normalizeAttempts(value, validIds) {
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
     };
-  }).filter(Boolean);
+  }).filter(Boolean).slice(-1000);
 }
 function normalizePatternAttempts(value, validIds) {
   if (!Array.isArray(value)) return [];
-  return value.slice(-1000).map(raw => {
+  return value.map(raw => {
     if (!raw || typeof raw !== 'object' || !validIds.has(String(raw.id))) return null;
     return {
       id: String(raw.id),
@@ -193,11 +191,11 @@ function normalizePatternAttempts(value, validIds) {
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
     };
-  }).filter(Boolean);
+  }).filter(Boolean).slice(-1000);
 }
 function normalizeVocabAttempts(value, validIds) {
   if (!Array.isArray(value)) return [];
-  return value.slice(-1000).map(raw => {
+  return value.map(raw => {
     if (!raw || typeof raw !== 'object' || !validIds.has(String(raw.id))) return null;
     return {
       id: String(raw.id),
@@ -207,11 +205,11 @@ function normalizeVocabAttempts(value, validIds) {
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
     };
-  }).filter(Boolean);
+  }).filter(Boolean).slice(-1000);
 }
 function normalizeFrequencyAttempts(value, validIds) {
   if (!Array.isArray(value)) return [];
-  return value.slice(-1000).map(raw => {
+  return value.map(raw => {
     if (!raw || typeof raw !== 'object' || !validIds.has(String(raw.id))) return null;
     return {
       id: String(raw.id),
@@ -221,23 +219,7 @@ function normalizeFrequencyAttempts(value, validIds) {
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
     };
-  }).filter(Boolean);
-}
-function normalizeGrammarScores(value, validIds) {
-  const out = {};
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return out;
-  Object.entries(value).forEach(([id, raw]) => {
-    if (!validIds.has(id) || !raw || typeof raw !== 'object' || Array.isArray(raw)) return;
-    const total = clampNumber(raw.total, 0, 100, 0);
-    if (!total) return;
-    out[id] = {
-      correct: clampNumber(raw.correct, 0, total, 0),
-      total,
-      attempts: clampNumber(raw.attempts, 1, 9999, 1),
-      updatedAt: normalizeDateKey(raw.updatedAt) || today(),
-    };
-  });
-  return out;
+  }).filter(Boolean).slice(-1000);
 }
 function normalizeSettings(value) {
   return {
@@ -248,7 +230,6 @@ function normalizeDb(raw = {}) {
   const validSentenceIds = validSentenceIdSet();
   const validPatternIds = validPatternIdSet();
   const validVocabIds = validVocabIdSet();
-  const validGrammarLessonIds = validGrammarLessonIdSet();
   const validFreqIds = validFrequencyRankSet();
   const safe = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
   const learned = uniqueValidIds(safe.learned, validSentenceIds);
@@ -257,14 +238,17 @@ function normalizeDb(raw = {}) {
   const vocabDailyQueueDate = normalizeDateKey(safe.vocabDailyQueueDate);
   const freqDailyQueueDate = normalizeDateKey(safe.freqDailyQueueDate);
 
-  learned.forEach(id => {
-    const alreadyTracked = Object.values(historyWords).some(ids => ids.includes(id));
-    const fallbackKey = normalizeDateKey(safe.lastStudy);
-    if (!alreadyTracked && fallbackKey) {
+  const fallbackKey = normalizeDateKey(safe.lastStudy);
+  if (fallbackKey) {
+    const trackedIds = new Set();
+    Object.values(historyWords).forEach(ids => ids.forEach(id => trackedIds.add(id)));
+    learned.forEach(id => {
+      if (trackedIds.has(id)) return;
       if (!historyWords[fallbackKey]) historyWords[fallbackKey] = [];
       historyWords[fallbackKey].push(id);
-    }
-  });
+      trackedIds.add(id);
+    });
+  }
 
   const history = normalizeHistory(safe.history);
   Object.entries(historyWords).forEach(([key, ids]) => { history[key] = ids.length; });
@@ -303,8 +287,6 @@ function normalizeDb(raw = {}) {
     freqDailyQueue: uniqueValidIds(safe.freqDailyQueue, validFreqIds),
     freqDailyQueueDate,
     freqDailyQueueDone: new Set(freqDailyQueueDate === todayK ? uniqueValidIds(safe.freqDailyQueueDone, validFreqIds) : []),
-    grammarStudied: new Set(uniqueValidIds(safe.grammarStudied, validGrammarLessonIds)),
-    grammarScores: normalizeGrammarScores(safe.grammarScores, validGrammarLessonIds),
     attempts: normalizeAttempts(safe.attempts, validSentenceIds),
     patternAttempts: normalizePatternAttempts(safe.patternAttempts, validPatternIds),
     settings: normalizeSettings(safe.settings),
@@ -368,8 +350,6 @@ function dbToObj() {
     freqDailyQueue: DB.freqDailyQueue,
     freqDailyQueueDate: DB.freqDailyQueueDate,
     freqDailyQueueDone: [...DB.freqDailyQueueDone],
-    grammarStudied: [...DB.grammarStudied],
-    grammarScores: DB.grammarScores,
     attempts: DB.attempts,
     patternAttempts: DB.patternAttempts,
     settings: DB.settings,
@@ -475,10 +455,19 @@ async function load() {
 
 function save() {
   const json = JSON.stringify(dbToObj());
+  let primarySaved = true;
+  let backupSaved = true;
   try { localStorage.setItem(SKEY, json); }
-  catch (e) { DB.storageError = 'Progress could not be saved locally. Export a backup before closing the browser.'; }
-  try { localStorage.setItem(SKEY_BACKUP, backupExportJson(true)); }
-  catch (e) { }
+  catch (e) {
+    primarySaved = false;
+    DB.storageError = 'Progress could not be saved locally. Export a backup before closing the browser.';
+  }
+  try { localStorage.setItem(SKEY_BACKUP, backupExportJson(false)); }
+  catch (e) {
+    backupSaved = false;
+    if (primarySaved) DB.storageError = 'Browser storage is nearly full, so the backup copy could not be updated. Export a backup file.';
+  }
+  if (primarySaved && backupSaved) delete DB.storageError;
   try { if (window.storage) window.storage.set(SKEY, json); }
   catch (e) { }
 }
@@ -660,9 +649,6 @@ function recordVocabAttempt({ id, result, intervalBefore = 0, intervalAfter = 0,
   DB.vocabAttempts.push({ id, date: today(), result, wasDue, intervalBefore, intervalAfter });
   if (DB.vocabAttempts.length > 1000) DB.vocabAttempts = DB.vocabAttempts.slice(-1000);
 }
-function setGrammarStudied() { return false; }
-function recordGrammarScore() { return false; }
-
 function blankVocabSrsState() {
   return { interval: 0, ease: 2.5, level: 0, nextReview: null, lastReview: null };
 }

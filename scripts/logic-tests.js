@@ -20,6 +20,7 @@ const source = [
     normalizeDb,
     objToDB,
     dbToObj,
+    save,
     today,
     todayISO,
     addDaysISO,
@@ -46,6 +47,8 @@ const source = [
     normalizePatternFilter,
     renderRevealDetails,
     applyImport,
+    mergeAttempts,
+    mergeSrsMaps,
     validFrequencyRankSet,
     getHistoryDaySummary,
     renderProgressOverview,
@@ -69,6 +72,7 @@ const source = [
 ].join('\n');
 
 const store = {};
+let failingStorageKey = null;
 function makeElement() {
   return {
     style: {},
@@ -152,7 +156,10 @@ const sandbox = {
   },
   localStorage: {
     getItem: key => Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null,
-    setItem: (key, value) => { store[key] = value; },
+    setItem: (key, value) => {
+      if (key === failingStorageKey) throw new Error('QuotaExceededError');
+      store[key] = value;
+    },
   },
 };
 
@@ -295,8 +302,6 @@ reset({
   freqFavorites: ['11'],
   freqSrs: { '10': { interval: 3, ease: 2.5, level: 1, nextReview: t.addDaysISO(3), lastReview: t.today() } },
   freqAttempts: [{ id: '10', date: t.today(), result: 'good', intervalBefore: 0, intervalAfter: 3 }],
-  grammarStudied: ['a1-word-position'],
-  grammarScores: { 'a1-word-position': { correct: 5, total: 6, attempts: 1, updatedAt: t.today() } },
 });
 t.applyImport(JSON.stringify({
   vocabLearned: ['vb012'],
@@ -307,8 +312,6 @@ t.applyImport(JSON.stringify({
   freqFavorites: ['13'],
   freqSrs: { '12': { interval: 5, ease: 2.5, level: 1, nextReview: t.addDaysISO(5), lastReview: t.today() } },
   freqAttempts: [{ id: '12', date: t.today(), result: 'easy', intervalBefore: 0, intervalAfter: 5 }],
-  grammarStudied: ['a2-comparative-form'],
-  grammarScores: { 'a2-comparative-form': { correct: 6, total: 6, attempts: 1, updatedAt: t.today() } },
 }));
 assert(t.DB().vocabLearned.has('vb010') && t.DB().vocabLearned.has('vb012'), 'import merges vocab learned IDs');
 assert(t.DB().vocabFavorites.has('vb011') && t.DB().vocabFavorites.has('vb013'), 'import merges vocab favorites');
@@ -318,6 +321,13 @@ assert(t.DB().freqLearned.has('10') && t.DB().freqLearned.has('12'), 'import mer
 assert(t.DB().freqFavorites.has('11') && t.DB().freqFavorites.has('13'), 'import merges frequency favorites');
 assert(t.DB().freqSrs['10'] && t.DB().freqSrs['12'], 'import merges frequency SRS maps');
 assert(t.DB().freqAttempts.some(a => a.id === '12'), 'import merges frequency attempts');
+
+reset({
+  grammarStudied: ['legacy-grammar-topic'],
+  grammarScores: { 'legacy-grammar-topic': { correct: 1, total: 1 } },
+});
+assert.strictEqual(Object.prototype.hasOwnProperty.call(t.dbToObj(), 'grammarStudied'), false, 'legacy grammar topics are not exported');
+assert.strictEqual(Object.prototype.hasOwnProperty.call(t.dbToObj(), 'grammarScores'), false, 'legacy grammar scores are not exported');
 
 reset({ settings: { externalTts: false } });
 assert.strictEqual(t.DB().settings.externalTts, true, 'external TTS stays enabled after normalizing old settings');
@@ -330,6 +340,25 @@ reset({
   attempts: [{ id: 'un1', date: t.today(), mode: 'practice', direction: 'type', result: 'got' }],
 });
 assert.strictEqual(t.DB().attempts[0].direction, 'type', 'typed practice direction survives normalization');
+
+reset({
+  attempts: [
+    { id: 'un1', date: t.today(), mode: 'practice', direction: 'de2en', result: 'got' },
+    ...Array.from({ length: 1000 }, () => ({ id: 'deleted-id', date: t.today(), result: 'got' })),
+  ],
+});
+assert.strictEqual(t.DB().attempts.length, 1, 'attempt cap is applied after invalid IDs are removed');
+
+const sameDayCurrent = Array.from({ length: 600 }, (_, index) => ({ id: `current-${index}`, date: t.today(), result: 'got', intervalBefore: index }));
+const sameDayImported = Array.from({ length: 600 }, (_, index) => ({ id: `imported-${index}`, date: t.today(), result: 'got', intervalBefore: index }));
+const mergedForwardIds = t.mergeAttempts(sameDayCurrent, sameDayImported).map(attempt => attempt.id);
+const mergedReverseIds = t.mergeAttempts(sameDayImported, sameDayCurrent).map(attempt => attempt.id);
+assert.strictEqual(JSON.stringify(mergedForwardIds), JSON.stringify(mergedReverseIds), 'attempt cap is independent of import direction when dates tie');
+
+const sameDayShortSrs = { interval: 3, ease: 2.3, level: 1, nextReview: t.addDaysISO(3), lastReview: t.today() };
+const sameDayLongSrs = { interval: 8, ease: 2.5, level: 2, nextReview: t.addDaysISO(8), lastReview: t.today() };
+assert.strictEqual(t.mergeSrsMaps({ un1: sameDayShortSrs }, { un1: sameDayLongSrs }).un1.interval, 8, 'same-day SRS merge keeps the more advanced state');
+assert.strictEqual(t.mergeSrsMaps({ un1: sameDayLongSrs }, { un1: sameDayShortSrs }).un1.interval, 8, 'same-day SRS merge is independent of import direction');
 
 reset({
   patternSrs: { would_possible: { interval: 1, ease: 2.5, level: 0, nextReview: t.today(), lastReview: t.today() } },
@@ -360,6 +389,33 @@ t.load();
 assert(t.DB().learned.has('un1'), 'valid legacy progress is recovered when current progress is corrupt');
 assert.strictEqual(store.dd_v4, '{bad json', 'recovering from legacy progress must not overwrite corrupt current progress');
 assert(store.dd_v4_recovery && store.dd_v4_recovery.includes('{bad json'), 'recovered corrupt current progress keeps a raw recovery copy');
+
+clearStore();
+store.dd_v4 = '{bad json';
+store.dd_v4_backup = JSON.stringify({ learned: ['un2'], lastStudy: '2026-05-03' });
+t.objToDB({});
+t.load();
+assert(t.DB().learned.has('un2'), 'valid backup mirror is recovered when current progress is corrupt');
+assert.strictEqual(store.dd_v4, '{bad json', 'mirror recovery does not overwrite corrupt current progress');
+
+clearStore();
+reset({ learned: ['un1'] });
+t.save();
+assert(store.dd_v4 && store.dd_v4_backup, 'save writes primary and backup progress');
+assert(!store.dd_v4_backup.includes('\n'), 'local backup mirror is stored compactly');
+failingStorageKey = 'dd_v4_backup';
+t.save();
+assert(t.DB().storageError && t.DB().storageError.includes('backup copy'), 'backup quota failure is visible to the user');
+failingStorageKey = null;
+t.save();
+assert.strictEqual(t.DB().storageError, undefined, 'storage warning clears after primary and backup save successfully');
+
+clearStore();
+reset({});
+const persistedCard = t.SENTENCES.find(sentence => sentence.id === 'un1');
+t.setPracticeState({ active: true, queue: [persistedCard], idx: 0, revealed: true, got: 0, again: 0, skipped: 0, isSRS: false, dir: 'de2en', dirChoice: false, answered: {}, missedIds: [], typedFeedback: null });
+t.practiceAnswer(true);
+assert.strictEqual(JSON.parse(store.dd_v4).attempts.length, 1, 'practice activity is persisted to primary storage');
 
 
 const browseState = t.stateFromUrl('http://localhost/DEDaily.html?view=browse&topic=health&filter=unlearned');

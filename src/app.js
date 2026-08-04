@@ -1373,9 +1373,6 @@ ${informal ? `<div class="pat-informal">
   <button class="act-btn speak-btn" data-id="p${p.id}" onclick="speak(${jsArg(p.examples[0].de)},'p${p.id}')" type="button">
     ${ICO.speak} Listen
   </button>
-  <button class="act-btn" onclick="startPatternPractice({ids:['${p.id}']})" type="button">
-    ${ICO.target} Practice
-  </button>
 </div>
   </div>`;
 }
@@ -2950,16 +2947,6 @@ document.addEventListener('keydown', e => {
 
   const isSpace = e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar' || e.keyCode === 32;
 
-  // Grammar quiz keyboard shortcuts
-  if (typeof GQ !== 'undefined' && GQ.lessonId && !GQ.complete && GQ.questions.length) {
-    const question = GQ.questions[GQ.index];
-    if (GQ.selected === null && ['1', '2', '3', '4'].includes(e.key)) {
-      const idx = Number(e.key) - 1;
-      if (idx < question.options.length) { e.preventDefault(); answerGrammarExercise(idx); return; }
-    }
-    if (GQ.selected !== null && (e.key === 'Enter' || e.code === 'ArrowRight')) { e.preventDefault(); nextGrammarExercise(); return; }
-  }
-
   // Pattern practice keyboard shortcuts
   if (PP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
@@ -3165,6 +3152,16 @@ function srsDateRank(card) {
   return normalizeDateKey(card.lastReview) || normalizeDateKey(card.nextReview) || '';
 }
 
+function compareSrsCards(a, b) {
+  const dateComparison = srsDateRank(a).localeCompare(srsDateRank(b));
+  if (dateComparison) return dateComparison;
+  const nextReviewComparison = String(normalizeDateKey(a.nextReview) || '').localeCompare(String(normalizeDateKey(b.nextReview) || ''));
+  if (nextReviewComparison) return nextReviewComparison;
+  return (Number(a.interval) || 0) - (Number(b.interval) || 0)
+    || (Number(a.level) || 0) - (Number(b.level) || 0)
+    || (Number(a.ease) || 0) - (Number(b.ease) || 0);
+}
+
 function mergeSrsMaps(currentMap = {}, importedMap = {}) {
   const merged = {};
   [...new Set([...Object.keys(importedMap || {}), ...Object.keys(currentMap || {})])].forEach(id => {
@@ -3172,7 +3169,7 @@ function mergeSrsMaps(currentMap = {}, importedMap = {}) {
     const imported = importedMap[id];
     if (!current) merged[id] = imported;
     else if (!imported) merged[id] = current;
-    else merged[id] = srsDateRank(imported) > srsDateRank(current) ? imported : current;
+    else merged[id] = compareSrsCards(imported, current) > 0 ? imported : current;
   });
   return merged;
 }
@@ -3193,24 +3190,10 @@ function mergeAttempts(currentAttempts = [], importedAttempts = []) {
     ].join('|');
     byKey.set(key, a);
   });
-  return [...byKey.values()].slice(-1000);
-}
-
-function mergeGrammarScores(currentScores = {}, importedScores = {}) {
-  const merged = {};
-  [...new Set([...Object.keys(importedScores || {}), ...Object.keys(currentScores || {})])].forEach(id => {
-    const current = currentScores[id];
-    const imported = importedScores[id];
-    if (!current) merged[id] = imported;
-    else if (!imported) merged[id] = current;
-    else {
-      const currentRate = current.total ? current.correct / current.total : 0;
-      const importedRate = imported.total ? imported.correct / imported.total : 0;
-      const best = currentRate >= importedRate ? current : imported;
-      merged[id] = { ...best, attempts: (current.attempts || 0) + (imported.attempts || 0) };
-    }
-  });
-  return merged;
+  return [...byKey.entries()]
+    .sort(([aKey, a], [bKey, b]) => String(a.date || '').localeCompare(String(b.date || '')) || aKey.localeCompare(bKey))
+    .slice(-1000)
+    .map(([, attempt]) => attempt);
 }
 
 function applyImport(text) {
@@ -3219,7 +3202,7 @@ function applyImport(text) {
   if (!text.trim()) { show('Nothing to import — paste or load a file first.'); return; }
   let parsed;
   try { parsed = JSON.parse(text); } catch (e) { show('Invalid JSON. Make sure you copied the full text without changes.'); return; }
-  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.vocabLearned) && !Array.isArray(parsed.freqLearned) && !Array.isArray(parsed.grammarStudied) && !parsed.streak && !parsed.srs && !parsed.vocabSrs && !parsed.freqSrs && !parsed.grammarScores && !parsed.attempts && !parsed.vocabAttempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
+  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.vocabLearned) && !Array.isArray(parsed.freqLearned) && !parsed.streak && !parsed.srs && !parsed.vocabSrs && !parsed.freqSrs && !parsed.attempts && !parsed.vocabAttempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
   const imported = normalizeDb(parsed);
   const current = dbToObj();
   const mergeHistoryWords = (a, b) => {
@@ -3258,8 +3241,6 @@ function applyImport(text) {
     freqDailyQueue: DB.freqDailyQueue,
     freqDailyQueueDate: DB.freqDailyQueueDate,
     freqDailyQueueDone: [...new Set([...current.freqDailyQueueDone, ...imported.freqDailyQueueDone])],
-    grammarStudied: [...new Set([...current.grammarStudied, ...imported.grammarStudied])],
-    grammarScores: mergeGrammarScores(current.grammarScores, imported.grammarScores),
     attempts: mergeAttempts(current.attempts, imported.attempts),
     patternAttempts: mergeAttempts(current.patternAttempts, imported.patternAttempts),
     settings: current.settings,
@@ -3271,7 +3252,7 @@ function applyImport(text) {
   // Show success toast
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#16A34A;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
-  toast.textContent = `Imported ${merged.learned.length} sentences · ${merged.vocabLearned.length} vocab · ${merged.freqLearned.length} frequency words · ${merged.grammarStudied.length} grammar topics`;
+  toast.textContent = `Imported ${merged.learned.length} sentences · ${merged.vocabLearned.length} vocab · ${merged.freqLearned.length} frequency words`;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
