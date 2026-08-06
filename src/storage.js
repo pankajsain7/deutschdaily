@@ -25,7 +25,6 @@ let DB = {
   dailyGoal: 10,
   dailyQueue: [],
   dailyQueueDate: null,
-  dailyLearned: new Set(),
   dailyQueueDone: new Set(),
   history: {},
   historyWords: {},
@@ -234,7 +233,6 @@ function normalizeDb(raw = {}) {
   const safe = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
   const learned = uniqueValidIds(safe.learned, validSentenceIds);
   const historyWords = normalizeHistoryWords(safe.historyWords, validSentenceIds);
-  const dailyLearned = uniqueValidIds(safe.dailyLearned, validSentenceIds);
   const vocabDailyQueueDate = normalizeDateKey(safe.vocabDailyQueueDate);
   const freqDailyQueueDate = normalizeDateKey(safe.freqDailyQueueDate);
 
@@ -265,7 +263,6 @@ function normalizeDb(raw = {}) {
     dailyGoal: clampNumber(safe.dailyGoal, 1, 50, 10),
     dailyQueue: uniqueValidIds(safe.dailyQueue, validSentenceIds),
     dailyQueueDate,
-    dailyLearned: new Set(dailyQueueDate === todayK ? [...new Set([...dailyLearned, ...(historyWords[todayK] || [])])] : []),
     dailyQueueDone: new Set(dailyQueueDate === todayK ? uniqueValidIds(safe.dailyQueueDone, validSentenceIds) : []),
     history,
     historyWords,
@@ -328,7 +325,6 @@ function dbToObj() {
     dailyGoal: DB.dailyGoal,
     dailyQueue: DB.dailyQueue,
     dailyQueueDate: DB.dailyQueueDate,
-    dailyLearned: [...DB.dailyLearned],
     dailyQueueDone: [...DB.dailyQueueDone],
     history: DB.history,
     historyWords: DB.historyWords,
@@ -544,10 +540,6 @@ function srsSchedule(id, gotIt) {
   save();
   return { intervalBefore: before, intervalAfter: card.interval, wasDue };
 }
-function beforeDue(id) {
-  const srs = DB.srs[id];
-  return Boolean(srs && srs.nextReview && srs.nextReview <= today());
-}
 function schedulePattern(id, gotIt) {
   const isNew = !DB.patternSrs[id];
   if (isNew) DB.patternSrs[id] = { interval: 0, ease: 2.5, level: 0, nextReview: null, lastReview: null };
@@ -601,7 +593,6 @@ function markSentenceLearned(id, source = 'manual') {
   if (!validSentenceIdSet().has(id)) return false;
   const wasLearned = DB.learned.has(id);
   DB.learned.add(id);
-  DB.dailyLearned.add(id);
   DB.dailyQueueDone.add(id);
   recordStudy();
   const k = today();
@@ -618,7 +609,6 @@ function markSentenceLearned(id, source = 'manual') {
 }
 function unmarkSentenceLearned(id) {
   DB.learned.delete(id);
-  DB.dailyLearned.delete(id);
   DB.dailyQueueDone.delete(id);
   delete DB.srs[id];
   save();
@@ -720,7 +710,6 @@ function ensureDailyQueue() {
   const t = today();
   if (DB.dailyQueueDate === t && DB.dailyQueue.length > 0) return;
   if (DB.dailyQueueDate !== t) {
-    DB.dailyLearned = new Set();
     DB.dailyQueueDone = new Set();
     _sessionGotIt = new Set();
   }
@@ -730,8 +719,6 @@ function ensureDailyQueue() {
   const queue = [...due, ...newPool.filter(s => !dueIds.includes(s.id))].slice(0, DB.dailyGoal);
   DB.dailyQueue = queue.map(s => s.id);
   DB.dailyQueueDate = t;
-  const todayWordIds = (DB.historyWords[t] || []).filter(id => DB.learned.has(id));
-  DB.dailyLearned = new Set(todayWordIds);
   save();
 }
 function ensureVocabDailyQueue() {

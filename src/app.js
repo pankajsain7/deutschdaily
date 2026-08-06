@@ -439,7 +439,7 @@ function renderTodayVocab() {
 </div>
 
 ${reviewEntries.length ? `<div class="sec-lbl">${ICO.repeat} SRS review — ${reviewEntries.length} word${reviewEntries.length !== 1 ? 's' : ''} due today</div>${reviewEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}` : ''}
-${newEntries.length ? `<div class="sec-lbl">New words — ${newEntries.length} word${newEntries.length !== 1 ? 's' : ''}</div>${newEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}` : ''}
+${newEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}
   </div>`;
 }
 
@@ -559,7 +559,7 @@ function renderLoadMore(shown, total, action) {
 function loadMoreFreq() { V.freqPage = (V.freqPage || 1) + 1; render(); }
 function loadMoreVocab() { V.vocabPage = (V.vocabPage || 1) + 1; render(); }
 
-function renderVocab(isToday = false) {
+function renderVocab() {
   ensureVocabDailyQueue();
   const dueIds = getVocabReviewIds();
   const dueCards = dueIds.map(id => VOCAB_BY_ID[id]).filter(Boolean).sort((a, b) => a.priority - b.priority);
@@ -595,27 +595,15 @@ function renderVocab(isToday = false) {
     ? `All vocab cards (${visibleCards.length})`
     : `${V.vocabFilter.charAt(0).toUpperCase() + V.vocabFilter.slice(1)} cards (${visibleCards.length})`;
 
-  const pageHeader = isToday ? '' : `<h2 class="page-title">Vocabulary</h2><p class="page-sub">Build your German vocabulary with spaced repetition.</p>`;
-  const todaySwitch = isToday ? `<div class="today-segmented-control" role="tablist" aria-label="Today practice category">
-    <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">Vocab</button>
-    <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">Sentences</button>
-  </div>` : '';
+  const pageHeader = `<h2 class="page-title">Vocabulary</h2><p class="page-sub">Build your German vocabulary with spaced repetition.</p>`;
 
-  const todaySectionBar = isToday ? `<div class="section-hdr">
-  <div class="section-hdr-title">Today's ${queueCards.length} vocab cards</div>
-  <div class="section-hdr-actions">
-    <button class="btn btn-primary btn-sm" onclick="startVocabPractice({ids:${queueIdsJson}})">${ICO.target} Practice</button>
-    <button class="btn btn-secondary btn-sm" onclick="refreshVocabQueue()">${ICO.repeat} New batch</button>
-  </div>
-</div>` : '';
-
-  const actionRow = !isToday ? `<div class="vocab-action-row">
+  const actionRow = `<div class="vocab-action-row">
   ${queueCards.length ? `<button class="learned-practice-btn" onclick="startVocabPractice({ids:${queueIdsJson}})">Practice today's ${queueCards.length}</button>` : ''}
   ${dueCards.length ? `<button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">Practice due ${dueCards.length}</button>` : ''}
   ${visibleCards.length ? `<button class="act-btn vocab-visible-practice" onclick="startVocabPractice({ids:${visibleIdsJson},skipSessionFilter:true})">Practice visible</button>` : ''}
-</div>` : '';
+</div>`;
 
-  return `<div${isToday ? '' : ' style="padding-top:14px"'}>
+  return `<div style="padding-top:14px">
 ${pageHeader}
 ${dueSection}
 
@@ -623,7 +611,6 @@ ${dueSection}
   <div class="goal-top">
     <div><div class="goal-title">Today's vocab queue</div><div class="goal-date">${queueCards.length} card${queueCards.length !== 1 ? 's' : ''} ready</div></div>
     <div class="goal-top-actions">
-      ${todaySwitch}
       <button class="goal-btn" onclick="refreshVocabQueue()" type="button">New batch</button>
     </div>
   </div>
@@ -642,17 +629,16 @@ ${dueSection}
 </div>
 
 ${actionRow}
-${todaySectionBar}
 
-${queueCards.length ? `${!isToday ? `<div class="sec-lbl">Today's new / due queue</div>` : ''}${queueCards.map((card, i) => renderVocabCard(card, i)).join('')}` : ''}
+${queueCards.length ? `<div class="sec-lbl">Today's new / due queue</div>${queueCards.map((card, i) => renderVocabCard(card, i)).join('')}` : ''}
 
-${!isToday ? `<div class="search-wrap" style="margin:16px 0"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search vocab, English meaning, topic, article, plural..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
+<div class="search-wrap" style="margin:16px 0"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search vocab, English meaning, topic, article, plural..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
 <div class="filter-row vocab-topic-row">${topicChips}</div>
 <div class="filter-row">
   ${['all', 'new', 'due', 'learned', 'saved'].map(f => `<button class="filter-chip${V.vocabFilter === f ? ' on' : ''}" onclick="setVocabFilter('${f}')" aria-pressed="${V.vocabFilter === f}" type="button">${f === 'all' ? 'All' : f === 'new' ? 'New' : f === 'due' ? 'Due' : f === 'learned' ? 'Learned' : 'Saved'}</button>`).join('')}
 </div>
 <div class="sec-lbl">${cardsTitle}</div>
-${visibleCards.length ? visibleCards.slice(0, (V.vocabPage || 1) * PAGE_SIZE).map((card, i) => renderVocabCard(card, i)).join('') + renderLoadMore(Math.min(visibleCards.length, (V.vocabPage || 1) * PAGE_SIZE), visibleCards.length, 'loadMoreVocab()') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No vocab cards match.</div>`}` : ''}
+${visibleCards.length ? visibleCards.slice(0, (V.vocabPage || 1) * PAGE_SIZE).map((card, i) => renderVocabCard(card, i)).join('') + renderLoadMore(Math.min(visibleCards.length, (V.vocabPage || 1) * PAGE_SIZE), visibleCards.length, 'loadMoreVocab()') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No vocab cards match.</div>`}
   </div>`;
 }
 function renderVocabCard(card, i) {
@@ -3222,7 +3208,6 @@ function applyImport(text) {
     dailyGoal: DB.dailyGoal,
     dailyQueue: DB.dailyQueue,
     dailyQueueDate: DB.dailyQueueDate,
-    dailyLearned: [...new Set([...current.dailyLearned, ...imported.dailyLearned])],
     dailyQueueDone: [...new Set([...current.dailyQueueDone, ...imported.dailyQueueDone])],
     history: Object.assign({}, imported.history, current.history),
     historyWords: mergeHistoryWords(imported.historyWords, current.historyWords),
