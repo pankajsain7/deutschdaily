@@ -394,8 +394,10 @@ ${qs.map((s, i) => renderSentenceCard(s, i, true)).join('')}`;
 
 function renderTodayVocab() {
   ensureFreqDailyQueue();
-  const dueIds = getFreqReviewIds().sort((a, b) => Number(a) - Number(b));
+  const dueIds = new Set(getFreqReviewIds());
   const queueEntries = DB.freqDailyQueue.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
+  const reviewEntries = queueEntries.filter(e => dueIds.has(String(e.rank)));
+  const newEntries = queueEntries.filter(e => !dueIds.has(String(e.rank)));
   const queueDone = queueEntries.filter(entry => DB.freqDailyQueueDone.has(String(entry.rank)) || (DB.freqSrs[String(entry.rank)] && DB.freqSrs[String(entry.rank)].lastReview === today())).length;
   const total = typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length;
   const queuePct = queueEntries.length ? Math.min(100, Math.round(queueDone / queueEntries.length * 100)) : 0;
@@ -416,7 +418,7 @@ function renderTodayVocab() {
   </div>
   <div class="goal-nums">
     <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-    <div><div class="gnum-v">${dueIds.length}</div><div class="gnum-l">Due</div></div>
+    <div><div class="gnum-v">${dueIds.size}</div><div class="gnum-l">Due</div></div>
     <div><div class="gnum-v">${DB.freqLearned.size}</div><div class="gnum-l">Learned</div></div>
     <div><div class="gnum-v">${DB.freqFavorites.size}</div><div class="gnum-l">Saved</div></div>
     <div><div class="gnum-v">${total - DB.freqLearned.size}</div><div class="gnum-l">Remaining</div></div>
@@ -436,7 +438,8 @@ function renderTodayVocab() {
   </div>
 </div>
 
-${queueEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}
+${reviewEntries.length ? `<div class="sec-lbl">${ICO.repeat} SRS review — ${reviewEntries.length} word${reviewEntries.length !== 1 ? 's' : ''} due today</div>${reviewEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}` : ''}
+${newEntries.length ? `<div class="sec-lbl">New words — ${newEntries.length} word${newEntries.length !== 1 ? 's' : ''}</div>${newEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}` : ''}
   </div>`;
 }
 
