@@ -514,50 +514,21 @@ ${cards}`;
 }
 
 // ─── PRACTICE ────────────────────────────────
-const PRACTICE_DECKS = {
-  due: {
-    title: 'Due reviews',
-    sub: 'Words spaced repetition scheduled for today',
-    ids: () => getFreqReviewIds(),
-    empty: 'Nothing is due right now. Come back tomorrow.',
-  },
-  new: {
-    title: "Today's new words",
-    sub: 'Words from your daily learn queue you have not seen yet',
-    ids: () => { ensureFreqDailyQueue(); return DB.freqDailyQueue.filter(id => !DB.freqDailyQueueDone.has(id)); },
-    empty: 'Today\'s new words are done. Raise the daily target on the Today tab for more.',
-  },
-  hard: {
-    title: 'Hard words',
-    sub: `Learned words you have forgotten ${LEECH_LAPSES} or more times`,
-    ids: () => getFreqLeechIds(),
-    empty: 'No problem words yet. They show up here after repeated lapses.',
-  },
-  saved: {
-    title: 'Saved words',
-    sub: 'Everything you starred while browsing',
-    ids: () => [...DB.freqFavorites].sort((a, b) => Number(a) - Number(b)),
-    empty: 'Star words while browsing the dictionary to build this deck.',
-  },
-  learned: {
-    title: 'All learned',
-    sub: 'Free review of every word you already know, without touching the schedule',
-    ids: () => [...DB.freqLearned].sort((a, b) => Number(a) - Number(b)),
-    empty: 'Learn a few words first and they will collect here.',
-  },
-};
+const PRACTICE_RATING_DECKS = [
+  { key: 'all', title: 'All reviewed', sub: 'Every word you have rated in flashcards', ids: () => getFreqRatedIds() },
+  { key: 'again', title: 'Again', sub: 'Latest rating: Again', ids: () => getFreqRatedIds('again') },
+  { key: 'hard', title: 'Hard', sub: 'Latest rating: Hard', ids: () => getFreqRatedIds('hard') },
+  { key: 'good', title: 'Good', sub: 'Latest rating: Good', ids: () => getFreqRatedIds('good') },
+  { key: 'easy', title: 'Easy', sub: 'Latest rating: Easy', ids: () => getFreqRatedIds('easy') },
+];
 
-function renderPracticeDeckCard(key) {
-  const deck = PRACTICE_DECKS[key];
-  const ids = deck.ids();
+function renderPracticeDeckCard(title, sub, empty, ids, mode = 'replay', isAttention = false) {
   const disabled = ids.length === 0;
-  const start = key === 'learned'
-    ? `startFrequencyPractice({ids:${idsArg(ids)},mode:'free'})`
-    : `startFrequencyPractice({ids:${idsArg(ids)},mode:'${key}'})`;
-  return `<button class="deck-card${disabled ? ' is-empty' : ''}${key === 'due' && ids.length ? ' is-due' : ''}" ${disabled ? 'disabled aria-disabled="true"' : `onclick="${start}"`} type="button">
+  const start = `startFrequencyPractice({ids:${idsArg(ids)},mode:'${mode}'})`;
+  return `<button class="deck-card${disabled ? ' is-empty' : ''}${isAttention && ids.length ? ' is-due' : ''}" ${disabled ? 'disabled aria-disabled="true"' : `onclick="${start}"`} type="button">
   <span class="deck-card-count">${ids.length}</span>
-  <span class="deck-card-title">${esc(deck.title)}</span>
-  <span class="deck-card-sub">${esc(disabled ? deck.empty : deck.sub)}</span>
+  <span class="deck-card-title">${esc(title)}</span>
+  <span class="deck-card-sub">${esc(disabled ? empty : sub)}</span>
 </button>`;
 }
 
@@ -566,47 +537,39 @@ function renderPracticeHub() {
   const dueIds = getFreqReviewIds();
   const newIds = DB.freqDailyQueue.filter(id => !DB.freqDailyQueueDone.has(id));
   const sessionIds = [...dueIds, ...newIds.filter(id => !dueIds.includes(id))];
-  const answeredToday = DB.freqAttempts.filter(a => a.date === today() && a.result !== 'skip');
-  const reviewsToday = answeredToday.filter(a => a.wasDue).length;
-  const newToday = DB.freqDailyQueueDone.size;
   const overdue = Object.entries(DB.freqSrs).filter(([id, s]) => DB.freqLearned.has(id) && s.nextReview && s.nextReview < today()).length;
-  const dirToggle = ['de2en', 'en2de'].map(dir => `<button class="filter-chip${freqPracticeDir() === dir ? ' on' : ''}" onclick="setFreqPracticeDir('${dir}')" aria-pressed="${freqPracticeDir() === dir}" type="button">${dir === 'de2en' ? 'German → English' : 'English → German'}</button>`).join('');
+  const replayCards = PRACTICE_RATING_DECKS.map(deck => renderPracticeDeckCard(
+    deck.title,
+    deck.sub,
+    'Rate vocabulary cards to build this replay group.',
+    deck.ids(),
+  )).join('');
+  const attentionIds = getFreqLeechIds();
 
   const hero = sessionIds.length
     ? `<div class="practice-hero">
   <div class="practice-hero-main">
-    <div class="practice-hero-title">${sessionIds.length} card${sessionIds.length !== 1 ? 's' : ''} waiting</div>
-    <div class="practice-hero-sub">${dueIds.length} due review${dueIds.length !== 1 ? 's' : ''} · ${newIds.length} new word${newIds.length !== 1 ? 's' : ''}</div>
+    <div class="practice-hero-title">${sessionIds.length} card${sessionIds.length !== 1 ? 's' : ''} ready</div>
+    <div class="practice-hero-sub">${dueIds.length} due review${dueIds.length !== 1 ? 's' : ''} · ${newIds.length} new word${newIds.length !== 1 ? 's' : ''}${overdue ? ` · ${overdue} overdue` : ''}</div>
   </div>
-  <button class="btn btn-primary practice-hero-btn" onclick="startFrequencyPractice({ids:${idsArg(sessionIds)},mode:'session'})" type="button">${ICO.target} Start session</button>
+  <button class="btn btn-primary practice-hero-btn" onclick="startFrequencyPractice({ids:${idsArg(sessionIds)},mode:'scheduled'})" type="button">${ICO.target} Start review</button>
 </div>`
     : `<div class="callout callout-success">
   <div class="callout-title">${ICO.check} You are done for today</div>
-  <div class="callout-sub">No reviews due and no new words left in the queue. Raise the daily target on the Today tab if you want more.</div>
+  <div class="callout-sub">No reviews due and no new words left in the queue. Use a replay group below if you want another round.</div>
 </div>`;
 
   return `<div style="padding-top:14px">
 <h2 class="page-title">Practice</h2>
-<p class="page-sub">Flashcards for the ${FREQUENCY_DICTIONARY_SIZE}-word German vocabulary deck, scheduled with spaced repetition.</p>
+<p class="page-sub">German vocabulary flashcards with spaced repetition.</p>
 
 ${hero}
 
-<div class="stats-grid stats-grid-three practice-today-stats">
-  <div class="stat-box"><div class="stat-lbl">Reviews today</div><div class="stat-num">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
-  <div class="stat-box"><div class="stat-lbl">New today</div><div class="stat-num">${newToday}</div><div class="stat-sub">of ${DB.freqDailyGoal} target</div></div>
-  <div class="stat-box"><div class="stat-lbl">Overdue</div><div class="stat-num${overdue > 0 ? ' is-danger' : ''}">${overdue}</div><div class="stat-sub">from earlier days</div></div>
-</div>
+<div class="sec-lbl">Practice again</div>
+<div class="deck-grid practice-replay-grid">${replayCards}</div>
 
-<div class="sec-lbl">Answer direction</div>
-<div class="filter-row">${dirToggle}</div>
-
-<div class="sec-lbl">Decks</div>
-<div class="deck-grid">${Object.keys(PRACTICE_DECKS).map(renderPracticeDeckCard).join('')}</div>
-
-<div class="callout">
-  <div class="callout-title">${ICO.keyboard} Shortcuts</div>
-  <div class="callout-sub">Space reveals the answer · 1 Again · 2 Hard · 3 Good · 4 Easy · Esc exits</div>
-</div>
+<div class="sec-lbl">Needs attention</div>
+<div class="deck-grid practice-attention-grid">${renderPracticeDeckCard('Hard words', `Words forgotten ${LEECH_LAPSES} or more times`, 'No problem words yet.', attentionIds, 'replay', true)}</div>
   </div>`;
 }
 
@@ -1818,7 +1781,7 @@ function setGoal(n) {
 // ==============================
 let P = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, isSRS: false, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [], typedFeedback: null };
 let PP = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, answered: {} };
-let FP = { active: false, queue: [], idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode: 'free', dir: 'de2en', answered: {}, missedIds: [] };
+let FP = { active: false, queue: [], idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode: 'replay', answered: {}, missedIds: [], ratingById: {} };
 
 function startPractice(opts) {
   const ids = Array.isArray(opts) ? opts : opts.ids;
@@ -2233,13 +2196,6 @@ function closePractice() { P.active = false; PP.active = false; FP.active = fals
 // ==============================
 // FREQUENCY PRACTICE MODE
 // ==============================
-let _freqPracticeDir = 'de2en';
-function freqPracticeDir() { return _freqPracticeDir; }
-function setFreqPracticeDir(dir) {
-  _freqPracticeDir = dir === 'en2de' ? 'en2de' : 'de2en';
-  if (FP.active) { FP.dir = _freqPracticeDir; renderFrequencyPractice(); }
-  else render();
-}
 
 function intervalLabel(days) {
   if (days <= 0) return '<10m';
@@ -2247,6 +2203,10 @@ function intervalLabel(days) {
   if (days < 30) return `${days}d`;
   if (days < 365) return `${Math.round(days / 30)}mo`;
   return `${(days / 365).toFixed(1)}y`;
+}
+
+function isScheduledFrequencyPractice(mode) {
+  return ['scheduled', 'due', 'new', 'session'].includes(mode);
 }
 
 function freqRatingPreview(id) {
@@ -2260,12 +2220,12 @@ function freqRatingPreview(id) {
 
 function startFrequencyPractice(opts) {
   const ids = Array.isArray(opts) ? opts : opts.ids;
-  const mode = Array.isArray(opts) ? 'free' : String(opts.mode || (opts.isSRS ? 'due' : 'free'));
+  const mode = Array.isArray(opts) ? 'replay' : String(opts.mode || (opts.isSRS ? 'due' : 'replay'));
   const entries = ids.map(id => freqById(id)).filter(Boolean);
   if (!entries.length) return;
   P.active = false;
   PP.active = false;
-  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, dir: _freqPracticeDir, answered: {}, missedIds: [] };
+  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, answered: {}, missedIds: [], ratingById: {} };
   renderFrequencyPractice();
 }
 function renderFrequencyPractice() {
@@ -2282,10 +2242,17 @@ function renderFrequencyPractice() {
     const answeredCount = Object.keys(FP.answered).filter(key => FP.answered[key] !== 'skip').length;
     const strong = FP.good + FP.easy;
     const pct = answeredCount ? Math.round(strong / answeredCount * 100) : 0;
-    const retryIds = idsArg(FP.queue.map(e => String(e.rank)));
-    const missedIds = [...new Set(FP.missedIds)];
-    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(missedIds)},mode:'free'})" type="button">Review misses (${missedIds.length})</button>` : '';
+    const sessionRatedIds = Object.keys(FP.ratingById);
+    const sessionRatingIds = rating => sessionRatedIds.filter(id => FP.ratingById[id] === rating);
+    const ratingButtons = ['again', 'hard', 'good', 'easy']
+      .map(rating => {
+        const ids = sessionRatingIds(rating);
+        return ids.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(ids)},mode:'replay'})" type="button">Review ${rating} (${ids.length})</button>` : '';
+      }).join('');
     const dueLeft = getFreqReviewIds().length;
+    const scheduleNote = isScheduledFrequencyPractice(FP.mode)
+      ? 'Review intervals updated — next reviews scheduled.'
+      : 'Practice-only replay — your review schedule is unchanged.';
     ov.innerHTML = `
   <div class="practice-hdr"><span class="practice-hdr-title">Session complete</span></div>
   <div class="practice-body">
@@ -2293,17 +2260,17 @@ function renderFrequencyPractice() {
       <div class="prac-sum-icon">${ICO.vocab}</div>
       <div class="prac-sum-title">${pct >= 80 ? 'Strong recall' : pct >= 50 ? 'Good progress' : 'Keep reviewing'}</div>
       <div class="prac-sum-sub">You answered ${answeredCount} of ${total} card${total !== 1 ? 's' : ''}</div>
-      <div class="prac-mode-tag">${FP.dir === 'en2de' ? 'English → German' : 'German → English'}</div>
+      <div class="prac-mode-tag">German → English</div>
       <div class="prac-sum-stats vocab-sum-stats">
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--red)">${FP.again}</div><div class="prac-sum-l">Again</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${FP.hard}</div><div class="prac-sum-l">Hard</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${FP.good}</div><div class="prac-sum-l">Good</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n">${FP.easy}</div><div class="prac-sum-l">Easy</div></div>
       </div>
-      <div class="prac-sum-note">${dueLeft ? `${dueLeft} card${dueLeft !== 1 ? 's' : ''} still due today.` : 'Nothing else is due today.'}</div>
+      <div class="prac-sum-note">${scheduleNote} ${dueLeft ? `${dueLeft} card${dueLeft !== 1 ? 's' : ''} still due today.` : ''}</div>
       <div class="prac-sum-actions">
-        ${missedBtn}
-        <button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${retryIds},mode:'free'})" type="button">Practice again</button>
+        ${sessionRatedIds.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(sessionRatedIds)},mode:'replay'})" type="button">Review all (${sessionRatedIds.length})</button>` : ''}
+        ${ratingButtons}
         <button class="prac-sum-done" onclick="closePractice()" type="button">Done</button>
       </div>
     </div>
@@ -2316,22 +2283,18 @@ function renderFrequencyPractice() {
   const id = String(entry.rank);
   const total = FP.queue.length;
   const pct = Math.round(FP.idx / total * 100);
-  const germanFront = FP.dir === 'de2en';
   const isNew = !DB.freqLearned.has(id);
+  const scheduledMode = isScheduledFrequencyPractice(FP.mode);
   const iv = freqRatingPreview(id);
   const speakText = entry.germanSentence || entry.german;
-  const frontHtml = germanFront
-    ? `<div class="practice-de freq-practice-word" lang="de">${esc(entry.german)}</div>`
-    : `<div class="practice-de freq-practice-word">${esc(entry.english)}</div><div class="practice-ph">Recall the German word</div>`;
-  const backHtml = germanFront
-    ? `<div class="practice-en freq-practice-en">${esc(entry.english)}</div>`
-    : `<div class="practice-en freq-practice-en" lang="de">${esc(entry.german)}</div>`;
+  const frontHtml = `<div class="practice-de freq-practice-word" lang="de">${esc(entry.german)}</div>`;
+  const backHtml = `<div class="practice-en freq-practice-en">${esc(entry.english)}</div>`;
   ov.innerHTML = `
   <div class="practice-hdr">
     <button class="practice-exit" onclick="closePractice()" type="button">Exit</button>
       <div class="practice-prog-wrap">
       <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
-      <div class="practice-prog-lbl">${FP.idx + 1}/${total} · <span class="prac-tag">${germanFront ? 'DE → EN' : 'EN → DE'}</span> · Again ${FP.again} · Hard ${FP.hard} · Good ${FP.good} · Easy ${FP.easy}</div>
+      <div class="practice-prog-lbl">${FP.idx + 1}/${total} · Again ${FP.again} · Hard ${FP.hard} · Good ${FP.good} · Easy ${FP.easy}</div>
     </div>
   </div>
   <div class="practice-body">
@@ -2344,27 +2307,22 @@ function renderFrequencyPractice() {
         <div class="practice-use">${esc(entry.englishSentence)}</div>
       ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the answer</button>`}
     </div>
-    ${germanFront || FP.revealed ? `<div style="display:flex;justify-content:center;margin:10px 0">
+    <div style="display:flex;justify-content:center;margin:10px 0">
       <button class="act-btn speak-btn" data-id="fprac-${id}" onclick="speak(${jsArg(speakText)},'fprac-${id}')" style="font-size:13px;padding:8px 18px" type="button">
         ${ICO.speak} Listen
       </button>
-    </div>` : ''}
+    </div>
     ${FP.revealed ? `
       <div class="vocab-rating-btns">
-        <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again<span class="vocab-rate-iv">${iv.again}</span></button>
-        <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard<span class="vocab-rate-iv">${iv.hard}</span></button>
-        <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good<span class="vocab-rate-iv">${iv.good}</span></button>
-        <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy<span class="vocab-rate-iv">${iv.easy}</span></button>
+        <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again${scheduledMode ? `<span class="vocab-rate-iv">${iv.again}</span>` : ''}</button>
+        <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard${scheduledMode ? `<span class="vocab-rate-iv">${iv.hard}</span>` : ''}</button>
+        <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good${scheduledMode ? `<span class="vocab-rate-iv">${iv.good}</span>` : ''}</button>
+        <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy${scheduledMode ? `<span class="vocab-rate-iv">${iv.easy}</span>` : ''}</button>
       </div>
-      <div class="vocab-rating-help">${isNew ? 'Again puts the card back later in this session.' : 'Again resets the interval to 1 day and counts as a lapse.'}</div>` : ''}
-    <div class="kbd-hint" style="margin-top:10px">
-      <span class="kbd">Space</span> reveal &nbsp;
-      <span class="kbd">1</span>–<span class="kbd">4</span> rate &nbsp;
-      <span class="kbd">→</span> skip
-    </div>
+      <div class="vocab-rating-help">${scheduledMode ? (isNew ? 'Again puts the card back later in this session.' : 'Again resets the interval to 1 day and counts as a lapse.') : 'Practice-only replay — ratings are saved, but your review schedule is unchanged.'}</div>` : ''}
   </div>`;
   document.body.appendChild(ov);
-  if (!FP.revealed && germanFront) {
+  if (!FP.revealed) {
     if (isMobile) speak(speakText, `fprac-${id}`);
     else setTimeout(() => speak(speakText, `fprac-${id}`), 150);
   }
@@ -2372,10 +2330,6 @@ function renderFrequencyPractice() {
 function frequencyPracticeReveal() {
   FP.revealed = !FP.revealed;
   renderFrequencyPractice();
-  if (FP.revealed && FP.dir === 'en2de' && FP.idx < FP.queue.length) {
-    const entry = FP.queue[FP.idx];
-    setTimeout(() => speak(entry.germanSentence || entry.german, `fprac-${entry.rank}`), 200);
-  }
 }
 function frequencyPracticeAnswer(rating) {
   const current = FP.queue[FP.idx];
@@ -2389,10 +2343,13 @@ function frequencyPracticeAnswer(rating) {
   }
   const id = String(current.rank);
   const intervalBefore = DB.freqSrs[id] ? DB.freqSrs[id].interval || 0 : 0;
-  const scheduled = FP.mode === 'free'
-    ? { intervalBefore, intervalAfter: intervalBefore, wasDue: false, learned: DB.freqLearned.has(id) }
-    : scheduleFreq(id, rating);
+  const scheduledMode = isScheduledFrequencyPractice(FP.mode);
+  const scheduled = scheduledMode
+    ? scheduleFreq(id, rating)
+    : { intervalBefore, intervalAfter: intervalBefore, wasDue: false, learned: DB.freqLearned.has(id) };
+  recordFreqRating(id, rating);
   FP.answered[attemptKey] = rating;
+  FP.ratingById[id] = rating;
   if (rating === 'again') FP.again++;
   else if (rating === 'hard') FP.hard++;
   else if (rating === 'easy') FP.easy++;
@@ -2790,6 +2747,18 @@ function mergeSrsMaps(currentMap = {}, importedMap = {}) {
   return merged;
 }
 
+function mergeFreqRatingStates(currentMap = {}, importedMap = {}) {
+  const merged = {};
+  [...new Set([...Object.keys(importedMap || {}), ...Object.keys(currentMap || {})])].forEach(id => {
+    const current = currentMap[id];
+    const imported = importedMap[id];
+    if (!current) merged[id] = imported;
+    else if (!imported) merged[id] = current;
+    else merged[id] = Date.parse(String(imported.updatedAt || '')) > Date.parse(String(current.updatedAt || '')) ? imported : current;
+  });
+  return merged;
+}
+
 function mergeAttempts(currentAttempts = [], importedAttempts = []) {
   const byKey = new Map();
   [...importedAttempts, ...currentAttempts].forEach(a => {
@@ -2818,7 +2787,7 @@ function applyImport(text) {
   if (!text.trim()) { show('Nothing to import — paste or load a file first.'); return; }
   let parsed;
   try { parsed = JSON.parse(text); } catch (e) { show('Invalid JSON. Make sure you copied the full text without changes.'); return; }
-  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.freqLearned) && !parsed.streak && !parsed.srs && !parsed.freqSrs && !parsed.attempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
+  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.freqLearned) && !parsed.streak && !parsed.srs && !parsed.freqSrs && !parsed.freqRatingState && !parsed.attempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
   const imported = normalizeDb(parsed);
   const current = dbToObj();
   const mergeHistoryWords = (a, b) => {
@@ -2843,6 +2812,7 @@ function applyImport(text) {
     freqLearned: [...new Set([...current.freqLearned, ...imported.freqLearned])],
     freqFavorites: [...new Set([...current.freqFavorites, ...imported.freqFavorites])],
     freqSrs: mergeSrsMaps(current.freqSrs, imported.freqSrs),
+    freqRatingState: mergeFreqRatingStates(current.freqRatingState, imported.freqRatingState),
     freqAttempts: mergeAttempts(current.freqAttempts, imported.freqAttempts),
     freqDailyGoal: DB.freqDailyGoal,
     freqDailyQueue: DB.freqDailyQueue,

@@ -5,7 +5,7 @@ const SKEY = 'dd_v4';
 const SKEY_OLD = 'dd_clean_v1';
 const SKEY_BACKUP = 'dd_v4_backup';
 const SKEY_RECOVERY = 'dd_v4_recovery';
-const DB_VERSION = 9;
+const DB_VERSION = 10;
 const FIRST_REVIEW_DAYS = 3;
 const DEFAULT_FREQ_DAILY_GOAL = 15;
 const FREQUENCY_DICTIONARY_SIZE = 2525;
@@ -33,6 +33,7 @@ let DB = {
   freqLearned: new Set(),
   freqFavorites: new Set(),
   freqSrs: {},
+  freqRatingState: {},
   freqAttempts: [],
   freqDailyGoal: DEFAULT_FREQ_DAILY_GOAL,
   freqDailyQueue: [],
@@ -199,6 +200,18 @@ function normalizeFrequencyAttempts(value, validIds) {
     };
   }).filter(Boolean).slice(-1000);
 }
+function normalizeFreqRatingState(value, validIds) {
+  const out = {};
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return out;
+  Object.entries(value).forEach(([id, raw]) => {
+    if (!validIds.has(String(id)) || !raw || typeof raw !== 'object' || Array.isArray(raw)) return;
+    const rating = ['again', 'hard', 'good', 'easy'].includes(raw.rating) ? raw.rating : null;
+    const updatedAtMs = Date.parse(String(raw.updatedAt || ''));
+    if (!rating || !Number.isFinite(updatedAtMs)) return;
+    out[String(id)] = { rating, updatedAt: new Date(updatedAtMs).toISOString() };
+  });
+  return out;
+}
 function normalizeSettings(value) {
   return {
     externalTts: true,
@@ -212,6 +225,7 @@ function normalizeDb(raw = {}) {
   const learned = uniqueValidIds(safe.learned, validSentenceIds);
   const historyWords = normalizeHistoryWords(safe.historyWords, validSentenceIds);
   const freqDailyQueueDate = normalizeDateKey(safe.freqDailyQueueDate);
+  const freqDailyQueue = uniqueValidIds(safe.freqDailyQueue, validFreqIds);
 
   const fallbackKey = normalizeDateKey(safe.lastStudy);
   if (fallbackKey) {
@@ -248,11 +262,14 @@ function normalizeDb(raw = {}) {
     freqLearned: new Set(uniqueValidIds(safe.freqLearned, validFreqIds)),
     freqFavorites: new Set(uniqueValidIds(safe.freqFavorites, validFreqIds)),
     freqSrs: normalizeSrs(safe.freqSrs, validFreqIds),
+    freqRatingState: normalizeFreqRatingState(safe.freqRatingState, validFreqIds),
     freqAttempts: normalizeFrequencyAttempts(safe.freqAttempts, validFreqIds),
     freqDailyGoal: clampNumber(safe.freqDailyGoal, 1, 60, DEFAULT_FREQ_DAILY_GOAL),
-    freqDailyQueue: uniqueValidIds(safe.freqDailyQueue, validFreqIds),
+    freqDailyQueue,
     freqDailyQueueDate,
-    freqDailyQueueDone: new Set(freqDailyQueueDate === todayK ? uniqueValidIds(safe.freqDailyQueueDone, validFreqIds) : []),
+    freqDailyQueueDone: new Set(freqDailyQueueDate === todayK
+      ? uniqueValidIds(safe.freqDailyQueueDone, validFreqIds).filter(id => freqDailyQueue.includes(id))
+      : []),
     reviewPromptDate: normalizeDateKey(safe.reviewPromptDate),
     attempts: normalizeAttempts(safe.attempts, validSentenceIds),
     patternAttempts: normalizePatternAttempts(safe.patternAttempts, validPatternIds),
@@ -297,6 +314,7 @@ function dbToObj() {
     freqLearned: [...DB.freqLearned],
     freqFavorites: [...DB.freqFavorites],
     freqSrs: DB.freqSrs,
+    freqRatingState: DB.freqRatingState,
     freqAttempts: DB.freqAttempts,
     freqDailyGoal: DB.freqDailyGoal,
     freqDailyQueue: DB.freqDailyQueue,
@@ -626,6 +644,21 @@ function getFreqLeechIds() {
     .sort((a, b) => (b[1].lapses || 0) - (a[1].lapses || 0) || Number(a[0]) - Number(b[0]))
     .map(([id]) => id);
 }
+function getFreqRatedIds(rating) {
+  const validRatings = ['again', 'hard', 'good', 'easy'];
+  return Object.entries(DB.freqRatingState)
+    .filter(([id, state]) => validFrequencyRankSet().has(id) && state && validRatings.includes(state.rating) && (!rating || state.rating === rating))
+    .sort((a, b) => String(b[1].updatedAt).localeCompare(String(a[1].updatedAt)) || Number(a[0]) - Number(b[0]))
+    .map(([id]) => id);
+}
+function recordFreqRating(id, rating, updatedAt = new Date().toISOString()) {
+  const sid = String(id);
+  if (!validFrequencyRankSet().has(sid) || !['again', 'hard', 'good', 'easy'].includes(rating)) return false;
+  const updatedAtMs = Date.parse(String(updatedAt || ''));
+  if (!Number.isFinite(updatedAtMs)) return false;
+  DB.freqRatingState[sid] = { rating, updatedAt: new Date(updatedAtMs).toISOString() };
+  return true;
+}
 function isFreqScheduledFuture(id) {
   const srs = DB.freqSrs[id];
   return Boolean(srs && srs.nextReview && srs.nextReview > today());
@@ -673,7 +706,7 @@ function scheduleFreq(id, rating) {
   card.lastReview = today();
   card.nextReview = addDaysKey(card.interval);
   DB.freqLearned.add(String(id));
-  DB.freqDailyQueueDone.add(String(id));
+  if (DB.freqDailyQueue.includes(String(id))) DB.freqDailyQueueDone.add(String(id));
   DB.freqSrs[String(id)] = card;
   recordStudy();
   return { intervalBefore: before, intervalAfter: card.interval, wasDue, learned: true };
@@ -691,6 +724,7 @@ function unmarkFreqLearned(id) {
   DB.freqLearned.delete(String(id));
   DB.freqDailyQueueDone.delete(String(id));
   delete DB.freqSrs[String(id)];
+  delete DB.freqRatingState[String(id)];
   save();
 }
 function toggleFreqLearned(id) {

@@ -54,8 +54,10 @@ const source = [
     FREQUENCY_DICTIONARY,
     scheduleFreq,
     recordFreqAttempt,
+    recordFreqRating,
     ensureFreqDailyQueue,
     getFreqReviewIds,
+    getFreqRatedIds,
     markFreqLearned,
     unmarkFreqLearned,
     toggleFreqLearned,
@@ -68,6 +70,7 @@ const source = [
     shouldPromptReview,
     markReviewPromptSeen,
     renderPracticeHub,
+    mergeFreqRatingStates,
     getFrequencyPracticeState: () => FP,
   };`
 ].join('\n');
@@ -442,6 +445,29 @@ assert(!revealHtml.includes('Learn' + ' more'), 'revealed details must not conta
 assert(Array.isArray(t.FREQUENCY_DICTIONARY) && t.FREQUENCY_DICTIONARY.length === 2525, 'FREQUENCY_DICTIONARY is loaded with 2525 entries');
 assert.strictEqual(t.validFrequencyRankSet().size, 2525, 'frequency ID validation remains available independently of dictionary data');
 
+// Frequency rating state is validated, persisted, and ordered by its latest response.
+reset({
+  freqRatingState: {
+    '1': { rating: 'hard', updatedAt: '2026-08-01T10:00:00.000Z' },
+    '2': { rating: 'not-a-rating', updatedAt: '2026-08-01T10:00:00.000Z' },
+    '9999': { rating: 'easy', updatedAt: '2026-08-01T10:00:00.000Z' },
+  },
+});
+assert.deepStrictEqual(Object.keys(t.DB().freqRatingState), ['1'], 'only valid persisted vocabulary ratings are retained');
+t.recordFreqRating('1', 'easy', '2026-08-02T10:00:00.000Z');
+assert.strictEqual(t.getFreqRatedIds('easy')[0], '1', 'latest vocabulary rating selects the replay group');
+const reloadedRatingState = t.dbToObj();
+reset(reloadedRatingState);
+assert.strictEqual(t.DB().freqRatingState['1'].rating, 'easy', 'vocabulary ratings survive a save/load normalization cycle');
+assert.strictEqual(
+  JSON.stringify(t.mergeFreqRatingStates(
+    { '1': { rating: 'hard', updatedAt: '2026-08-01T10:00:00.000Z' } },
+    { '1': { rating: 'good', updatedAt: '2026-08-02T10:00:00.000Z' } },
+  )),
+  JSON.stringify({ '1': { rating: 'good', updatedAt: '2026-08-02T10:00:00.000Z' } }),
+  'import keeps the newest persisted vocabulary rating',
+);
+
 // scheduleFreq: new entry with each rating
 reset({});
 let freqAgain = t.scheduleFreq('1', 'again');
@@ -484,6 +510,36 @@ reset({
 let freqReviewedEasy = t.scheduleFreq('10', 'easy');
 assert.strictEqual(freqReviewedEasy.intervalAfter, 33, 'review freq easy extends good interval');
 
+// Completing a due review must not make it look like a new daily word.
+reset({
+  freqLearned: ['1'],
+  freqDailyQueue: ['2'],
+  freqDailyQueueDate: t.today(),
+  freqDailyQueueDone: ['1'],
+  freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
+});
+t.scheduleFreq('1', 'good');
+assert.strictEqual(t.DB().freqDailyQueueDone.size, 0, 'due reviews do not increment the new-word queue');
+
+// Scheduled sessions change SRS; replay sessions keep the schedule intact while recording ratings.
+reset({
+  freqLearned: ['1'],
+  freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
+});
+t.startFrequencyPractice({ ids: ['1'], mode: 'scheduled' });
+t.frequencyPracticeAnswer('good');
+assert.strictEqual(t.DB().freqSrs['1'].interval, 8, 'scheduled vocabulary practice updates SRS');
+assert.strictEqual(t.DB().freqRatingState['1'].rating, 'good', 'scheduled vocabulary practice saves the latest rating');
+
+reset({
+  freqLearned: ['1'],
+  freqSrs: { '1': { interval: 8, ease: 2.5, level: 2, nextReview: t.addDaysISO(8), lastReview: t.today() } },
+});
+t.startFrequencyPractice({ ids: ['1'], mode: 'replay' });
+t.frequencyPracticeAnswer('hard');
+assert.strictEqual(t.DB().freqSrs['1'].interval, 8, 'replay practice does not alter SRS');
+assert.strictEqual(t.DB().freqRatingState['1'].rating, 'hard', 'replay practice still saves the latest rating');
+
 // ensureFreqDailyQueue populates the queue
 reset({
   freqLearned: ['1'],
@@ -521,7 +577,9 @@ assert.strictEqual(frequencyHistory.frequencyPracticeCount, 1, 'answered frequen
 assert.strictEqual(frequencyHistory.skipped, 1, 'frequency skips count in daily history');
 assert.strictEqual(frequencyHistory.reviews, 1, 'due frequency answers count as reviews');
 assert(t.renderProgressOverview().includes('Vocab learned'), 'progress overview leads with vocabulary stats');
-assert(t.renderPracticeHub().includes('Decks'), 'practice hub renders the deck picker');
+assert(t.renderPracticeHub().includes('Practice again'), 'practice hub renders persistent replay groups');
+assert(!t.renderPracticeHub().includes('English → German'), 'vocabulary practice no longer offers English-to-German cards');
+assert(!t.renderPracticeHub().includes('Shortcuts'), 'practice hub no longer shows shortcut hints');
 assert(!t.renderTodayVocab().includes('undefined'), 'today vocab card renders without holes');
 assert(!t.renderFrequency().includes('undefined'), 'vocabulary browse view renders without holes');
 t.ensureFreqDailyQueue();
