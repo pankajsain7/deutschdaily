@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', libType: 'vocab', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', vocabPage: 1, historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
@@ -13,22 +13,21 @@ function findMatchingPattern(sentence) {
   if (explicit) return explicit;
   return null;
 }
-const VALID_VIEWS = new Set(['today', 'browse', 'vocab', 'kursplan', 'frequency', 'patterns', 'saved', 'progress', 'history-day']);
+const VALID_VIEWS = new Set(['today', 'browse', 'practice', 'kursplan', 'frequency', 'patterns', 'saved', 'progress', 'history-day']);
 const VALID_PROGRESS_TABS = new Set(['overview', 'activity']);
 const VALID_FILTERS = new Set(['all', 'unlearned', 'learned', 'favorites']);
-const VALID_VOCAB_FILTERS = new Set(['all', 'new', 'due', 'learned', 'saved']);
 const VALID_FREQ_FILTERS = new Set(['all', 'new', 'due', 'learned', 'saved']);
 const VALID_FREQ_RANGES = new Set(['all', '1-500', '501-1000', '1001-1500', '1501-2000', '2001-2525']);
 const VALID_PATTERN_FILTERS = new Set(['learning', 'due', 'understood', 'all']);
 const VALID_LIBRARY_TABS = new Set(['saved', 'learned']);
 const VALID_LIBRARY_TYPES = new Set(['sentences', 'vocab']);
 const TOPIC_IDS = new Set(TOPICS.map(t => t.id));
-const VOCAB_TOPIC_IDS = new Set(VOCAB_TOPICS.map(t => t.id));
 
 function normalizeViewName(view) {
   const raw = String(view || 'today');
   if (raw === 'library') return 'saved';
   if (raw === 'stats' || raw === 'history') return 'progress';
+  if (raw === 'vocab') return 'frequency';
   return VALID_VIEWS.has(raw) ? raw : 'today';
 }
 function normalizeProgressTab(value) {
@@ -42,7 +41,7 @@ function normalizePatternFilter(value) {
 }
 
 function stateFromUrl(href) {
-  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'saved', libType: 'vocab', patFilter: 'learning', vocabTopicId: null, vocabFilter: 'all', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'saved', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -67,10 +66,6 @@ function stateFromUrl(href) {
     fallback.view = 'browse';
     fallback.topicId = topic && TOPIC_IDS.has(topic) ? topic : null;
     fallback.filter = VALID_FILTERS.has(filter) ? filter : 'all';
-  } else if (view === 'vocab') {
-    fallback.view = 'vocab';
-    fallback.vocabTopicId = topic && VOCAB_TOPIC_IDS.has(topic) ? topic : null;
-    fallback.vocabFilter = VALID_VOCAB_FILTERS.has(filter) ? filter : 'all';
   } else if (view === 'frequency') {
     fallback.view = 'frequency';
     fallback.freqFilter = VALID_FREQ_FILTERS.has(filter) ? filter : 'all';
@@ -105,9 +100,6 @@ function urlFromState(state = V) {
   } else if (view === 'browse') {
     if (state.topicId && TOPIC_IDS.has(state.topicId)) params.set('topic', state.topicId);
     if (state.filter && state.filter !== 'all') params.set('filter', state.filter);
-  } else if (view === 'vocab') {
-    if (state.vocabTopicId && VOCAB_TOPIC_IDS.has(state.vocabTopicId)) params.set('topic', state.vocabTopicId);
-    if (state.vocabFilter && state.vocabFilter !== 'all') params.set('filter', state.vocabFilter);
   } else if (view === 'frequency') {
     if (state.freqFilter && state.freqFilter !== 'all') params.set('filter', state.freqFilter);
     if (state.freqRange && state.freqRange !== 'all') params.set('range', state.freqRange);
@@ -135,8 +127,6 @@ function applyUrlState(href) {
   V.libTab = next.libTab;
   V.libType = next.libType;
   V.patFilter = next.patFilter;
-  V.vocabTopicId = next.vocabTopicId;
-  V.vocabFilter = next.vocabFilter;
   V.freqFilter = next.freqFilter;
   V.freqRange = next.freqRange;
   V.historyDay = next.historyDay;
@@ -160,13 +150,10 @@ function nav(view, extra) {
   V.view = nextView;
   if (nextView === 'today' && (extra === 'sentences' || extra === 'vocab')) V.todayTab = extra;
   V.topicId = nextView === 'browse' && extra && TOPIC_IDS.has(extra) ? extra : null;
-  V.vocabTopicId = nextView === 'vocab' && extra && VOCAB_TOPIC_IDS.has(extra) ? extra : null;
   V.filter = 'all';
-  V.vocabFilter = 'all';
   V.freqFilter = 'all';
   V.freqRange = 'all';
   V.freqPage = 1;
-  V.vocabPage = 1;
   V.query = '';
   V.historyDay = null;
   if (nextView === 'patterns') V.patFilter = 'learning';
@@ -283,7 +270,7 @@ function render() {
   if (V.view === 'today') root.innerHTML = renderToday();
   else if (V.view === 'browse' && V.topicId) root.innerHTML = renderTopic();
   else if (V.view === 'browse') root.innerHTML = renderBrowse();
-  else if (V.view === 'vocab') root.innerHTML = renderVocab();
+  else if (V.view === 'practice') root.innerHTML = renderPracticeHub();
   else if (V.view === 'frequency') root.innerHTML = renderFrequency();
   else if (V.view === 'kursplan') root.innerHTML = renderKursplan();
   else if (V.view === 'patterns') root.innerHTML = renderPatterns();
@@ -294,7 +281,7 @@ function render() {
 }
 
 function updateHeader() {
-  const showVocab = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'vocab';
+  const showVocab = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'practice';
   const tot = showVocab ? (typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length) : SENTENCES.length;
   const done = showVocab ? DB.freqLearned.size : DB.learned.size;
   const pct = tot ? Math.round(done / tot * 100) : 0;
@@ -303,13 +290,13 @@ function updateHeader() {
   document.getElementById('stk-n').textContent = DB.streak;
 }
 function updateNavBtns() {
-  ['today', 'browse', 'kursplan', 'patterns'].forEach(v => {
+  ['today', 'practice', 'browse', 'kursplan', 'patterns'].forEach(v => {
     const el = document.getElementById('nb-' + v);
     if (el) el.className = 'nb' + (V.view === v ? ' on' : '');
     const mel = document.getElementById('mnb-' + v);
     if (mel) mel.className = 'mnb' + (V.view === v ? ' on' : '');
   });
-  const wordsActive = V.view === 'vocab' || V.view === 'frequency';
+  const wordsActive = V.view === 'frequency';
   const wordsBtn = document.getElementById('nb-words');
   if (wordsBtn) wordsBtn.className = 'nb' + (wordsActive ? ' on' : '');
   const mWordsBtn = document.getElementById('mnb-words');
@@ -323,9 +310,14 @@ function updateNavBtns() {
   if (progBtn) progBtn.className = 'nb' + (progressActive ? ' on' : '');
   const mProgBtn = document.getElementById('mnb-progress');
   if (mProgBtn) mProgBtn.className = 'mnb' + (progressActive ? ' on' : '');
+  const dueCount = getFreqReviewIds().length;
+  document.querySelectorAll('.nav-due-badge').forEach(el => {
+    el.textContent = dueCount > 99 ? '99+' : String(dueCount);
+    el.hidden = dueCount === 0;
+  });
   const sc = document.getElementById('sb-learned-count');
   const scLbl = document.getElementById('sb-learned-lbl');
-  const showVocabStat = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'vocab';
+  const showVocabStat = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'practice';
   if (sc) sc.textContent = showVocabStat ? DB.freqLearned.size : DB.learned.size;
   if (scLbl) scLbl.textContent = showVocabStat ? 'vocab learned' : 'sentences learned';
 }
@@ -394,20 +386,25 @@ ${qs.map((s, i) => renderSentenceCard(s, i, true)).join('')}`;
 
 function renderTodayVocab() {
   ensureFreqDailyQueue();
-  const dueIds = new Set(getFreqReviewIds());
-  const queueEntries = DB.freqDailyQueue.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
-  const reviewEntries = queueEntries.filter(e => dueIds.has(String(e.rank)));
-  const newEntries = queueEntries.filter(e => !dueIds.has(String(e.rank)));
-  const queueDone = queueEntries.filter(entry => DB.freqDailyQueueDone.has(String(entry.rank)) || (DB.freqSrs[String(entry.rank)] && DB.freqSrs[String(entry.rank)].lastReview === today())).length;
+  const dueCount = getFreqReviewIds().length;
+  const newEntries = DB.freqDailyQueue.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
+  const queueDone = newEntries.filter(entry => DB.freqDailyQueueDone.has(String(entry.rank))).length;
   const total = typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length;
-  const queuePct = queueEntries.length ? Math.min(100, Math.round(queueDone / queueEntries.length * 100)) : 0;
-  const queueIdsJson = idsArg(queueEntries.map(entry => String(entry.rank)));
-  const goalOptions = [15, 30, 45, 60].map(n => `<button class="vocab-goal-opt${DB.freqDailyGoal === n ? ' on' : ''}" onclick="setFreqGoal(${n})" aria-pressed="${DB.freqDailyGoal === n}" type="button">${n}</button>`).join('');
+  const queuePct = newEntries.length ? Math.min(100, Math.round(queueDone / newEntries.length * 100)) : 0;
+  const queueIdsJson = idsArg(newEntries.map(entry => String(entry.rank)));
+  const goalOptions = [10, 15, 20, 30].map(n => `<button class="vocab-goal-opt${DB.freqDailyGoal === n ? ' on' : ''}" onclick="setFreqGoal(${n})" aria-pressed="${DB.freqDailyGoal === n}" type="button">${n}</button>`).join('');
+  const reviewBanner = dueCount ? `<div class="review-section vocab-review-section">
+  <div class="review-section-hdr">
+    <div class="review-section-title">${ICO.repeat} ${dueCount} word${dueCount !== 1 ? 's' : ''} due for review</div>
+    <button class="review-practice-btn" onclick="nav('practice')" type="button">Go to Practice</button>
+  </div>
+  <div class="review-section-sub">Reviews are handled in the Practice tab so today's list stays new words only.</div>
+</div>` : '';
 
   return `<div>
 <div class="goal-card vocab-goal-card">
   <div class="goal-top">
-    <div><div class="goal-title">Today's vocab queue</div><div class="goal-date">${queueEntries.length} card${queueEntries.length !== 1 ? 's' : ''} ready</div></div>
+    <div><div class="goal-title">Today's new words</div><div class="goal-date">${newEntries.length} word${newEntries.length !== 1 ? 's' : ''} you have not learned yet</div></div>
     <div class="goal-top-actions">
       <div class="today-segmented-control" role="tablist" aria-label="Today practice category">
         <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">Vocab</button>
@@ -417,29 +414,30 @@ function renderTodayVocab() {
     </div>
   </div>
   <div class="goal-nums">
-    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-    <div><div class="gnum-v">${dueIds.size}</div><div class="gnum-l">Due</div></div>
+    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Learned today</div></div>
+    <div><div class="gnum-v">${Math.max(0, newEntries.length - queueDone)}</div><div class="gnum-l">Remaining</div></div>
+    <div><div class="gnum-v">${dueCount}</div><div class="gnum-l">Due to review</div></div>
     <div><div class="gnum-v">${DB.freqLearned.size}</div><div class="gnum-l">Learned</div></div>
-    <div><div class="gnum-v">${DB.freqFavorites.size}</div><div class="gnum-l">Saved</div></div>
-    <div><div class="gnum-v">${total - DB.freqLearned.size}</div><div class="gnum-l">Remaining</div></div>
+    <div><div class="gnum-v">${total - DB.freqLearned.size}</div><div class="gnum-l">Left in deck</div></div>
   </div>
   <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
   <div class="vocab-goal-row">
-    <span>Daily vocab goal</span>
+    <span>New words per day</span>
     <div class="vocab-goal-options">${goalOptions}</div>
   </div>
 </div>
 
+${reviewBanner}
+
 <div class="section-hdr">
-  <h2 class="section-hdr-title">Today's ${queueEntries.length} vocab cards</h2>
+  <h2 class="section-hdr-title">Today's ${newEntries.length} new word${newEntries.length !== 1 ? 's' : ''}</h2>
   <div class="section-hdr-actions">
-    <button class="btn btn-primary btn-sm" onclick="startFrequencyPractice({ids:${queueIdsJson}})" type="button">${ICO.target} Practice</button>
+    ${newEntries.length ? `<button class="btn btn-primary btn-sm" onclick="startFrequencyPractice({ids:${queueIdsJson},mode:'new'})" type="button">${ICO.target} Learn these</button>` : ''}
     <button class="btn btn-secondary btn-sm" onclick="refreshFreqQueue()" type="button">${ICO.repeat} New batch</button>
   </div>
 </div>
 
-${reviewEntries.length ? `<div class="sec-lbl">${ICO.repeat} SRS review — ${reviewEntries.length} word${reviewEntries.length !== 1 ? 's' : ''} due today</div>${reviewEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}` : ''}
-${newEntries.map((entry, i) => renderFreqCard(entry, i)).join('')}
+${newEntries.length ? newEntries.map((entry, i) => renderFreqCard(entry, i)).join('') : `<div class="callout callout-success"><div class="callout-title">${ICO.check} No new words left for today</div><div class="callout-sub">Raise the daily target or head to Practice to review what is due.</div></div>`}
   </div>`;
 }
 
@@ -515,37 +513,103 @@ ${practiceTopicBtn}
 ${cards}`;
 }
 
-// ─── VOCAB ───────────────────────────────────
-function vocabTopicById(id) {
-  return VOCAB_TOPICS.find(topic => topic.id === id) || null;
+// ─── PRACTICE ────────────────────────────────
+const PRACTICE_DECKS = {
+  due: {
+    title: 'Due reviews',
+    sub: 'Words spaced repetition scheduled for today',
+    ids: () => getFreqReviewIds(),
+    empty: 'Nothing is due right now. Come back tomorrow.',
+  },
+  new: {
+    title: "Today's new words",
+    sub: 'Words from your daily learn queue you have not seen yet',
+    ids: () => { ensureFreqDailyQueue(); return DB.freqDailyQueue.filter(id => !DB.freqDailyQueueDone.has(id)); },
+    empty: 'Today\'s new words are done. Raise the daily target on the Today tab for more.',
+  },
+  hard: {
+    title: 'Hard words',
+    sub: `Learned words you have forgotten ${LEECH_LAPSES} or more times`,
+    ids: () => getFreqLeechIds(),
+    empty: 'No problem words yet. They show up here after repeated lapses.',
+  },
+  saved: {
+    title: 'Saved words',
+    sub: 'Everything you starred while browsing',
+    ids: () => [...DB.freqFavorites].sort((a, b) => Number(a) - Number(b)),
+    empty: 'Star words while browsing the dictionary to build this deck.',
+  },
+  learned: {
+    title: 'All learned',
+    sub: 'Free review of every word you already know, without touching the schedule',
+    ids: () => [...DB.freqLearned].sort((a, b) => Number(a) - Number(b)),
+    empty: 'Learn a few words first and they will collect here.',
+  },
+};
+
+function renderPracticeDeckCard(key) {
+  const deck = PRACTICE_DECKS[key];
+  const ids = deck.ids();
+  const disabled = ids.length === 0;
+  const start = key === 'learned'
+    ? `startFrequencyPractice({ids:${idsArg(ids)},mode:'free'})`
+    : `startFrequencyPractice({ids:${idsArg(ids)},mode:'${key}'})`;
+  return `<button class="deck-card${disabled ? ' is-empty' : ''}${key === 'due' && ids.length ? ' is-due' : ''}" ${disabled ? 'disabled aria-disabled="true"' : `onclick="${start}"`} type="button">
+  <span class="deck-card-count">${ids.length}</span>
+  <span class="deck-card-title">${esc(deck.title)}</span>
+  <span class="deck-card-sub">${esc(disabled ? deck.empty : deck.sub)}</span>
+</button>`;
 }
-function vocabDisplay(card) {
-  return card && card.article ? `${card.article} ${card.de}` : (card ? card.de : '');
+
+function renderPracticeHub() {
+  ensureFreqDailyQueue();
+  const dueIds = getFreqReviewIds();
+  const newIds = DB.freqDailyQueue.filter(id => !DB.freqDailyQueueDone.has(id));
+  const sessionIds = [...dueIds, ...newIds.filter(id => !dueIds.includes(id))];
+  const answeredToday = DB.freqAttempts.filter(a => a.date === today() && a.result !== 'skip');
+  const reviewsToday = answeredToday.filter(a => a.wasDue).length;
+  const newToday = DB.freqDailyQueueDone.size;
+  const overdue = Object.entries(DB.freqSrs).filter(([id, s]) => DB.freqLearned.has(id) && s.nextReview && s.nextReview < today()).length;
+  const dirToggle = ['de2en', 'en2de'].map(dir => `<button class="filter-chip${freqPracticeDir() === dir ? ' on' : ''}" onclick="setFreqPracticeDir('${dir}')" aria-pressed="${freqPracticeDir() === dir}" type="button">${dir === 'de2en' ? 'German → English' : 'English → German'}</button>`).join('');
+
+  const hero = sessionIds.length
+    ? `<div class="practice-hero">
+  <div class="practice-hero-main">
+    <div class="practice-hero-title">${sessionIds.length} card${sessionIds.length !== 1 ? 's' : ''} waiting</div>
+    <div class="practice-hero-sub">${dueIds.length} due review${dueIds.length !== 1 ? 's' : ''} · ${newIds.length} new word${newIds.length !== 1 ? 's' : ''}</div>
+  </div>
+  <button class="btn btn-primary practice-hero-btn" onclick="startFrequencyPractice({ids:${idsArg(sessionIds)},mode:'session'})" type="button">${ICO.target} Start session</button>
+</div>`
+    : `<div class="callout callout-success">
+  <div class="callout-title">${ICO.check} You are done for today</div>
+  <div class="callout-sub">No reviews due and no new words left in the queue. Raise the daily target on the Today tab if you want more.</div>
+</div>`;
+
+  return `<div style="padding-top:14px">
+<h2 class="page-title">Practice</h2>
+<p class="page-sub">Flashcards for the ${FREQUENCY_DICTIONARY_SIZE}-word German vocabulary deck, scheduled with spaced repetition.</p>
+
+${hero}
+
+<div class="stats-grid stats-grid-three practice-today-stats">
+  <div class="stat-box"><div class="stat-lbl">Reviews today</div><div class="stat-num">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
+  <div class="stat-box"><div class="stat-lbl">New today</div><div class="stat-num">${newToday}</div><div class="stat-sub">of ${DB.freqDailyGoal} target</div></div>
+  <div class="stat-box"><div class="stat-lbl">Overdue</div><div class="stat-num${overdue > 0 ? ' is-danger' : ''}">${overdue}</div><div class="stat-sub">from earlier days</div></div>
+</div>
+
+<div class="sec-lbl">Answer direction</div>
+<div class="filter-row">${dirToggle}</div>
+
+<div class="sec-lbl">Decks</div>
+<div class="deck-grid">${Object.keys(PRACTICE_DECKS).map(renderPracticeDeckCard).join('')}</div>
+
+<div class="callout">
+  <div class="callout-title">${ICO.keyboard} Shortcuts</div>
+  <div class="callout-sub">Space reveals the answer · 1 Again · 2 Hard · 3 Good · 4 Easy · Esc exits</div>
+</div>
+  </div>`;
 }
-function vocabSpeakText(card) {
-  return vocabDisplay(card);
-}
-function vocabMetaLabel(card) {
-  if (!card) return '';
-  if (card.pos === 'noun') return `${card.article} · ${card.gender}${card.plural ? ` · plural: ${card.plural}` : ''}`;
-  return VOCAB_POS_LABELS[card.pos] || card.pos;
-}
-function vocabCardsForView() {
-  const due = new Set(getVocabReviewIds());
-  const q = V.query.trim().toLowerCase();
-  return VOCAB_CARDS.filter(card => {
-    if (V.vocabTopicId && card.topic !== V.vocabTopicId) return false;
-    if (V.vocabFilter === 'new' && DB.vocabLearned.has(card.id)) return false;
-    if (V.vocabFilter === 'due' && !due.has(card.id)) return false;
-    if (V.vocabFilter === 'learned' && !DB.vocabLearned.has(card.id)) return false;
-    if (V.vocabFilter === 'saved' && !DB.vocabFavorites.has(card.id)) return false;
-    if (!q) return true;
-    const topic = vocabTopicById(card.topic);
-    return [vocabDisplay(card), card.de, card.en, card.pos, card.article, card.gender, card.plural, topic && topic.name, topic && topic.german]
-      .filter(Boolean)
-      .some(value => String(value).toLowerCase().includes(q));
-  }).sort((a, b) => a.priority - b.priority);
-}
+
 function renderLoadMore(shown, total, action) {
   if (total <= shown) return '';
   const remaining = total - shown;
@@ -557,127 +621,6 @@ function renderLoadMore(shown, total, action) {
 }
 
 function loadMoreFreq() { V.freqPage = (V.freqPage || 1) + 1; render(); }
-function loadMoreVocab() { V.vocabPage = (V.vocabPage || 1) + 1; render(); }
-
-function renderVocab() {
-  ensureVocabDailyQueue();
-  const dueIds = getVocabReviewIds();
-  const dueCards = dueIds.map(id => VOCAB_BY_ID[id]).filter(Boolean).sort((a, b) => a.priority - b.priority);
-  const queueCards = DB.vocabDailyQueue.map(id => VOCAB_BY_ID[id]).filter(Boolean).sort((a, b) => a.priority - b.priority);
-  const queueDone = queueCards.filter(card => DB.vocabDailyQueueDone.has(card.id) || (DB.vocabSrs[card.id] && DB.vocabSrs[card.id].lastReview === today())).length;
-  const learned = DB.vocabLearned.size;
-  const saved = DB.vocabFavorites.size;
-  const remaining = VOCAB_CARDS.length - learned;
-  const queuePct = queueCards.length ? Math.min(100, Math.round(queueDone / queueCards.length * 100)) : 0;
-  const visibleCards = vocabCardsForView();
-  const visibleIds = visibleCards.map(card => card.id);
-  const queueIds = queueCards.map(card => card.id);
-  const dueIdsJson = idsArg(dueIds);
-  const queueIdsJson = idsArg(queueIds);
-  const visibleIdsJson = idsArg(visibleIds);
-  const selectedTopic = vocabTopicById(V.vocabTopicId);
-  const dueSection = dueCards.length ? `<div class="review-section vocab-review-section">
-  <div class="review-section-hdr">
-    <div class="review-section-title">${ICO.repeat} Due vocab review <span class="review-count-badge">${dueCards.length}</span></div>
-    <button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">Practice now</button>
-  </div>
-  <div class="review-section-sub">These vocabulary cards are scheduled for spaced review today.</div>
-</div>` : '';
-  const goalOptions = [15, 30, 45, 60].map(n => `<button class="vocab-goal-opt${DB.vocabDailyGoal === n ? ' on' : ''}" onclick="setVocabGoal(${n})" aria-pressed="${DB.vocabDailyGoal === n}" type="button">${n}</button>`).join('');
-  const topicChips = [`<button class="filter-chip${!V.vocabTopicId ? ' on' : ''}" onclick="setVocabTopic(null)" aria-pressed="${!V.vocabTopicId}" type="button">All topics</button>`]
-    .concat(VOCAB_TOPICS.map(topic => `<button class="filter-chip${V.vocabTopicId === topic.id ? ' on' : ''}" onclick="setVocabTopic('${topic.id}')" aria-pressed="${V.vocabTopicId === topic.id}" type="button">${esc(topic.name)}</button>`))
-    .join('');
-  const cardsTitle = V.query
-    ? `Search results (${visibleCards.length})`
-    : selectedTopic
-    ? `${esc(selectedTopic.name)} (${visibleCards.length})`
-    : V.vocabFilter === 'all'
-    ? `All vocab cards (${visibleCards.length})`
-    : `${V.vocabFilter.charAt(0).toUpperCase() + V.vocabFilter.slice(1)} cards (${visibleCards.length})`;
-
-  const pageHeader = `<h2 class="page-title">Vocabulary</h2><p class="page-sub">Build your German vocabulary with spaced repetition.</p>`;
-
-  const actionRow = `<div class="vocab-action-row">
-  ${queueCards.length ? `<button class="learned-practice-btn" onclick="startVocabPractice({ids:${queueIdsJson}})">Practice today's ${queueCards.length}</button>` : ''}
-  ${dueCards.length ? `<button class="review-practice-btn" onclick="startVocabPractice({ids:${dueIdsJson},isSRS:true})">Practice due ${dueCards.length}</button>` : ''}
-  ${visibleCards.length ? `<button class="act-btn vocab-visible-practice" onclick="startVocabPractice({ids:${visibleIdsJson},skipSessionFilter:true})">Practice visible</button>` : ''}
-</div>`;
-
-  return `<div style="padding-top:14px">
-${pageHeader}
-${dueSection}
-
-<div class="goal-card vocab-goal-card">
-  <div class="goal-top">
-    <div><div class="goal-title">Today's vocab queue</div><div class="goal-date">${queueCards.length} card${queueCards.length !== 1 ? 's' : ''} ready</div></div>
-    <div class="goal-top-actions">
-      <button class="goal-btn" onclick="refreshVocabQueue()" type="button">New batch</button>
-    </div>
-  </div>
-  <div class="goal-nums">
-    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-    <div><div class="gnum-v">${dueIds.length}</div><div class="gnum-l">Due</div></div>
-    <div><div class="gnum-v">${learned}</div><div class="gnum-l">Learned</div></div>
-    <div><div class="gnum-v">${saved}</div><div class="gnum-l">Saved</div></div>
-    <div><div class="gnum-v">${remaining}</div><div class="gnum-l">Remaining</div></div>
-  </div>
-  <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
-  <div class="vocab-goal-row">
-    <span>Daily vocab goal</span>
-    <div class="vocab-goal-options">${goalOptions}</div>
-  </div>
-</div>
-
-${actionRow}
-
-${queueCards.length ? `<div class="sec-lbl">Today's new / due queue</div>${queueCards.map((card, i) => renderVocabCard(card, i)).join('')}` : ''}
-
-<div class="search-wrap" style="margin:16px 0"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search vocab, English meaning, topic, article, plural..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
-<div class="filter-row vocab-topic-row">${topicChips}</div>
-<div class="filter-row">
-  ${['all', 'new', 'due', 'learned', 'saved'].map(f => `<button class="filter-chip${V.vocabFilter === f ? ' on' : ''}" onclick="setVocabFilter('${f}')" aria-pressed="${V.vocabFilter === f}" type="button">${f === 'all' ? 'All' : f === 'new' ? 'New' : f === 'due' ? 'Due' : f === 'learned' ? 'Learned' : 'Saved'}</button>`).join('')}
-</div>
-<div class="sec-lbl">${cardsTitle}</div>
-${visibleCards.length ? visibleCards.slice(0, (V.vocabPage || 1) * PAGE_SIZE).map((card, i) => renderVocabCard(card, i)).join('') + renderLoadMore(Math.min(visibleCards.length, (V.vocabPage || 1) * PAGE_SIZE), visibleCards.length, 'loadMoreVocab()') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No vocab cards match.</div>`}
-  </div>`;
-}
-function renderVocabCard(card, i) {
-  const topic = vocabTopicById(card.topic);
-  const learned = DB.vocabLearned.has(card.id);
-  const saved = DB.vocabFavorites.has(card.id);
-  const nextLabel = vocabSrsNextLabel(card.id);
-  const srsLvl = getVocabSrsLevel(card.id);
-  const srsDots = learned ? `<span class="srs-dots" title="${esc(nextLabel)}">${SRS_INTERVALS.map((_, dot) => `<span class="srs-dot${dot < srsLvl ? ' filled' : ''}"></span>`).join('')}</span>${nextLabel ? `<span class="srs-next">${esc(nextLabel)}</span>` : ''}` : '';
-  const gender = card.pos === 'noun' ? `<span class="vocab-gender g-${card.gender}">${card.article} · ${card.gender}</span>` : `<span class="vocab-gender">${esc(VOCAB_POS_LABELS[card.pos] || card.pos)}</span>`;
-  return `<div class="vc${learned ? ' lrn' : ''}${saved ? ' fav' : ''}" id="vc-${card.id}">
-<div class="sc-top">
-  ${topic ? `<span class="topic-label">${esc(topic.name)}</span>` : ''}
-  <span class="lvl-tag l${card.level}">${card.level}</span>
-  ${gender}
-  ${learned ? `<span class="lrn-badge">${ICO.check} Learned</span>${srsDots}` : ''}
-</div>
-<button class="vocab-term reveal-btn" onclick="toggleVocabReveal('${card.id}')" aria-expanded="false" type="button" lang="de">${esc(vocabDisplay(card))}</button>
-<div class="vocab-meta">${esc(vocabMetaLabel(card))}</div>
-<div class="reveal-hint" id="vhn-${card.id}" onclick="toggleVocabReveal('${card.id}')">Tap to reveal meaning and example</div>
-<button class="vocab-en hid reveal-btn" id="ven-${card.id}" onclick="toggleVocabReveal('${card.id}')" aria-hidden="true" hidden type="button">${esc(card.en)}</button>
-<div class="vocab-details" id="vrd-${card.id}" style="display:none">
-  ${card.plural ? `<div class="vocab-detail-row"><strong>Plural</strong><span lang="de">${esc(card.plural)}</span></div>` : ''}
-  <div class="vocab-example"><strong>Example</strong><span lang="de">${esc(card.example.de)}</span><em>${esc(card.example.en)}</em></div>
-</div>
-<div class="card-actions">
-  <button class="act-btn speak-btn" data-id="vocab-${card.id}" onclick="speak(${jsArg(vocabSpeakText(card))},'vocab-${card.id}')" type="button">
-    ${ICO.speak} Listen
-  </button>
-  <button class="act-btn${learned ? ' is-learned' : ''}" id="vlrn-btn-${card.id}" onclick="toggleVocabLearned('${card.id}')">
-    ${ICO.check} ${learned ? 'Learned' : 'Mark learned'}
-  </button>
-  <button class="act-btn${saved ? ' is-fav' : ''}" id="vfav-btn-${card.id}" onclick="toggleVocabFav('${card.id}')">
-    ${ICO.star} ${saved ? 'Saved' : 'Save'}
-  </button>
-  <button class="act-btn" onclick="startVocabPractice({ids:['${card.id}'],skipSessionFilter:true})">Practice</button>
-</div>
-  </div>`;
-}
 
 // ══════════════════════════════════════════════
 // FREQUENCY DICTIONARY
@@ -717,74 +660,31 @@ function freqCardsForView() {
 function renderFrequency() {
   if (!V.freqRange || !VALID_FREQ_RANGES.has(V.freqRange)) V.freqRange = 'all';
   if (!V.freqFilter || !VALID_FREQ_FILTERS.has(V.freqFilter)) V.freqFilter = 'all';
-  ensureFreqDailyQueue();
-  const dueIds = getFreqReviewIds().sort((a, b) => Number(a) - Number(b));
-  const dueEntries = dueIds.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
-  const queueEntries = DB.freqDailyQueue.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
-  const queueDone = queueEntries.filter(e => DB.freqDailyQueueDone.has(String(e.rank)) || (DB.freqSrs[String(e.rank)] && DB.freqSrs[String(e.rank)].lastReview === today())).length;
+  const dueCount = getFreqReviewIds().length;
   const learned = DB.freqLearned.size;
-  const saved = DB.freqFavorites.size;
   const total = typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length;
-  const remaining = total - learned;
-  const queuePct = queueEntries.length ? Math.min(100, Math.round(queueDone / queueEntries.length * 100)) : 0;
   const visibleEntries = freqCardsForView();
-  const visibleIds = visibleEntries.map(e => String(e.rank));
-  const queueIds = queueEntries.map(e => String(e.rank));
-  const dueIdsJson = idsArg(dueIds);
-  const queueIdsJson = idsArg(queueIds);
-  const visibleIdsJson = idsArg(visibleIds);
+  const visibleIdsJson = idsArg(visibleEntries.map(e => String(e.rank)));
   const rangeChips = [['all', 'All'], ['1-500', '1–500'], ['501-1000', '501–1000'], ['1001-1500', '1001–1500'], ['1501-2000', '1501–2000'], ['2001-2525', '2001–2525']]
     .map(([r, label]) => `<button class="filter-chip${V.freqRange === r ? ' on' : ''}" onclick="setFreqRange('${r}')" aria-pressed="${V.freqRange === r}" type="button">${esc(label)}</button>`).join('');
-  const dueSection = dueEntries.length ? `<div class="review-section vocab-review-section">
+  const dueSection = dueCount ? `<div class="review-section vocab-review-section">
   <div class="review-section-hdr">
-    <div class="review-section-title">${ICO.repeat} Due frequency review <span class="review-count-badge">${dueEntries.length}</span></div>
-    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueIdsJson},isSRS:true})">Practice now</button>
+    <div class="review-section-title">${ICO.repeat} ${dueCount} word${dueCount !== 1 ? 's' : ''} due for review</div>
+    <button class="review-practice-btn" onclick="nav('practice')" type="button">Go to Practice</button>
   </div>
-  <div class="review-section-sub">These frequency cards are scheduled for spaced review today.</div>
+  <div class="review-section-sub">Spaced repetition sessions live in the Practice tab.</div>
 </div>` : '';
-  const goalOptions = [5, 10, 15, 20, 25, 30].map(n => `<button class="vocab-goal-opt${DB.freqDailyGoal === n ? ' on' : ''}" onclick="setFreqGoal(${n})" aria-pressed="${DB.freqDailyGoal === n}" type="button">${n}</button>`).join('');
   const cardsTitle = V.query
     ? `Search results (${visibleEntries.length})`
     : V.freqRange === 'all'
-    ? `All frequency cards (${visibleEntries.length})`
+    ? `All words (${visibleEntries.length})`
     : `Rank ${esc(V.freqRange)} (${visibleEntries.length})`;
 
   return `<div style="padding-top:14px">
 <h2 class="page-title">Vocabulary</h2>
-<p class="page-sub">The 2,525 most common German words, ranked by frequency — with example sentences and spaced review.</p>
+<p class="page-sub">The ${total.toLocaleString('en-DE')} most common German words, ranked by frequency — ${learned} learned so far.</p>
 ${dueSection}
 
-<div class="goal-card vocab-goal-card">
-  <div class="goal-top">
-    <div><div class="goal-title">Today's frequency queue</div><div class="goal-date">${queueEntries.length} card${queueEntries.length !== 1 ? 's' : ''} ready</div></div>
-    <button class="goal-btn" onclick="refreshFreqQueue()" type="button">New batch</button>
-  </div>
-  <div class="goal-nums">
-    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Queue done</div></div>
-    <div><div class="gnum-v">${dueIds.length}</div><div class="gnum-l">Due</div></div>
-    <div><div class="gnum-v">${learned}</div><div class="gnum-l">Learned</div></div>
-    <div><div class="gnum-v">${saved}</div><div class="gnum-l">Saved</div></div>
-    <div><div class="gnum-v">${remaining}</div><div class="gnum-l">Remaining</div></div>
-  </div>
-  <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
-  <div class="vocab-goal-row">
-    <span>Daily frequency goal</span>
-    <div class="vocab-goal-options">${goalOptions}</div>
-  </div>
-</div>
-
-<div class="vocab-action-row">
-  ${queueEntries.length ? `<button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${queueIdsJson}})">Practice today's ${queueEntries.length}</button>` : ''}
-  ${dueEntries.length ? `<button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueIdsJson},isSRS:true})">Practice due ${dueEntries.length}</button>` : ''}
-</div>
-
-${queueEntries.length ? `<details class="freq-queue-preview" open>
-  <summary class="freq-queue-summary"><span class="sec-lbl freq-queue-lbl">Today's new / due queue</span><span class="freq-queue-toggle">Show words</span></summary>
-  <div class="freq-chip-row">${queueEntries.map(e => `<button class="freq-chip" onclick="startFrequencyPractice({ids:['${String(e.rank)}'],skipSessionFilter:true})" type="button"><span class="freq-chip-rank">#${e.rank}</span> <span lang="de">${esc(freqDisplay(e))}</span></button>`).join('')}</div>
-</details>` : ''}
-
-<div class="freq-browse-section">
-<div class="sec-lbl freq-browse-lbl">Browse dictionary</div>
 <div class="search-wrap" style="margin:12px 0"><span class="search-icon">${ICO.search}</span><input class="search-input" placeholder="Search German word, English meaning, or sentence..." value="${esc(V.query)}" oninput="setQuery(this.value)" type="text"></div>
 <div class="filter-row vocab-topic-row">${rangeChips}</div>
 <div class="filter-row">
@@ -792,10 +692,9 @@ ${queueEntries.length ? `<details class="freq-queue-preview" open>
 </div>
 <div class="freq-browse-hdr">
   <div class="sec-lbl freq-browse-results-lbl">${cardsTitle}</div>
-  ${visibleEntries.length ? `<button class="act-btn vocab-visible-practice" onclick="startFrequencyPractice({ids:${visibleIdsJson},skipSessionFilter:true})">${ICO.target} Practice these</button>` : ''}
+  ${visibleEntries.length ? `<button class="act-btn vocab-visible-practice" onclick="startFrequencyPractice({ids:${visibleIdsJson},mode:'free'})" type="button">${ICO.target} Practice these</button>` : ''}
 </div>
-${visibleEntries.length ? visibleEntries.slice(0, (V.freqPage || 1) * PAGE_SIZE).map((e, i) => renderFreqCard(e, i)).join('') + renderLoadMore(Math.min(visibleEntries.length, (V.freqPage || 1) * PAGE_SIZE), visibleEntries.length, 'loadMoreFreq()') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No frequency cards match.</div>`}
-</div>
+${visibleEntries.length ? visibleEntries.slice(0, (V.freqPage || 1) * PAGE_SIZE).map((e, i) => renderFreqCard(e, i)).join('') + renderLoadMore(Math.min(visibleEntries.length, (V.freqPage || 1) * PAGE_SIZE), visibleEntries.length, 'loadMoreFreq()') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No words match.</div>`}
   </div>`;
 }
 function renderFreqCard(entry, i) {
@@ -814,6 +713,7 @@ function renderFreqCard(entry, i) {
 <button class="vocab-term reveal-btn" onclick="toggleFreqReveal('${id}')" aria-expanded="false" type="button" lang="de">${esc(freqDisplay(entry))}</button>
 <div class="freq-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
 <button class="vocab-en hid reveal-btn" id="fen-${id}" onclick="toggleFreqReveal('${id}')" aria-hidden="true" hidden type="button">
+  <span class="freq-en-word">${esc(entry.english)}</span>
   <span class="freq-en-sentence">${esc(entry.englishSentence)}</span>
 </button>
 <div class="card-actions">
@@ -1405,7 +1305,7 @@ function renderSaved() {
   const frequencyReviewSection = reviewFreq.length ? `<div class="review-section">
   <div class="review-section-hdr">
     <div class="review-section-title">${ICO.repeat} Due for review <span class="review-count-badge">${reviewFreq.length}</span></div>
-    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${idsArg(reviewFreqIds)},isSRS:true})">Practice now</button>
+    <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${idsArg(reviewFreqIds)},mode:'due'})" type="button">Practice now</button>
   </div>
   <div class="review-section-sub">These vocabulary cards are scheduled for review today.</div>
 </div>` : '';
@@ -1428,7 +1328,7 @@ ${favSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}` : '';
     <div class="learned-cta-title">${favFreq.length} saved frequency word${favFreq.length !== 1 ? 's' : ''}</div>
     <div class="learned-cta-sub">Practice your saved vocabulary</div>
   </div>
-  <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${favFreqIds},skipSessionFilter:true})">Practice all</button>
+  <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${favFreqIds},mode:'saved'})" type="button">Practice all</button>
 </div>
 ${favFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}` : '';
   return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}
@@ -1469,7 +1369,7 @@ function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
     <div class="review-section">
       <div class="review-section-hdr">
         <div class="review-section-title">${ICO.repeat} Due frequency review <span class="review-count-badge">${dueFreq.length}</span></div>
-        <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueFreqIdsJson},isSRS:true})">Practice due</button>
+        <button class="review-practice-btn" onclick="startFrequencyPractice({ids:${dueFreqIdsJson},mode:'due'})" type="button">Practice due</button>
       </div>
       <div class="review-section-sub">These vocabulary cards are scheduled for review today.</div>
     </div>
@@ -1498,7 +1398,7 @@ function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
         <div class="learned-cta-title">${learnedFreq.length} learned frequency word${learnedFreq.length !== 1 ? 's' : ''}</div>
         <div class="learned-cta-sub">Review your learned vocabulary</div>
       </div>
-      <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${learnedFreqIds},skipSessionFilter:true})">Practice all</button>
+      <button class="learned-practice-btn" onclick="startFrequencyPractice({ids:${learnedFreqIds},mode:'free'})" type="button">Practice all</button>
     </div>
     ${learnedFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}
   ` : '';
@@ -1528,67 +1428,44 @@ function aggregateAttempts(attempts, keyFn) {
   });
   return map;
 }
-function reviewForecast(days = 7) {
+function reviewForecast(srsMap, days = 7) {
   return Array.from({ length: days }, (_, i) => {
     const key = addDaysISO(i);
-    const count = Object.values(DB.srs).filter(s => s.nextReview === key).length;
+    const count = Object.values(srsMap).filter(s => s.nextReview === key).length;
     return { key, count, label: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : parseDateKey(key).toLocaleDateString('en-DE', { weekday: 'short' }) };
   });
 }
 function renderProgressOverview() {
-  const tot = SENTENCES.length, done = DB.learned.size, fav = DB.favorites.size, und = DB.understood.size;
-  const completion = pct(done, tot);
-  const lvColors = { A1: '#16A34A', A2: '#D97706' };
-  const byLevel = ['A1', 'A2'].map(lv => {
-    const lvS = SENTENCES.filter(s => s.lv === lv); const lvD = lvS.filter(s => DB.learned.has(s.id)).length;
-    return { lv, done: lvD, tot: lvS.length, pct: pct(lvD, lvS.length) };
-  });
+  const vocabTotal = FREQUENCY_DICTIONARY_SIZE;
+  const vocabDone = DB.freqLearned.size;
+  const vocabCompletion = pct(vocabDone, vocabTotal);
+  const vocabDue = getFreqReviewIds().length;
+  const vocabOverdue = Object.entries(DB.freqSrs).filter(([id, s]) => DB.freqLearned.has(id) && s.nextReview && s.nextReview < today()).length;
+  const vocabMastered = Object.entries(DB.freqSrs).filter(([id, s]) => DB.freqLearned.has(id) && s.level >= 5).length;
+  const leechIds = getFreqLeechIds();
+
   const histRows = [];
   for (let i = 6; i >= 0; i--) {
     const key = addDaysISO(-i);
-    const cnt = DB.attempts.filter(a => a.date === key && a.result !== 'skip').length
-      + DB.patternAttempts.filter(a => a.date === key && a.result !== 'skip').length
-      + DB.vocabAttempts.filter(a => a.date === key && a.result !== 'skip').length
-      + DB.freqAttempts.filter(a => a.date === key && a.result !== 'skip').length;
+    const cnt = DB.freqAttempts.filter(a => a.date === key && a.result !== 'skip').length;
     const d = parseDateKey(key);
     const label = i === 0 ? 'Today' : i === 1 ? 'Yest' : d.toLocaleDateString('en-DE', { weekday: 'short' });
     histRows.push({ label, cnt, isToday: i === 0 });
   }
   const maxH = Math.max(...histRows.map(r => r.cnt), 1);
-  const studiedDates = new Set([...DB.attempts, ...DB.patternAttempts, ...DB.vocabAttempts, ...DB.freqAttempts].filter(a => a.result !== 'skip').map(a => a.date));
+  const studiedDates = new Set([...DB.attempts, ...DB.patternAttempts, ...DB.freqAttempts].filter(a => a.result !== 'skip').map(a => a.date));
   Object.keys(DB.historyWords).forEach(k => studiedDates.add(k));
-  const reviewDue = getSrsReviewIds().length;
-  const patternDue = getPatternReviewIds().length;
-  const vocabDue = getVocabReviewIds().length;
-  const vocabDone = DB.vocabLearned.size;
-  const freqDue = getFreqReviewIds().length;
-  const freqDone = DB.freqLearned.size;
-  const overdue = Object.values(DB.srs).filter(s => s.nextReview && s.nextReview < today()).length;
-  const srsTotal = Object.keys(DB.srs).length;
-  const srsLvl5plus = Object.entries(DB.srs).filter(([id, v]) => DB.learned.has(id) && v.level >= 5).length;
-  const newToday = (DB.historyWords[today()] || []).length;
-  const reviewsToday = [...DB.attempts, ...DB.patternAttempts, ...DB.vocabAttempts, ...DB.freqAttempts]
-    .filter(a => a.date === today() && a.wasDue && a.result !== 'skip').length;
-  const sentenceAgg = aggregateAttempts(DB.attempts, a => a.id);
-  const topicAgg = aggregateAttempts(DB.attempts, a => a.topic);
-  const dirAgg = aggregateAttempts(DB.attempts, a => a.direction);
-  const patternAgg = aggregateAttempts(DB.patternAttempts, a => a.id);
-  const weakSentences = Object.entries(sentenceAgg)
-    .map(([id, s]) => ({ id, ...s, acc: pct(s.got, s.total) }))
-    .filter(s => s.total >= 1 && (s.again > 0 || s.acc < 70))
-    .sort((a, b) => b.again - a.again || a.acc - b.acc)
-    .slice(0, 5);
-  const weakPatterns = Object.entries(patternAgg)
-    .map(([id, s]) => ({ id, ...s, acc: pct(s.got, s.total) }))
-    .filter(s => s.total >= 1 && (s.again > 0 || s.acc < 70))
-    .sort((a, b) => b.again - a.again || a.acc - b.acc)
-    .slice(0, 5);
-  const topicRows = Object.entries(topicAgg)
-    .map(([id, s]) => ({ topic: TOPICS.find(t => t.id === id), ...s, acc: pct(s.got, s.total) }))
-    .filter(r => r.topic && r.total > 0)
-    .sort((a, b) => a.acc - b.acc)
-    .slice(0, 5);
-  const forecast = reviewForecast(7);
+
+  const todayFreq = DB.freqAttempts.filter(a => a.date === today() && a.result !== 'skip');
+  const newToday = DB.freqDailyQueueDone.size;
+  const reviewsToday = todayFreq.filter(a => a.wasDue).length;
+
+  const ratings = ['again', 'hard', 'good', 'easy'];
+  const ratingCounts = ratings.map(r => ({ r, n: DB.freqAttempts.filter(a => a.result === r).length }));
+  const ratingTotal = ratingCounts.reduce((sum, c) => sum + c.n, 0);
+  const retention = ratingTotal ? pct(ratingCounts[2].n + ratingCounts[3].n, ratingTotal) : 0;
+
+  const forecast = reviewForecast(DB.freqSrs, 7);
   const maxForecast = Math.max(...forecast.map(r => r.count), 1);
 
   const barChart = `<div class="hist-chart">
@@ -1597,64 +1474,52 @@ ${histRows.map(r => {
     return `<div class="hist-col"><div class="hist-bar-wrap"><div class="hist-bar-inner${r.isToday ? ' today' : ''}${r.cnt === 0 ? ' zero' : ''}" style="height:${heightPct}%">${r.cnt > 0 ? `<span class="hist-bar-num">${r.cnt}</span>` : ''}</div></div><div class="hist-day-lbl${r.isToday ? ' today' : ''}">${r.label}</div></div>`;
   }).join('')}
   </div>`;
-  const forecastChart = `<div class="stats-chart-title"><strong>Review forecast</strong><span>Next 7 days of scheduled sentence reviews</span></div>
-  <div class="forecast-row">${forecast.map(r => `<div class="forecast-day"><div class="forecast-count">${r.count}</div><div class="forecast-bar"><span class="${r.count ? '' : 'zero'}" style="height:${Math.max(8, Math.round(r.count / maxForecast * 100))}%"></span></div><div class="forecast-label">${r.label}</div></div>`).join('')}</div>`;
+  const forecastChart = `<div class="forecast-row">${forecast.map(r => `<div class="forecast-day"><div class="forecast-count">${r.count}</div><div class="forecast-bar"><span class="${r.count ? '' : 'zero'}" style="height:${Math.max(8, Math.round(r.count / maxForecast * 100))}%"></span></div><div class="forecast-label">${r.label}</div></div>`).join('')}</div>`;
+
+  const leechRows = leechIds.slice(0, 8).map(id => {
+    const entry = freqById(id);
+    if (!entry) return '';
+    const lapses = (DB.freqSrs[id] || {}).lapses || 0;
+    return `<div class="insight-row"><div><strong lang="de">${esc(entry.german)}</strong><span>${esc(entry.english)} · forgotten ${lapses}×</span></div><button onclick="startFrequencyPractice({ids:['${id}'],mode:'free'})" type="button">Practice</button></div>`;
+  }).join('');
 
   return `<div class="progress-body">
 <div class="stats-grid">
-  <div class="stat-box"><div class="stat-lbl">Sentences learned</div><div class="stat-num">${done}</div><div class="stat-sub">of ${tot} sentences</div></div>
-  <div class="stat-box"><div class="stat-lbl">Completion</div><div class="stat-num">${completion}%</div><div class="stat-sub">overall progress</div></div>
+  <div class="stat-box"><div class="stat-lbl">Vocab learned</div><div class="stat-num">${vocabDone}</div><div class="stat-sub">of ${vocabTotal} words</div></div>
+  <div class="stat-box"><div class="stat-lbl">Completion</div><div class="stat-num">${vocabCompletion}%</div><div class="stat-sub">of the deck</div></div>
   <div class="stat-box"><div class="stat-lbl">Streak</div><div class="stat-num">${DB.streak}</div><div class="stat-sub">study days in a row</div></div>
   <div class="stat-box"><div class="stat-lbl">Days studied</div><div class="stat-num">${studiedDates.size}</div><div class="stat-sub">with activity</div></div>
-</div>
-<div class="stats-grid stats-grid-three">
-  <div class="stat-box"><div class="stat-lbl">New today</div><div class="stat-num">${newToday}</div><div class="stat-sub">sentences learned</div></div>
-  <div class="stat-box"><div class="stat-lbl">Reviews today</div><div class="stat-num">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
-  <div class="stat-box"><div class="stat-lbl">Patterns</div><div class="stat-num">${und}</div><div class="stat-sub">${patternDue} due</div></div>
-  <div class="stat-box"><div class="stat-lbl">Vocab</div><div class="stat-num">${vocabDone}</div><div class="stat-sub">${vocabDue} due of ${VOCAB_CARDS.length}</div></div>
-  <div class="stat-box"><div class="stat-lbl">Frequency</div><div class="stat-num">${freqDone}</div><div class="stat-sub">${freqDue} due of ${FREQUENCY_DICTIONARY_SIZE}</div></div>
 </div>
 
 <div class="stats-sec-hdr">Spaced repetition</div>
 <div class="stats-grid stats-grid-three">
-  <div class="stat-box"><div class="stat-lbl">Due today</div><div class="stat-num${reviewDue > 0 ? ' is-warn' : ''}">${reviewDue}</div><div class="stat-sub">sentence reviews</div></div>
-  <div class="stat-box"><div class="stat-lbl">Overdue</div><div class="stat-num${overdue > 0 ? ' is-danger' : ''}">${overdue}</div><div class="stat-sub">before today</div></div>
-  <div class="stat-box"><div class="stat-lbl">Mastered</div><div class="stat-num">${srsLvl5plus}</div><div class="stat-sub">of ${srsTotal} scheduled</div></div>
+  <div class="stat-box"><div class="stat-lbl">Due today</div><div class="stat-num${vocabDue > 0 ? ' is-warn' : ''}">${vocabDue}</div><div class="stat-sub">scheduled reviews</div></div>
+  <div class="stat-box"><div class="stat-lbl">Overdue</div><div class="stat-num${vocabOverdue > 0 ? ' is-danger' : ''}">${vocabOverdue}</div><div class="stat-sub">from earlier days</div></div>
+  <div class="stat-box"><div class="stat-lbl">Mastered</div><div class="stat-num">${vocabMastered}</div><div class="stat-sub">interval of months+</div></div>
+  <div class="stat-box"><div class="stat-lbl">New today</div><div class="stat-num">${newToday}</div><div class="stat-sub">of ${DB.freqDailyGoal} target</div></div>
+  <div class="stat-box"><div class="stat-lbl">Reviews today</div><div class="stat-num">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
+  <div class="stat-box"><div class="stat-lbl">Hard words</div><div class="stat-num${leechIds.length > 0 ? ' is-warn' : ''}">${leechIds.length}</div><div class="stat-sub">${LEECH_LAPSES}+ lapses</div></div>
 </div>
+
+<div class="stats-sec-hdr">Review forecast</div>
 ${forecastChart}
 
 <div class="stats-sec-hdr">Practice activity — past 7 days</div>
 ${barChart}
 
-<div class="stats-sec-hdr">Accuracy by direction</div>
-${['de2en', 'en2de', 'type'].map(dir => {
-    const row = dirAgg[dir] || { got: 0, total: 0 };
-    const label = dir === 'de2en' ? 'German → English' : dir === 'en2de' ? 'English → German' : 'Typed German';
-    return `<div class="prog-row"><div class="prog-lbl" style="min-width:130px">${label}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct(row.got, row.total)}%"></div></div><div class="prog-pct">${pct(row.got, row.total)}%</div><div class="prog-cnt">${row.got}/${row.total}</div></div>`;
-  }).join('')}
+<div class="stats-sec-hdr">Answer breakdown</div>
+${ratingTotal ? `<div class="rating-breakdown">${ratingCounts.map(c => `<div class="prog-row"><div class="prog-lbl" style="min-width:70px;text-transform:capitalize">${c.r}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct(c.n, ratingTotal)}%"></div></div><div class="prog-pct">${pct(c.n, ratingTotal)}%</div><div class="prog-cnt">${c.n}</div></div>`).join('')}</div>
+<div class="callout"><div class="callout-title">Retention ${retention}%</div><div class="callout-sub">Share of answers rated Good or Easy across ${ratingTotal} rating${ratingTotal !== 1 ? 's' : ''}.</div></div>` : '<div class="empty-mini">Rate some flashcards in Practice and the breakdown appears here.</div>'}
 
 <div class="stats-sec-hdr">Needs attention</div>
-${weakSentences.length ? weakSentences.map(w => {
-    const s = SENTENCES.find(x => x.id === w.id);
-    return s ? `<div class="insight-row"><div><strong lang="de">${esc(s.de)}</strong><span>${esc(s.en)}</span></div><button onclick="startPractice({ids:['${w.id}'],skipSessionFilter:true})">Practice</button></div>` : '';
-  }).join('') : '<div class="empty-mini">No weak sentence data yet. Practice a few sessions first.</div>'}
+${leechRows || '<div class="empty-mini">No problem words. Words appear here once you forget them repeatedly.</div>'}
 
-<div class="stats-sec-hdr">Weak topics</div>
-${topicRows.length ? topicRows.map(r => `<div class="prog-row"><div class="prog-lbl" style="min-width:130px">${esc(r.topic.name)}</div><div class="prog-bar"><div class="prog-fill" style="width:${r.acc}%"></div></div><div class="prog-pct">${r.acc}%</div><div class="prog-cnt">${r.got}/${r.total}</div></div>`).join('') : '<div class="empty-mini">Topic accuracy appears after practice attempts.</div>'}
-
-<div class="stats-sec-hdr">Hardest patterns</div>
-${weakPatterns.length ? weakPatterns.map(w => {
-    const p = PATTERNS.find(x => x.id === w.id);
-    return p ? `<div class="insight-row"><div><strong lang="de">${esc(p.template)}</strong><span>${esc(p.meaning)} · ${w.acc}% accuracy</span></div><button onclick="startPatternPractice({ids:['${w.id}']})">Practice</button></div>` : '';
-  }).join('') : '<div class="empty-mini">Pattern accuracy appears after pattern practice.</div>'}
-
-<div class="stats-sec-hdr">By level</div>
-${byLevel.map(l => `<div class="prog-row">
-  <div class="prog-lbl">${l.lv}</div>
-  <div class="prog-bar"><div class="prog-fill" style="width:${l.pct}%"></div></div>
-  <div class="prog-pct">${l.pct}%</div>
-  <div class="prog-cnt">${l.done}/${l.tot}</div>
-</div>`).join('')}
+<div class="stats-sec-hdr">Sentences &amp; patterns</div>
+<div class="stats-grid stats-grid-three">
+  <div class="stat-box"><div class="stat-lbl">Sentences learned</div><div class="stat-num">${DB.learned.size}</div><div class="stat-sub">of ${SENTENCES.length}</div></div>
+  <div class="stat-box"><div class="stat-lbl">Sentences due</div><div class="stat-num">${getSrsReviewIds().length}</div><div class="stat-sub">scheduled today</div></div>
+  <div class="stat-box"><div class="stat-lbl">Patterns understood</div><div class="stat-num">${DB.understood.size}</div><div class="stat-sub">${getPatternReviewIds().length} due</div></div>
+</div>
 
 <div class="stats-sec-hdr">Data</div>
 <div class="btn-row" style="margin-bottom:20px">
@@ -1717,41 +1582,6 @@ function toggleFav(id) {
   }
 }
 
-function toggleVocabReveal(id) {
-  const en = document.getElementById('ven-' + id);
-  const hint = document.getElementById('vhn-' + id);
-  const details = document.getElementById('vrd-' + id);
-  const card = document.getElementById('vc-' + id);
-  if (!en) return;
-  if (en.classList.contains('hid')) {
-    en.hidden = false;
-    en.setAttribute('aria-hidden', 'false');
-    en.classList.remove('hid');
-    if (hint) hint.style.display = 'none';
-    if (details) details.style.display = 'block';
-    if (card) card.querySelectorAll('.reveal-btn').forEach(btn => btn.setAttribute('aria-expanded', 'true'));
-  } else {
-    en.classList.add('hid');
-    en.hidden = true;
-    en.setAttribute('aria-hidden', 'true');
-    if (hint) hint.style.display = 'block';
-    if (details) details.style.display = 'none';
-    if (card) card.querySelectorAll('.reveal-btn').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
-  }
-}
-
-function toggleVocabLearned(id) {
-  if (DB.vocabLearned.has(id)) unmarkVocabLearned(id);
-  else markVocabLearned(id, 'manual');
-  render();
-}
-
-function toggleVocabFav(id) {
-  DB.vocabFavorites.has(id) ? DB.vocabFavorites.delete(id) : DB.vocabFavorites.add(id);
-  save();
-  render();
-}
-
 function toggleUnderstood(id) {
   if (DB.understood.has(id)) {
     DB.understood.delete(id);
@@ -1772,21 +1602,8 @@ function toggleUnderstood(id) {
 }
 
 function setFilter(f) { V.filter = VALID_FILTERS.has(f) ? f : 'all'; commitState(); }
-function setVocabFilter(f) { V.vocabFilter = VALID_VOCAB_FILTERS.has(f) ? f : 'all'; V.vocabPage = 1; commitState(); }
-function setVocabTopic(topicId) {
-  V.vocabTopicId = topicId && VOCAB_TOPIC_IDS.has(topicId) ? topicId : null;
-  V.vocabPage = 1;
-  commitState();
-}
-function setVocabGoal(n) {
-  DB.vocabDailyGoal = clampNumber(n, 1, 60, DEFAULT_VOCAB_DAILY_GOAL);
-  DB.vocabDailyQueueDate = null;
-  save();
-  commitState();
-}
-function setQuery(q) { V.query = q; V.freqPage = 1; V.vocabPage = 1; clearTimeout(window._qt); window._qt = setTimeout(render, 300); }
+function setQuery(q) { V.query = q; V.freqPage = 1; clearTimeout(window._qt); window._qt = setTimeout(render, 300); }
 function refreshQueue() { DB.dailyQueueDate = null; save(); nav('today'); }
-function refreshVocabQueue() { DB.vocabDailyQueueDate = null; save(); commitState(); }
 
 // ─── TTS ─────────────────────────────────────
 // ── TTS Engine ──────────────────────────────────────────────────────────────
@@ -2001,8 +1818,7 @@ function setGoal(n) {
 // ==============================
 let P = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, isSRS: false, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [], typedFeedback: null };
 let PP = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, answered: {} };
-let VP = { active: false, queue: [], idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, isSRS: false, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [] };
-let FP = { active: false, queue: [], idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, isSRS: false, answered: {}, missedIds: [] };
+let FP = { active: false, queue: [], idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode: 'free', dir: 'de2en', answered: {}, missedIds: [] };
 
 function startPractice(opts) {
   const ids = Array.isArray(opts) ? opts : opts.ids;
@@ -2412,236 +2228,44 @@ function practicePrev() {
   if (P.idx > 0) { P.idx--; P.revealed = false; P.typedFeedback = null; renderPractice(); }
 }
 
-function closePractice() { P.active = false; PP.active = false; VP.active = false; FP.active = false; const ov = document.getElementById('practice-overlay'); if (ov) ov.remove(); render(); }
-
-// ==============================
-// VOCAB PRACTICE MODE
-// ==============================
-function startVocabPractice(opts) {
-  const ids = Array.isArray(opts) ? opts : opts.ids;
-  const isSRS = Array.isArray(opts) ? false : Boolean(opts.isSRS);
-  const requestedDir = Array.isArray(opts) ? '' : String(opts.dir || '');
-  const dir = ['de2en', 'en2de'].includes(requestedDir) ? requestedDir : 'de2en';
-  const cards = ids.map(id => VOCAB_BY_ID[id]).filter(Boolean);
-  if (!cards.length) return;
-  P.active = false;
-  PP.active = false;
-  VP = { active: true, queue: [...cards].sort((a, b) => a.priority - b.priority), idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, isSRS, dir, dirChoice: !requestedDir, answered: {}, missedIds: [] };
-  renderVocabPractice();
-}
-
-function setVocabPracticeDir(dir) {
-  VP.dir = ['de2en', 'en2de'].includes(dir) ? dir : 'de2en';
-  VP.dirChoice = false;
-  renderVocabPractice();
-}
-
-function renderVocabPractice() {
-  const existing = document.getElementById('practice-overlay');
-  if (existing) existing.remove();
-  if (!VP.active) return;
-
-  const ov = document.createElement('div');
-  ov.id = 'practice-overlay';
-  ov.className = 'practice-overlay';
-
-  if (VP.dirChoice) {
-    const total = VP.queue.length;
-    ov.innerHTML = `
-  <div class="practice-hdr">
-    <button class="practice-exit" onclick="closePractice()">Exit</button>
-    <div style="font-size:15px;font-weight:700;color:var(--text)">${total} vocab card${total !== 1 ? 's' : ''} ready</div>
-    <div style="width:44px"></div>
-  </div>
-  <div class="practice-body">
-    <div class="dir-choice-wrap">
-      <div class="dir-choice-title">Choose vocab direction</div>
-      <div class="dir-choice-sub">Pick which side appears first.</div>
-      <button class="dir-btn primary" onclick="setVocabPracticeDir('de2en')">
-        <span class="dir-btn-icon">DE</span>
-        <div>
-          <div class="dir-btn-title">German → English</div>
-          <div class="dir-btn-sub">See the German word, recall the meaning</div>
-        </div>
-      </button>
-      <button class="dir-btn" onclick="setVocabPracticeDir('en2de')">
-        <span class="dir-btn-icon">EN</span>
-        <div>
-          <div class="dir-btn-title">English → German</div>
-          <div class="dir-btn-sub">See the meaning, recall the German word and article</div>
-        </div>
-      </button>
-    </div>
-  </div>`;
-    document.body.appendChild(ov);
-    return;
-  }
-
-  if (VP.idx >= VP.queue.length) {
-    const total = VP.queue.length;
-    const answeredCount = Object.keys(VP.answered).filter(key => VP.answered[key] !== 'skip').length;
-    const strong = VP.good + VP.easy;
-    const pct = answeredCount ? Math.round(strong / answeredCount * 100) : 0;
-    const retryIds = idsArg(VP.queue.map(card => card.id));
-    const missedIds = [...new Set(VP.missedIds)];
-    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startVocabPractice({ids:${idsArg(missedIds)},skipSessionFilter:true,dir:'${VP.dir}'})">Review again</button>` : '';
-    const modeTag = `<div class="prac-mode-tag">${VP.dir === 'en2de' ? 'English → German' : 'German → English'}</div>`;
-    ov.innerHTML = `
-  <div class="practice-hdr"><span class="practice-hdr-title">Vocab practice complete</span></div>
-  <div class="practice-body">
-    <div class="prac-summary">
-      <div class="prac-sum-icon">${ICO.layers}</div>
-      <div class="prac-sum-title">${pct >= 80 ? 'Strong recall' : pct >= 50 ? 'Good progress' : 'Keep reviewing'}</div>
-      <div class="prac-sum-sub">You reviewed ${total} vocab card${total !== 1 ? 's' : ''}</div>
-      ${modeTag}
-      <div class="prac-sum-stats vocab-sum-stats">
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--red)">${VP.again}</div><div class="prac-sum-l">Again</div></div>
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${VP.hard}</div><div class="prac-sum-l">Hard</div></div>
-        <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${VP.good}</div><div class="prac-sum-l">Good</div></div>
-        <div class="prac-sum-stat"><div class="prac-sum-n">${VP.easy}</div><div class="prac-sum-l">Easy</div></div>
-      </div>
-      <div class="prac-sum-actions">
-        ${missedBtn}
-        <button class="prac-sum-retry" onclick="startVocabPractice({ids:${retryIds},isSRS:${VP.isSRS},dir:'${VP.dir}'})">Practice again</button>
-        <button class="prac-sum-done" onclick="closePractice()">Done</button>
-      </div>
-    </div>
-  </div>`;
-    document.body.appendChild(ov);
-    return;
-  }
-
-  const card = VP.queue[VP.idx];
-  const topic = vocabTopicById(card.topic);
-  const total = VP.queue.length;
-  const pct = Math.round(VP.idx / total * 100);
-  const germanFront = VP.dir === 'de2en';
-  const dirLabel = `<span class="prac-tag">${germanFront ? 'DE → EN' : 'EN → DE'}</span>`;
-  const frontHtml = germanFront
-    ? `<div class="practice-de vocab-practice-term" lang="de">${esc(vocabDisplay(card))}</div><div class="practice-ph">${esc(vocabMetaLabel(card))}</div>`
-    : `<div class="practice-de vocab-practice-term">${esc(card.en)}</div><div class="practice-ph">Recall the German term${card.pos === 'noun' ? ', article, and gender' : ''}</div>`;
-  const revealedHtml = germanFront
-    ? `<div class="practice-en">${esc(card.en)}</div>`
-    : `<div class="practice-en" lang="de">${esc(vocabDisplay(card))}</div><div class="practice-use">${esc(vocabMetaLabel(card))}</div>`;
-  const listenHtml = germanFront || VP.revealed
-    ? `<div style="display:flex;justify-content:center;margin:10px 0">
-      <button class="act-btn speak-btn" data-id="vprac-${card.id}" onclick="speak(${jsArg(vocabSpeakText(card))},'vprac-${card.id}')" style="font-size:13px;padding:8px 18px" type="button">
-        ${ICO.speak} Listen
-      </button>
-    </div>`
-    : '';
-  const ratingHelp = DB.vocabLearned.has(card.id)
-    ? 'Again = 1 day · Hard = shorter interval · Good = normal interval · Easy = longer interval'
-    : 'Again requeues · Hard = 1 day · Good = 3 days · Easy = 5 days';
-  ov.innerHTML = `
-  <div class="practice-hdr">
-    <button class="practice-exit" onclick="closePractice()">Exit</button>
-      <div class="practice-prog-wrap">
-      <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
-      <div class="practice-prog-lbl">${VP.idx + 1}/${total} · ${dirLabel} · Again ${VP.again} · Hard ${VP.hard} · Good ${VP.good} · Easy ${VP.easy}</div>
-    </div>
-  </div>
-  <div class="practice-body">
-    <div class="practice-card vocab-practice-card">
-      ${topic ? `<div class="practice-topic-lbl">${esc(topic.name)} <span class="lvl-tag l${card.level}">${card.level}</span></div>` : ''}
-      ${frontHtml}
-      ${VP.revealed ? `
-        ${revealedHtml}
-        <div class="vocab-practice-example"><strong>Example</strong><span lang="de">${esc(card.example.de)}</span><em>${esc(card.example.en)}</em></div>
-        ${card.plural ? `<div class="practice-use"><strong>Plural:</strong> <span lang="de">${esc(card.plural)}</span></div>` : ''}
-      ` : `<button class="practice-reveal-hint" onclick="vocabPracticeReveal()" type="button">${germanFront ? 'Tap to reveal meaning' : 'Tap to reveal German'}</button>`}
-    </div>
-    ${listenHtml}
-    ${VP.revealed ? `
-      <div class="vocab-rating-help">${esc(ratingHelp)}</div>
-      <div class="vocab-rating-btns">
-        <button class="vocab-rate again" onclick="vocabPracticeAnswer('again')">Again</button>
-        <button class="vocab-rate hard" onclick="vocabPracticeAnswer('hard')">Hard</button>
-        <button class="vocab-rate good" onclick="vocabPracticeAnswer('good')">Good</button>
-        <button class="vocab-rate easy" onclick="vocabPracticeAnswer('easy')">Easy</button>
-      </div>` : ''}
-    <div class="kbd-hint" style="margin-top:10px">
-      <span class="kbd">Space</span> reveal &nbsp;
-      <span class="kbd">→</span> skip
-    </div>
-  </div>`;
-  document.body.appendChild(ov);
-  if (!VP.revealed && germanFront) {
-    if (isMobile) speak(vocabSpeakText(card), `vprac-${card.id}`);
-    else setTimeout(() => speak(vocabSpeakText(card), `vprac-${card.id}`), 150);
-  }
-}
-
-function vocabPracticeReveal() {
-  VP.revealed = !VP.revealed;
-  renderVocabPractice();
-  if (VP.revealed && VP.dir === 'en2de' && VP.idx < VP.queue.length) {
-    const card = VP.queue[VP.idx];
-    setTimeout(() => speak(vocabSpeakText(card), `vprac-${card.id}`), 200);
-  }
-}
-
-function vocabPracticeAnswer(rating) {
-  const currentCard = VP.queue[VP.idx];
-  if (!currentCard) return;
-  const attemptKey = String(VP.idx);
-  if (VP.answered[attemptKey]) {
-    VP.idx++;
-    VP.revealed = false;
-    renderVocabPractice();
-    return;
-  }
-  const intervalBefore = DB.vocabSrs[currentCard.id] ? DB.vocabSrs[currentCard.id].interval || 0 : 0;
-  const scheduled = scheduleVocab(currentCard.id, rating);
-  const intervalAfter = scheduled.intervalAfter;
-  VP.answered[attemptKey] = rating;
-  if (rating === 'again') VP.again++;
-  else if (rating === 'hard') VP.hard++;
-  else if (rating === 'easy') VP.easy++;
-  else VP.good++;
-
-  if (rating === 'again') {
-    VP.missedIds.push(currentCard.id);
-    if (!scheduled.learned && !VP.queue.slice(VP.idx + 1).some(card => card.id === currentCard.id)) {
-      const insertAt = Math.min(VP.queue.length, VP.idx + 3);
-      VP.queue.splice(insertAt, 0, currentCard);
-    }
-  }
-  recordVocabAttempt({ id: currentCard.id, result: rating, intervalBefore, intervalAfter, wasDue: scheduled.wasDue });
-  save();
-  VP.idx++;
-  VP.revealed = false;
-  renderVocabPractice();
-}
-
-function vocabPracticeNext() {
-  if (VP.idx < VP.queue.length) {
-    const currentCard = VP.queue[VP.idx];
-    const attemptKey = String(VP.idx);
-    if (currentCard && !VP.answered[attemptKey]) {
-      VP.answered[attemptKey] = 'skip';
-      VP.skipped++;
-      recordVocabAttempt({ id: currentCard.id, result: 'skip', intervalBefore: 0, intervalAfter: 0, wasDue: false });
-      save();
-    }
-    VP.idx++;
-    VP.revealed = false;
-    renderVocabPractice();
-  }
-}
+function closePractice() { P.active = false; PP.active = false; FP.active = false; const ov = document.getElementById('practice-overlay'); if (ov) ov.remove(); render(); }
 
 // ==============================
 // FREQUENCY PRACTICE MODE
 // ==============================
+let _freqPracticeDir = 'de2en';
+function freqPracticeDir() { return _freqPracticeDir; }
+function setFreqPracticeDir(dir) {
+  _freqPracticeDir = dir === 'en2de' ? 'en2de' : 'de2en';
+  if (FP.active) { FP.dir = _freqPracticeDir; renderFrequencyPractice(); }
+  else render();
+}
+
+function intervalLabel(days) {
+  if (days <= 0) return '<10m';
+  if (days === 1) return '1d';
+  if (days < 30) return `${days}d`;
+  if (days < 365) return `${Math.round(days / 30)}mo`;
+  return `${(days / 365).toFixed(1)}y`;
+}
+
+function freqRatingPreview(id) {
+  const isNew = !DB.freqLearned.has(id) || !DB.freqSrs[id];
+  const card = DB.freqSrs[id] || { interval: 0, ease: 2.5 };
+  return ['again', 'hard', 'good', 'easy'].reduce((acc, rating) => {
+    acc[rating] = intervalLabel(freqRatingInterval(card, rating, isNew));
+    return acc;
+  }, {});
+}
+
 function startFrequencyPractice(opts) {
   const ids = Array.isArray(opts) ? opts : opts.ids;
-  const isSRS = Array.isArray(opts) ? false : Boolean(opts.isSRS);
+  const mode = Array.isArray(opts) ? 'free' : String(opts.mode || (opts.isSRS ? 'due' : 'free'));
   const entries = ids.map(id => freqById(id)).filter(Boolean);
   if (!entries.length) return;
   P.active = false;
   PP.active = false;
-  VP.active = false;
-  FP = { active: true, queue: [...entries], idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, isSRS, answered: {}, missedIds: [] };
+  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, dir: _freqPracticeDir, answered: {}, missedIds: [] };
   renderFrequencyPractice();
 }
 function renderFrequencyPractice() {
@@ -2660,24 +2284,27 @@ function renderFrequencyPractice() {
     const pct = answeredCount ? Math.round(strong / answeredCount * 100) : 0;
     const retryIds = idsArg(FP.queue.map(e => String(e.rank)));
     const missedIds = [...new Set(FP.missedIds)];
-    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(missedIds)},skipSessionFilter:true})">Review again</button>` : '';
+    const missedBtn = missedIds.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(missedIds)},mode:'free'})" type="button">Review misses (${missedIds.length})</button>` : '';
+    const dueLeft = getFreqReviewIds().length;
     ov.innerHTML = `
-  <div class="practice-hdr"><span class="practice-hdr-title">Frequency practice complete</span></div>
+  <div class="practice-hdr"><span class="practice-hdr-title">Session complete</span></div>
   <div class="practice-body">
     <div class="prac-summary">
       <div class="prac-sum-icon">${ICO.vocab}</div>
       <div class="prac-sum-title">${pct >= 80 ? 'Strong recall' : pct >= 50 ? 'Good progress' : 'Keep reviewing'}</div>
-      <div class="prac-sum-sub">You reviewed ${total} frequency card${total !== 1 ? 's' : ''}</div>
+      <div class="prac-sum-sub">You answered ${answeredCount} of ${total} card${total !== 1 ? 's' : ''}</div>
+      <div class="prac-mode-tag">${FP.dir === 'en2de' ? 'English → German' : 'German → English'}</div>
       <div class="prac-sum-stats vocab-sum-stats">
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--red)">${FP.again}</div><div class="prac-sum-l">Again</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${FP.hard}</div><div class="prac-sum-l">Hard</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${FP.good}</div><div class="prac-sum-l">Good</div></div>
         <div class="prac-sum-stat"><div class="prac-sum-n">${FP.easy}</div><div class="prac-sum-l">Easy</div></div>
       </div>
+      <div class="prac-sum-note">${dueLeft ? `${dueLeft} card${dueLeft !== 1 ? 's' : ''} still due today.` : 'Nothing else is due today.'}</div>
       <div class="prac-sum-actions">
         ${missedBtn}
-        <button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${retryIds},isSRS:${FP.isSRS})">Practice again</button>
-        <button class="prac-sum-done" onclick="closePractice()">Done</button>
+        <button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${retryIds},mode:'free'})" type="button">Practice again</button>
+        <button class="prac-sum-done" onclick="closePractice()" type="button">Done</button>
       </div>
     </div>
   </div>`;
@@ -2689,53 +2316,66 @@ function renderFrequencyPractice() {
   const id = String(entry.rank);
   const total = FP.queue.length;
   const pct = Math.round(FP.idx / total * 100);
-  const ratingHelp = DB.freqLearned.has(id)
-    ? 'Again = 1 day · Hard = shorter interval · Good = normal interval · Easy = longer interval'
-    : 'Again = not learned · Hard = 1 day · Good = 3 days · Easy = 5 days';
+  const germanFront = FP.dir === 'de2en';
+  const isNew = !DB.freqLearned.has(id);
+  const iv = freqRatingPreview(id);
+  const speakText = entry.germanSentence || entry.german;
+  const frontHtml = germanFront
+    ? `<div class="practice-de freq-practice-word" lang="de">${esc(entry.german)}</div>`
+    : `<div class="practice-de freq-practice-word">${esc(entry.english)}</div><div class="practice-ph">Recall the German word</div>`;
+  const backHtml = germanFront
+    ? `<div class="practice-en freq-practice-en">${esc(entry.english)}</div>`
+    : `<div class="practice-en freq-practice-en" lang="de">${esc(entry.german)}</div>`;
   ov.innerHTML = `
   <div class="practice-hdr">
-    <button class="practice-exit" onclick="closePractice()">Exit</button>
+    <button class="practice-exit" onclick="closePractice()" type="button">Exit</button>
       <div class="practice-prog-wrap">
       <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
-      <div class="practice-prog-lbl">${FP.idx + 1}/${total} · Again ${FP.again} · Hard ${FP.hard} · Good ${FP.good} · Easy ${FP.easy}</div>
+      <div class="practice-prog-lbl">${FP.idx + 1}/${total} · <span class="prac-tag">${germanFront ? 'DE → EN' : 'EN → DE'}</span> · Again ${FP.again} · Hard ${FP.hard} · Good ${FP.good} · Easy ${FP.easy}</div>
     </div>
   </div>
   <div class="practice-body">
     <div class="practice-card freq-practice-card">
-      <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))}</div>
-      <div class="practice-de freq-practice-word" lang="de">${esc(entry.german)}</div>
+      <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))} ${isNew ? '<span class="card-state-tag is-new">New</span>' : '<span class="card-state-tag">Review</span>'}</div>
+      ${frontHtml}
       ${FP.revealed ? `
+        ${backHtml}
         <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-        <div class="practice-en freq-practice-en">${esc(entry.englishSentence)}</div>
-      ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the sentence translation</button>`}
+        <div class="practice-use">${esc(entry.englishSentence)}</div>
+      ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the answer</button>`}
     </div>
-    <div style="display:flex;justify-content:center;margin:10px 0">
-      <button class="act-btn speak-btn" data-id="fprac-${id}" onclick="speak(${jsArg(entry.germanSentence || entry.german)},'fprac-${id}')" style="font-size:13px;padding:8px 18px" type="button">
+    ${germanFront || FP.revealed ? `<div style="display:flex;justify-content:center;margin:10px 0">
+      <button class="act-btn speak-btn" data-id="fprac-${id}" onclick="speak(${jsArg(speakText)},'fprac-${id}')" style="font-size:13px;padding:8px 18px" type="button">
         ${ICO.speak} Listen
       </button>
-    </div>
+    </div>` : ''}
     ${FP.revealed ? `
-      <div class="vocab-rating-help">${esc(ratingHelp)}</div>
       <div class="vocab-rating-btns">
-        <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')">Again</button>
-        <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')">Hard</button>
-        <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')">Good</button>
-        <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')">Easy</button>
-      </div>` : ''}
+        <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again<span class="vocab-rate-iv">${iv.again}</span></button>
+        <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard<span class="vocab-rate-iv">${iv.hard}</span></button>
+        <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good<span class="vocab-rate-iv">${iv.good}</span></button>
+        <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy<span class="vocab-rate-iv">${iv.easy}</span></button>
+      </div>
+      <div class="vocab-rating-help">${isNew ? 'Again puts the card back later in this session.' : 'Again resets the interval to 1 day and counts as a lapse.'}</div>` : ''}
     <div class="kbd-hint" style="margin-top:10px">
       <span class="kbd">Space</span> reveal &nbsp;
+      <span class="kbd">1</span>–<span class="kbd">4</span> rate &nbsp;
       <span class="kbd">→</span> skip
     </div>
   </div>`;
   document.body.appendChild(ov);
-  if (!FP.revealed) {
-    if (isMobile) speak(entry.germanSentence || entry.german, `fprac-${id}`);
-    else setTimeout(() => speak(entry.germanSentence || entry.german, `fprac-${id}`), 150);
+  if (!FP.revealed && germanFront) {
+    if (isMobile) speak(speakText, `fprac-${id}`);
+    else setTimeout(() => speak(speakText, `fprac-${id}`), 150);
   }
 }
 function frequencyPracticeReveal() {
   FP.revealed = !FP.revealed;
   renderFrequencyPractice();
+  if (FP.revealed && FP.dir === 'en2de' && FP.idx < FP.queue.length) {
+    const entry = FP.queue[FP.idx];
+    setTimeout(() => speak(entry.germanSentence || entry.german, `fprac-${entry.rank}`), 200);
+  }
 }
 function frequencyPracticeAnswer(rating) {
   const current = FP.queue[FP.idx];
@@ -2749,8 +2389,9 @@ function frequencyPracticeAnswer(rating) {
   }
   const id = String(current.rank);
   const intervalBefore = DB.freqSrs[id] ? DB.freqSrs[id].interval || 0 : 0;
-  const scheduled = scheduleFreq(id, rating);
-  const intervalAfter = scheduled.intervalAfter;
+  const scheduled = FP.mode === 'free'
+    ? { intervalBefore, intervalAfter: intervalBefore, wasDue: false, learned: DB.freqLearned.has(id) }
+    : scheduleFreq(id, rating);
   FP.answered[attemptKey] = rating;
   if (rating === 'again') FP.again++;
   else if (rating === 'hard') FP.hard++;
@@ -2759,8 +2400,11 @@ function frequencyPracticeAnswer(rating) {
 
   if (rating === 'again') {
     FP.missedIds.push(id);
+    if (!FP.queue.slice(FP.idx + 1).some(e => String(e.rank) === id)) {
+      FP.queue.splice(Math.min(FP.queue.length, FP.idx + 3), 0, current);
+    }
   }
-  recordFreqAttempt({ id, result: rating, intervalBefore, intervalAfter, wasDue: scheduled.wasDue });
+  recordFreqAttempt({ id, result: rating, intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue });
   save();
   FP.idx++;
   FP.revealed = false;
@@ -2936,6 +2580,8 @@ document.addEventListener('keydown', e => {
 
   const isSpace = e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar' || e.keyCode === 32;
 
+  if (e.key === 'Escape' && document.getElementById('review-reminder')) { dismissReviewReminder(); return; }
+
   // Pattern practice keyboard shortcuts
   if (PP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
@@ -2951,25 +2597,7 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // Vocab practice keyboard shortcuts
-  if (VP.active) {
-    if (e.key === 'Escape') { closePractice(); return; }
-    if (VP.idx >= VP.queue.length) return;
-    if (isSpace) {
-      e.preventDefault();
-      vocabPracticeReveal();
-      return;
-    }
-    if (e.code === 'ArrowRight') { e.preventDefault(); vocabPracticeNext(); return; }
-    if (VP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
-      e.preventDefault();
-      vocabPracticeAnswer({ 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' }[e.key]);
-      return;
-    }
-    return;
-  }
-
-  // Frequency practice keyboard shortcuts
+  // Vocab flashcard keyboard shortcuts
   if (FP.active) {
     if (e.key === 'Escape') { closePractice(); return; }
     if (FP.idx >= FP.queue.length) return;
@@ -3015,13 +2643,13 @@ document.addEventListener('keydown', e => {
   if (isSpace) {
     e.preventDefault();
     const activeEl = document.activeElement;
-    const activeCard = activeEl ? activeEl.closest('.vc, .sc, .fc') : null;
+    const activeCard = activeEl ? activeEl.closest('.sc, .fc') : null;
 
     if (activeEl && activeEl.tagName === 'BUTTON') {
       activeEl.blur();
     }
 
-    const cards = Array.from(document.querySelectorAll('.vc, .sc, .fc'));
+    const cards = Array.from(document.querySelectorAll('.sc, .fc'));
     if (!cards.length) return;
 
     let targetIdx = activeCard ? cards.indexOf(activeCard) : -1;
@@ -3039,8 +2667,7 @@ document.addEventListener('keydown', e => {
     if (!currentCardEl || !currentCardEl.id) return;
 
     const rawId = currentCardEl.id;
-    if (rawId.startsWith('vc-')) toggleVocabReveal(rawId.replace('vc-', ''));
-    else if (rawId.startsWith('sc-')) toggleReveal(rawId.replace('sc-', ''));
+    if (rawId.startsWith('sc-')) toggleReveal(rawId.replace('sc-', ''));
     else if (rawId.startsWith('fc-')) toggleFreqReveal(rawId.replace('fc-', ''));
   }
 });
@@ -3191,7 +2818,7 @@ function applyImport(text) {
   if (!text.trim()) { show('Nothing to import — paste or load a file first.'); return; }
   let parsed;
   try { parsed = JSON.parse(text); } catch (e) { show('Invalid JSON. Make sure you copied the full text without changes.'); return; }
-  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.vocabLearned) && !Array.isArray(parsed.freqLearned) && !parsed.streak && !parsed.srs && !parsed.vocabSrs && !parsed.freqSrs && !parsed.attempts && !parsed.vocabAttempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
+  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.freqLearned) && !parsed.streak && !parsed.srs && !parsed.freqSrs && !parsed.attempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
   const imported = normalizeDb(parsed);
   const current = dbToObj();
   const mergeHistoryWords = (a, b) => {
@@ -3213,14 +2840,6 @@ function applyImport(text) {
     historyWords: mergeHistoryWords(imported.historyWords, current.historyWords),
     srs: mergeSrsMaps(current.srs, imported.srs),
     patternSrs: mergeSrsMaps(current.patternSrs, imported.patternSrs),
-    vocabLearned: [...new Set([...current.vocabLearned, ...imported.vocabLearned])],
-    vocabFavorites: [...new Set([...current.vocabFavorites, ...imported.vocabFavorites])],
-    vocabSrs: mergeSrsMaps(current.vocabSrs, imported.vocabSrs),
-    vocabAttempts: mergeAttempts(current.vocabAttempts, imported.vocabAttempts),
-    vocabDailyGoal: DB.vocabDailyGoal,
-    vocabDailyQueue: DB.vocabDailyQueue,
-    vocabDailyQueueDate: DB.vocabDailyQueueDate,
-    vocabDailyQueueDone: [...new Set([...current.vocabDailyQueueDone, ...imported.vocabDailyQueueDone])],
     freqLearned: [...new Set([...current.freqLearned, ...imported.freqLearned])],
     freqFavorites: [...new Set([...current.freqFavorites, ...imported.freqFavorites])],
     freqSrs: mergeSrsMaps(current.freqSrs, imported.freqSrs),
@@ -3229,6 +2848,7 @@ function applyImport(text) {
     freqDailyQueue: DB.freqDailyQueue,
     freqDailyQueueDate: DB.freqDailyQueueDate,
     freqDailyQueueDone: [...new Set([...current.freqDailyQueueDone, ...imported.freqDailyQueueDone])],
+    reviewPromptDate: DB.reviewPromptDate,
     attempts: mergeAttempts(current.attempts, imported.attempts),
     patternAttempts: mergeAttempts(current.patternAttempts, imported.patternAttempts),
     settings: current.settings,
@@ -3240,7 +2860,7 @@ function applyImport(text) {
   // Show success toast
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#16A34A;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
-  toast.textContent = `Imported ${merged.learned.length} sentences · ${merged.vocabLearned.length} vocab · ${merged.freqLearned.length} frequency words`;
+  toast.textContent = `Imported ${merged.freqLearned.length} vocab words · ${merged.learned.length} sentences`;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
@@ -3288,17 +2908,15 @@ function getHistoryDaySummary(key, dayIndex = 0) {
   const sentenceIds = historyValidSentenceIds(DB.historyWords[key] || []);
   const sentenceAttempts = DB.attempts.filter(a => a.date === key);
   const patternAttempts = DB.patternAttempts.filter(a => a.date === key);
-  const vocabAttempts = DB.vocabAttempts.filter(a => a.date === key);
   const frequencyAttempts = DB.freqAttempts.filter(a => a.date === key);
   const answeredSentenceAttempts = sentenceAttempts.filter(a => a.mode === 'practice' && historyIsPracticeResult(a.result));
   const answeredPatternAttempts = patternAttempts.filter(a => historyIsPracticeResult(a.result));
   const answeredAttempts = [...answeredSentenceAttempts, ...answeredPatternAttempts];
-  const answeredVocabAttempts = vocabAttempts.filter(a => a.result !== 'skip');
   const answeredFrequencyAttempts = frequencyAttempts.filter(a => a.result !== 'skip');
   const got = answeredAttempts.filter(a => a.result === 'got').length;
   const again = answeredAttempts.filter(a => a.result === 'again').length;
-  const skipped = [...sentenceAttempts, ...patternAttempts, ...vocabAttempts, ...frequencyAttempts].filter(a => a.result === 'skip').length;
-  const reviews = [...sentenceAttempts, ...patternAttempts, ...vocabAttempts, ...frequencyAttempts].filter(a => a.wasDue && a.result !== 'skip').length;
+  const skipped = [...sentenceAttempts, ...patternAttempts, ...frequencyAttempts].filter(a => a.result === 'skip').length;
+  const reviews = [...sentenceAttempts, ...patternAttempts, ...frequencyAttempts].filter(a => a.wasDue && a.result !== 'skip').length;
   const attemptSentenceIds = historyValidSentenceIds(sentenceAttempts.map(a => a.id));
   const missedSentenceIds = historyValidSentenceIds(sentenceAttempts.filter(a => a.result === 'again').map(a => a.id));
   const topicCounts = {};
@@ -3326,17 +2944,16 @@ function getHistoryDaySummary(key, dayIndex = 0) {
     sentenceIds,
     sentenceAttempts,
     patternAttempts,
-    practiceCount: answeredAttempts.length + answeredVocabAttempts.length + answeredFrequencyAttempts.length,
+    practiceCount: answeredAttempts.length + answeredFrequencyAttempts.length,
     sentencePracticeCount: answeredSentenceAttempts.length,
     patternPracticeCount: answeredPatternAttempts.length,
-    vocabPracticeCount: answeredVocabAttempts.length,
     frequencyPracticeCount: answeredFrequencyAttempts.length,
     got,
     again,
     skipped,
     reviews,
     accuracy: pct(got, got + again),
-    activityCount: sentenceIds.length + answeredAttempts.length + answeredVocabAttempts.length + answeredFrequencyAttempts.length + skipped,
+    activityCount: sentenceIds.length + answeredAttempts.length + answeredFrequencyAttempts.length + skipped,
     missedSentenceIds,
     topTopics,
   };
@@ -3414,7 +3031,7 @@ function renderHistoryQuickActions() {
     actions.push(`<button class="history-action" onclick="startPatternPractice({ids:${idsArg(patternDueIds)}})" type="button"><strong>Review ${patternDueIds.length} due pattern${patternDueIds.length !== 1 ? 's' : ''}</strong><span>Keep sentence patterns fresh</span></button>`);
   }
   if (frequencyDueIds.length) {
-    actions.push(`<button class="history-action" onclick="startFrequencyPractice({ids:${idsArg(frequencyDueIds)},isSRS:true})" type="button"><strong>Review ${frequencyDueIds.length} due frequency card${frequencyDueIds.length !== 1 ? 's' : ''}</strong><span>Scheduled vocabulary review</span></button>`);
+    actions.push(`<button class="history-action" onclick="startFrequencyPractice({ids:${idsArg(frequencyDueIds)},mode:'due'})" type="button"><strong>Review ${frequencyDueIds.length} due vocab word${frequencyDueIds.length !== 1 ? 's' : ''}</strong><span>Scheduled vocabulary review</span></button>`);
   }
   if (missedIds.length) {
     actions.push(`<button class="history-action" onclick="startPractice({ids:${idsArg(missedIds)},skipSessionFilter:true})" type="button"><strong>Retry ${missedIds.length} missed sentence${missedIds.length !== 1 ? 's' : ''}</strong><span>From the last 14 days</span></button>`);
@@ -3675,7 +3292,44 @@ function hydrateIcons(scope = document) {
   });
 }
 
+// ─── DAILY REVIEW REMINDER ───────────────────
+function dismissReviewReminder() {
+  markReviewPromptSeen();
+  const el = document.getElementById('review-reminder');
+  if (el) el.remove();
+}
+
+function startReviewFromReminder() {
+  markReviewPromptSeen();
+  const el = document.getElementById('review-reminder');
+  if (el) el.remove();
+  startFrequencyPractice({ ids: getFreqReviewIds(), mode: 'due' });
+}
+
+function maybeShowReviewReminder() {
+  if (!shouldPromptReview()) return;
+  const dueCount = getFreqReviewIds().length;
+  const ov = document.createElement('div');
+  ov.id = 'review-reminder';
+  ov.className = 'modal-overlay';
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-labelledby', 'review-reminder-title');
+  ov.innerHTML = `<div class="modal-box">
+  <div class="modal-title" id="review-reminder-title">${dueCount} word${dueCount !== 1 ? 's' : ''} due for review</div>
+  <div class="modal-sub">Spaced repetition works best when you clear the queue every day. This reminder only shows once per day.</div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="startReviewFromReminder()" type="button">${ICO.target} Practice now</button>
+    <button class="btn btn-ghost" onclick="dismissReviewReminder()" type="button">Not today</button>
+  </div>
+</div>`;
+  ov.addEventListener('click', e => { if (e.target === ov) dismissReviewReminder(); });
+  document.body.appendChild(ov);
+  const btn = ov.querySelector('.btn-primary');
+  if (btn) btn.focus();
+}
+
 if (!window.__DD_SKIP_AUTO_INIT) {
   hydrateIcons();
-  load().then(() => { applyUrlState(); commitState({ replace: true }); });
+  load().then(() => { applyUrlState(); commitState({ replace: true }); maybeShowReviewReminder(); });
 }

@@ -9,14 +9,12 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const source = [
   read('src/content.js'),
   read('src/learning.js'),
-  read('src/vocab.js'),
   read('src/frequency-dictionary-data.js'),
   read('src/storage.js'),
   read('src/app.js'),
   'renderPractice = () => {}; updateHeader = () => {}; render = () => {};',
   `globalThis.__test = {
     SENTENCES,
-    VOCAB_CARDS,
     normalizeDb,
     objToDB,
     dbToObj,
@@ -29,14 +27,10 @@ const source = [
     markSentenceLearned,
     srsSchedule,
     schedulePattern,
-    scheduleVocab,
     getSrsReviewIds,
     getPatternReviewIds,
-    getVocabReviewIds,
     practiceAnswer,
     practiceNext,
-    ensureVocabDailyQueue,
-    markVocabLearned,
     renderKursplan,
     setPracticeState: value => { P = value; },
     getPracticeState: () => P,
@@ -53,6 +47,8 @@ const source = [
     getHistoryDaySummary,
     renderProgressOverview,
     renderSaved,
+    renderTodayVocab,
+    renderFrequency,
     getViewState: () => V,
     // Frequency
     FREQUENCY_DICTIONARY,
@@ -67,6 +63,11 @@ const source = [
     startFrequencyPractice,
     frequencyPracticeAnswer,
     frequencyPracticeNext,
+    getFreqLeechIds,
+    getNewFreqPool,
+    shouldPromptReview,
+    markReviewPromptSeen,
+    renderPracticeHub,
     getFrequencyPracticeState: () => FP,
   };`
 ].join('\n');
@@ -235,88 +236,54 @@ assert.strictEqual(firstPattern.intervalBefore, 0, 'new pattern SRS starts from 
 assert.strictEqual(t.DB().patternSrs.would_possible.interval, 3, 'first understood pattern uses the first-review interval');
 
 reset({
-  vocabLearned: ['vb001'],
-  vocabFavorites: ['vb002', 'missing'],
-  vocabDailyGoal: 500,
-  vocabSrs: { vb001: { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) }, missing: { interval: 1 } },
+  freqDailyGoal: 5,
+  freqLearned: ['1'],
+  freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, lapses: 0, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
 });
-assert(t.DB().vocabLearned.has('vb001'), 'vocab learned IDs are normalized');
-assert(t.DB().vocabFavorites.has('vb002'), 'vocab favorites are normalized');
-assert.strictEqual(t.DB().vocabDailyGoal, 60, 'vocab daily goal is clamped');
-assert(!t.DB().vocabSrs.missing, 'invalid vocab SRS entry is removed');
-assert.strictEqual(JSON.stringify(t.getVocabReviewIds()), JSON.stringify(['vb001']), 'due vocab review IDs are returned');
+t.ensureFreqDailyQueue();
+assert(!t.DB().freqDailyQueue.includes('1'), 'due reviews must not appear in the daily learn queue');
+assert(t.DB().freqDailyQueue.every(id => !t.DB().freqLearned.has(id)), 'daily learn queue holds new words only');
+assert.strictEqual(t.DB().freqDailyQueue.length, 5, 'daily learn queue honours the daily goal');
 
 reset({
-  vocabLearned: ['vb001'],
-  vocabDailyGoal: 5,
-  vocabSrs: { vb001: { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
+  freqLearned: ['1'],
+  freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, lapses: 0, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
 });
-t.ensureVocabDailyQueue();
-assert.strictEqual(t.DB().vocabDailyQueue[0], 'vb001', 'due vocab reviews should be first in the vocab daily queue');
+assert.strictEqual(t.shouldPromptReview(), true, 'review reminder shows when cards are due and it has not been seen today');
+t.markReviewPromptSeen();
+assert.strictEqual(t.shouldPromptReview(), false, 'review reminder does not return the same day once dismissed');
+assert.strictEqual(t.DB().reviewPromptDate, t.today(), 'reminder dismissal is stored as a date key');
+assert.strictEqual(t.dbToObj().reviewPromptDate, t.today(), 'reminder date is exported');
 
 reset({});
-let vocabAgain = t.scheduleVocab('vb002', 'again');
-assert.strictEqual(vocabAgain.learned, false, 'new vocab again should not mark learned');
-assert(!t.DB().vocabLearned.has('vb002'), 'new vocab again stays unlearned');
-let vocabHard = t.scheduleVocab('vb002', 'hard');
-assert.strictEqual(vocabHard.intervalAfter, 1, 'new vocab hard schedules one day');
-assert(t.DB().vocabLearned.has('vb002'), 'new vocab hard marks learned');
+assert.strictEqual(t.shouldPromptReview(), false, 'review reminder stays hidden when nothing is due');
+
+reset({
+  freqLearned: ['20'],
+  freqSrs: { '20': { interval: 10, ease: 2.5, level: 3, lapses: 3, nextReview: t.today(), lastReview: t.addDaysISO(-10) } },
+});
+const lapsed = t.scheduleFreq('20', 'again');
+assert.strictEqual(lapsed.intervalAfter, 1, 'again on a review card resets the interval to one day');
+assert.strictEqual(t.DB().freqSrs['20'].lapses, 4, 'again on a review card increments the lapse counter');
+assert.strictEqual(JSON.stringify(t.getFreqLeechIds()), JSON.stringify(['20']), 'repeatedly forgotten words surface as leeches');
 
 reset({});
-let vocabGood = t.scheduleVocab('vb003', 'good');
-assert.strictEqual(vocabGood.intervalAfter, 3, 'new vocab good schedules three days');
-reset({});
-let vocabEasy = t.scheduleVocab('vb004', 'easy');
-assert.strictEqual(vocabEasy.intervalAfter, 5, 'new vocab easy schedules five days');
+const newAgain = t.scheduleFreq('30', 'again');
+assert.strictEqual(newAgain.learned, false, 'again on a new card does not mark it learned');
+assert.strictEqual(t.DB().freqSrs['30'], undefined, 'again on a new card leaves it unscheduled');
 
 reset({
-  vocabLearned: ['vb005'],
-  vocabSrs: { vb005: { interval: 10, ease: 2.5, level: 3, nextReview: t.today(), lastReview: t.addDaysISO(-10) } },
-});
-let reviewedHard = t.scheduleVocab('vb005', 'hard');
-assert.strictEqual(reviewedHard.intervalAfter, 12, 'review vocab hard uses a shorter multiplier');
-reset({
-  vocabLearned: ['vb005'],
-  vocabSrs: { vb005: { interval: 10, ease: 2.5, level: 3, nextReview: t.today(), lastReview: t.addDaysISO(-10) } },
-});
-let reviewedGood = t.scheduleVocab('vb005', 'good');
-assert.strictEqual(reviewedGood.intervalAfter, 25, 'review vocab good uses ease multiplier');
-reset({
-  vocabLearned: ['vb005'],
-  vocabSrs: { vb005: { interval: 10, ease: 2.5, level: 3, nextReview: t.today(), lastReview: t.addDaysISO(-10) } },
-});
-let reviewedEasy = t.scheduleVocab('vb005', 'easy');
-assert.strictEqual(reviewedEasy.intervalAfter, 33, 'review vocab easy extends good interval');
-
-reset({});
-t.markVocabLearned('vb006', 'manual');
-assert(t.DB().vocabLearned.has('vb006'), 'manual vocab learned is tracked');
-assert.strictEqual(t.DB().vocabAttempts[0].result, 'manual', 'manual vocab learned records attempt');
-
-reset({
-  vocabLearned: ['vb010'],
-  vocabFavorites: ['vb011'],
-  vocabSrs: { vb010: { interval: 3, ease: 2.5, level: 1, nextReview: t.addDaysISO(3), lastReview: t.today() } },
-  vocabAttempts: [{ id: 'vb010', date: t.today(), result: 'good', intervalBefore: 0, intervalAfter: 3 }],
   freqLearned: ['10'],
   freqFavorites: ['11'],
   freqSrs: { '10': { interval: 3, ease: 2.5, level: 1, nextReview: t.addDaysISO(3), lastReview: t.today() } },
   freqAttempts: [{ id: '10', date: t.today(), result: 'good', intervalBefore: 0, intervalAfter: 3 }],
 });
 t.applyImport(JSON.stringify({
-  vocabLearned: ['vb012'],
-  vocabFavorites: ['vb013'],
-  vocabSrs: { vb012: { interval: 5, ease: 2.5, level: 1, nextReview: t.addDaysISO(5), lastReview: t.today() } },
-  vocabAttempts: [{ id: 'vb012', date: t.today(), result: 'easy', intervalBefore: 0, intervalAfter: 5 }],
   freqLearned: ['12'],
   freqFavorites: ['13'],
   freqSrs: { '12': { interval: 5, ease: 2.5, level: 1, nextReview: t.addDaysISO(5), lastReview: t.today() } },
   freqAttempts: [{ id: '12', date: t.today(), result: 'easy', intervalBefore: 0, intervalAfter: 5 }],
 }));
-assert(t.DB().vocabLearned.has('vb010') && t.DB().vocabLearned.has('vb012'), 'import merges vocab learned IDs');
-assert(t.DB().vocabFavorites.has('vb011') && t.DB().vocabFavorites.has('vb013'), 'import merges vocab favorites');
-assert(t.DB().vocabSrs.vb010 && t.DB().vocabSrs.vb012, 'import merges vocab SRS maps');
-assert(t.DB().vocabAttempts.some(a => a.id === 'vb012'), 'import merges vocab attempts');
 assert(t.DB().freqLearned.has('10') && t.DB().freqLearned.has('12'), 'import merges frequency learned IDs');
 assert(t.DB().freqFavorites.has('11') && t.DB().freqFavorites.has('13'), 'import merges frequency favorites');
 assert(t.DB().freqSrs['10'] && t.DB().freqSrs['12'], 'import merges frequency SRS maps');
@@ -425,8 +392,8 @@ assert.strictEqual(browseState.filter, 'unlearned', 'browse URL state should par
 
 const patternUrl = t.urlFromState({ view: 'patterns', patFilter: 'due' });
 assert.strictEqual(patternUrl, '/DEDaily.html?view=patterns&filter=due', 'pattern URL should serialize filter');
-const vocabUrl = t.urlFromState({ view: 'vocab', vocabTopicId: 'health', vocabFilter: 'due' });
-assert.strictEqual(vocabUrl, '/DEDaily.html?view=vocab&topic=health&filter=due', 'vocab URL should serialize topic and filter');
+const practiceUrl = t.urlFromState({ view: 'practice' });
+assert.strictEqual(practiceUrl, '/DEDaily.html?view=practice', 'practice URL should serialize the view');
 assert.strictEqual(t.normalizePatternFilter('all'), 'all', 'known pattern filters are preserved');
 assert.strictEqual(t.normalizePatternFilter('new'), 'learning', 'unknown/legacy pattern filters default to learning');
 
@@ -441,10 +408,11 @@ assert.strictEqual(t.getViewState().libType, 'vocab', 'Library defaults to vocab
 const sentenceLibraryUrl = t.urlFromState({ view: 'saved', libTab: 'learned', libType: 'sentences' });
 assert.strictEqual(sentenceLibraryUrl, '/DEDaily.html?view=library&tab=learned&type=sentences', 'Library URL preserves sentence item type');
 
+t.applyUrlState('http://localhost/DEDaily.html?view=practice');
+assert.strictEqual(t.getViewState().view, 'practice', 'practice URL opens the Practice tab');
+
 t.applyUrlState('http://localhost/DEDaily.html?view=vocab&topic=money&filter=saved');
-assert.strictEqual(t.getViewState().view, 'vocab', 'vocab URL opens Vocab tab');
-assert.strictEqual(t.getViewState().vocabTopicId, 'money', 'vocab URL selects topic');
-assert.strictEqual(t.getViewState().vocabFilter, 'saved', 'vocab URL selects filter');
+assert.strictEqual(t.getViewState().view, 'frequency', 'legacy vocab URL redirects to the vocabulary dictionary');
 
 t.applyUrlState('http://localhost/DEDaily.html?view=kursplan');
 assert.strictEqual(t.getViewState().view, 'kursplan', 'kursplan URL opens Kursplan tab');
@@ -523,7 +491,7 @@ reset({
   freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
 });
 t.ensureFreqDailyQueue();
-assert.strictEqual(t.DB().freqDailyQueue[0], '1', 'due freq reviews should be first in the freq daily queue');
+assert.strictEqual(t.DB().freqDailyQueue[0], '2', 'the freq daily queue starts at the first unlearned word');
 
 reset({});
 t.startFrequencyPractice({ ids: ['1'] });
@@ -535,9 +503,10 @@ assert(!t.DB().freqLearned.has('1'), 'skipping does not schedule or learn a freq
 reset({});
 const sixtyFrequencyIds = Array.from({ length: 60 }, (_, index) => String(index + 1));
 t.startFrequencyPractice({ ids: sixtyFrequencyIds });
+const firstCardId = String(t.getFrequencyPracticeState().queue[0].rank);
 t.frequencyPracticeAnswer('again');
-assert.strictEqual(t.getFrequencyPracticeState().queue.length, 60, 'Again does not increase a 60-card frequency session');
-assert.strictEqual(t.getFrequencyPracticeState().missedIds[0], '1', 'Again keeps the card available for Review Again');
+assert.strictEqual(t.getFrequencyPracticeState().queue.length, 61, 'Again requeues the card later in the session');
+assert.strictEqual(t.getFrequencyPracticeState().missedIds[0], firstCardId, 'Again keeps the card available for Review Again');
 
 reset({
   freqLearned: ['1'],
@@ -551,7 +520,12 @@ const frequencyHistory = t.getHistoryDaySummary(t.today());
 assert.strictEqual(frequencyHistory.frequencyPracticeCount, 1, 'answered frequency cards count in daily history');
 assert.strictEqual(frequencyHistory.skipped, 1, 'frequency skips count in daily history');
 assert.strictEqual(frequencyHistory.reviews, 1, 'due frequency answers count as reviews');
-assert(t.renderProgressOverview().includes('Frequency'), 'progress overview includes frequency learning stats');
+assert(t.renderProgressOverview().includes('Vocab learned'), 'progress overview leads with vocabulary stats');
+assert(t.renderPracticeHub().includes('Decks'), 'practice hub renders the deck picker');
+assert(!t.renderTodayVocab().includes('undefined'), 'today vocab card renders without holes');
+assert(!t.renderFrequency().includes('undefined'), 'vocabulary browse view renders without holes');
+t.ensureFreqDailyQueue();
+assert(t.DB().freqDailyQueue.every(id => !t.DB().freqLearned.has(id)), 'today vocab never re-offers a learned word');
 
 reset({ freqLearned: ['1'], freqFavorites: ['2'] });
 assert(t.renderSaved().includes('saved frequency word'), 'Library Saved tab includes saved frequency words');

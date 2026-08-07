@@ -9,7 +9,6 @@ const html = read('DEDaily.html');
 const expectedScripts = [
   'src/content.js',
   'src/learning.js',
-  'src/vocab.js',
   'src/frequency-dictionary-data.js',
   'src/storage.js',
   'src/app.js'
@@ -71,16 +70,15 @@ try {
 const source = [
   read('src/content.js'),
   read('src/learning.js'),
-  read('src/vocab.js'),
   read('src/frequency-dictionary-data.js'),
-  'globalThis.__dd = { TOPICS, PAT_CATS, PATTERNS, PATTERN_BY_ID, SENTENCE_SEEDS, SENTENCES, VOCAB_TOPICS, VOCAB_SOURCE_REFS, VOCAB_CARDS, FREQUENCY_DICTIONARY };'
+  'globalThis.__dd = { TOPICS, PAT_CATS, PATTERNS, PATTERN_BY_ID, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY };'
 ].join('\n');
 
 const sandbox = { console };
 vm.createContext(sandbox);
 vm.runInContext(source, sandbox, { filename: 'validate-content.vm.js' });
 
-const { TOPICS, PAT_CATS, PATTERNS, SENTENCE_SEEDS, SENTENCES, VOCAB_TOPICS, VOCAB_SOURCE_REFS, VOCAB_CARDS, FREQUENCY_DICTIONARY } = sandbox.__dd;
+const { TOPICS, PAT_CATS, PATTERNS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY } = sandbox.__dd;
 const topicIds = new Set(TOPICS.map(t => t.id));
 const catIds = new Set(PAT_CATS.map(c => c.id));
 const allPatternIds = new Set(PATTERNS.map(p => p.id));
@@ -89,15 +87,10 @@ const activePatternIds = new Set(activePatterns.map(p => p.id));
 const hiddenPatternIds = new Set(PATTERNS.filter(p => p.status === 'hidden').map(p => p.id));
 const sentenceIds = new Set();
 const germanSentences = new Map();
-const vocabTopicIds = new Set(VOCAB_TOPICS.map(t => t.id));
-const vocabSourceIds = new Set(Object.keys(VOCAB_SOURCE_REFS));
-const vocabIds = new Set();
 
 record(SENTENCES.length === 216, `expected 216 sentences, found ${SENTENCES.length}`);
 record(SENTENCE_SEEDS.length === 216, `expected 216 sentence seeds, found ${SENTENCE_SEEDS.length}`);
 record(activePatterns.length === 50, `expected 50 active patterns, found ${activePatterns.length}`);
-record(VOCAB_CARDS.length === 500, `expected 500 vocab cards, found ${VOCAB_CARDS.length}`);
-record(VOCAB_TOPICS.length === 12, `expected 12 vocab topics, found ${VOCAB_TOPICS.length}`);
 
 for (const [topicId, expected] of Object.entries(topicTargets)) {
   const actual = SENTENCES.filter(s => s.t === topicId).length;
@@ -168,32 +161,6 @@ for (const pattern of PATTERNS) {
 for (const pattern of activePatterns) {
   const referenced = SENTENCES.some(sentence => (sentence.patternIds || []).includes(pattern.id));
   record(referenced, `active pattern ${pattern.id} is not referenced`);
-}
-
-for (const card of VOCAB_CARDS) {
-  if (vocabIds.has(card.id)) errors.push(`duplicate vocab id ${card.id}`);
-  vocabIds.add(card.id);
-
-  for (const key of ['id', 'de', 'en', 'pos', 'topic', 'level', 'priority']) {
-    record(Boolean(card[key]), `${card.id} missing ${key}`);
-  }
-
-  record(vocabTopicIds.has(card.topic), `${card.id} invalid vocab topic ${card.topic}`);
-  record(['A1', 'A2'].includes(card.level), `${card.id} invalid vocab level ${card.level}`);
-  record(Number.isFinite(card.priority), `${card.id} missing numeric priority`);
-  record(card.priority >= 1 && card.priority <= 500, `${card.id} priority out of range`);
-  record(card.example && card.example.de && card.example.en, `${card.id} missing complete example`);
-  record(Array.isArray(card.sourceRefs) && card.sourceRefs.length > 0, `${card.id} missing sourceRefs`);
-  (card.sourceRefs || []).forEach(ref => record(vocabSourceIds.has(ref), `${card.id} invalid sourceRef ${ref}`));
-
-  if (card.pos === 'noun') {
-    const expectedGender = { der: 'm', die: 'f', das: 'n' }[card.article];
-    record(Boolean(expectedGender), `${card.id} noun missing valid article`);
-    record(card.gender === expectedGender, `${card.id} noun article/gender mismatch`);
-    record(Boolean(card.plural), `${card.id} noun missing plural`);
-  } else {
-    record(!card.article && !card.gender, `${card.id} non-noun should not carry article/gender`);
-  }
 }
 
 // ─── Frequency Dictionary ─────────────────────
@@ -301,7 +268,6 @@ const oldSentenceUseClass = 'sentence' + '-use';
 record(!sourceText.includes(oldSentenceUseClass), 'old sentence class remains');
 
 const topicCounts = Object.fromEntries(TOPICS.map(t => [t.id, SENTENCES.filter(s => s.t === t.id).length]));
-const vocabTopicCounts = Object.fromEntries(VOCAB_TOPICS.map(t => [t.id, VOCAB_CARDS.filter(card => card.topic === t.id).length]));
 const levelCounts = SENTENCES.reduce((acc, s) => {
   acc[s.lv] = (acc[s.lv] || 0) + 1;
   return acc;
@@ -316,10 +282,8 @@ const report = {
   seeds: SENTENCE_SEEDS.length,
   topics: TOPICS.length,
   activePatterns: activePatterns.length,
-  vocabCards: VOCAB_CARDS.length,
   formalInformal: formalInformal.length,
   topicCounts,
-  vocabTopicCounts,
   levelCounts,
   activePatternReferences,
   errors,

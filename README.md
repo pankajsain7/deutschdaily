@@ -6,7 +6,9 @@ DeutschDaily is an offline-first daily German practice app focused on useful res
 
 - Daily sentence queue with progress tracking
 - Spaced repetition scheduling
-- **Vocabulary**: 2,525-word German frequency dictionary with example sentences, SRS review, and paginated practice (50 words per page)
+- **Vocabulary**: a single 2,525-word German frequency dictionary with example sentences, searchable and filterable browsing
+- **Practice**: dedicated tab with Anki-style flashcards for vocabulary — Again / Hard / Good / Easy ratings with next-interval previews, DE→EN and EN→DE directions, and decks for due reviews, today's new words, hard words, saved words, and everything learned
+- **Daily review reminder**: shown once per day when reviews are due, and stays dismissed for the rest of the day
 - **Sentences**: Browse and practice daily-life resident scenarios by topic with pattern learning and English-to-German translation exercises
 - **Kursplan (Curriculum Syllabus)**: Comprehensive A1 → B1 study plan covering 48 units and 600 Unterrichtseinheiten structured according to BAMF Integrationskurs and telc/Goethe specifications
 - Pattern learning and pattern practice
@@ -14,6 +16,7 @@ DeutschDaily is an offline-first daily German practice app focused on useful res
 - Text-to-speech support with browser speech synthesis plus optional desktop fallback voices when network audio is available
 - Learn more panels with grammar, variants, reuse ideas, likely replies, and active practice tasks
 - Formal and informal variants where `Sie` / `du` matters
+- Vocabulary-focused progress tab with review forecast, retention, and a "needs attention" list of repeatedly forgotten words
 - Offline local progress storage with export/import backups
 - Responsive sidebar navigation with section grouping (Learn, Track)
 - Minimal SVG app logo for browser tabs and bookmarks
@@ -31,6 +34,7 @@ The app loads these local files:
 ```text
 src/content.js
 src/learning.js
+src/frequency-dictionary-data.js
 src/storage.js
 src/app.js
 src/styles.css
@@ -45,7 +49,6 @@ DEDaily.html              App shell and script/style includes
 deutsch-a1-b1-kursplan.html  Interactive A1 → B1 Kursplan (48 units / 600 UE syllabus)
 src/content.js            Topics, patterns, and sentence seed data
 src/learning.js           Learn more generation and teaching metadata
-src/vocab.js              500-card daily-life vocabulary deck
 src/frequency-dictionary-data.js  2,525-word frequency dictionary data
 src/frequency-dictionary.json     Parsed frequency dictionary (JSON, generated)
 src/storage.js            Local storage, daily queue, history, and SRS

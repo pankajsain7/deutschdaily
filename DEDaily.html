@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="src/styles.css?v=ui-20260803">
+  <link rel="stylesheet" href="src/styles.css?v=practice-20260901">
 </head>
 
 <body>
@@ -30,8 +30,9 @@
       <nav class="nav-desktop" style="flex:1">
         <div class="sidebar-section-label">Learn</div>
         <button class="nb on" id="nb-today" onclick="nav('today')"><span class="nb-icon-wrap" data-icon="today"></span> Today</button>
-        <button class="nb" id="nb-browse" onclick="nav('browse')"><span class="nb-icon-wrap" data-icon="sentences"></span> Sentences</button>
+        <button class="nb" id="nb-practice" onclick="nav('practice')"><span class="nb-icon-wrap" data-icon="layers"></span> Practice<span class="nav-due-badge" hidden></span></button>
         <button class="nb" id="nb-words" onclick="nav('frequency')"><span class="nb-icon-wrap" data-icon="vocab"></span> Vocabulary</button>
+        <button class="nb" id="nb-browse" onclick="nav('browse')"><span class="nb-icon-wrap" data-icon="sentences"></span> Sentences</button>
         <button class="nb" id="nb-patterns" onclick="nav('patterns')"><span class="nb-icon-wrap" data-icon="patterns"></span> Patterns</button>
         <button class="nb" id="nb-kursplan" onclick="nav('kursplan')"><span class="nb-icon-wrap" data-icon="kursplan"></span> Kursplan</button>
         <div class="sidebar-section-label">Track</div>
@@ -65,10 +66,8 @@
 
     <nav class="mobile-nav">
       <button class="mnb on" id="mnb-today" onclick="nav('today')"><span class="mnb-icon" data-icon="today"></span>Today</button>
-      <button class="mnb" id="mnb-browse" onclick="nav('browse')"><span class="mnb-icon" data-icon="sentences"></span>Phrases</button>
+      <button class="mnb" id="mnb-practice" onclick="nav('practice')"><span class="mnb-icon" data-icon="layers"></span>Practice<span class="nav-due-badge" hidden></span></button>
       <button class="mnb" id="mnb-words" onclick="nav('frequency')"><span class="mnb-icon" data-icon="vocab"></span>Vocab</button>
-      <button class="mnb" id="mnb-patterns" onclick="nav('patterns')"><span class="mnb-icon" data-icon="patterns"></span>Patterns</button>
-      <button class="mnb" id="mnb-kursplan" onclick="nav('kursplan')"><span class="mnb-icon" data-icon="kursplan"></span>Kursplan</button>
       <button class="mnb" id="mnb-library" onclick="nav('saved')"><span class="mnb-icon" data-icon="library"></span>Library</button>
       <button class="mnb" id="mnb-progress" onclick="nav('progress')"><span class="mnb-icon" data-icon="progress"></span>Progress</button>
     </nav>
@@ -85,10 +84,9 @@
 
   <script src="src/content.js?v=history-20260523"></script>
   <script src="src/learning.js?v=history-20260523"></script>
-  <script src="src/vocab.js?v=vocab-20260525"></script>
   <script src="src/frequency-dictionary-data.js?v=freq-20260623"></script>
-  <script src="src/storage.js?v=vocab-20260623"></script>
-  <script src="src/app.js?v=vocab-20260623"></script>
+  <script src="src/storage.js?v=practice-20260901"></script>
+  <script src="src/app.js?v=practice-20260901"></script>
 </body>
 
 </html>

@@ -1398,18 +1398,6 @@
   color: var(--accent);
 }
 
-.vocab-action-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
-.vocab-action-row > button {
-  flex: 1 1 160px;
-  justify-content: center;
-}
-
 .vocab-topic-row {
   max-height: 112px;
   overflow: auto;
@@ -1419,31 +1407,6 @@
 .vocab-visible-practice {
   color: var(--accent);
   font-weight: 700;
-}
-
-.vocab-practice-example {
-  display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
-  gap: 7px;
-  margin-top: 12px;
-  padding: 12px;
-  background: var(--blue-bg);
-  border: 1px solid var(--blue-border);
-  border-radius: 10px;
-  font-size: 13px;
-}
-
-.vocab-practice-example strong {
-  color: var(--text-3);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.35px;
-}
-
-.vocab-practice-example em {
-  grid-column: 2;
-  color: var(--text-3);
-  font-style: normal;
 }
 
 .vocab-rating-help {
@@ -1460,14 +1423,24 @@
 }
 
 .vocab-rate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
   border: 0;
   border-radius: 10px;
-  padding: 13px 8px;
+  padding: 11px 8px;
   color: white;
   font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
+}
+
+.vocab-rate-iv {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.85;
 }
 
 .vocab-rate.again { background: #DC2626; }
@@ -1486,13 +1459,11 @@
   }
 
   .vocab-detail-row,
-  .vocab-example,
-  .vocab-practice-example {
+  .vocab-example {
     grid-template-columns: 1fr;
   }
 
-  .vocab-example em,
-  .vocab-practice-example em {
+  .vocab-example em {
     grid-column: 1;
   }
 }
@@ -1500,89 +1471,12 @@
 /* ══════════════════════════════════════════════
    FREQUENCY DICTIONARY
    ══════════════════════════════════════════════ */
-.freq-queue-preview {
-  margin: 4px 0 8px;
-}
-
-.freq-queue-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  list-style: none;
-}
-
-.freq-queue-summary::-webkit-details-marker {
-  display: none;
-}
-
-.freq-queue-lbl {
-  border-top: none;
-  padding: 12px 0 8px;
-  margin-top: 0;
-}
-
-.freq-queue-toggle {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
-}
-
-.freq-queue-preview[open] .freq-queue-toggle::after {
-  content: ' ▲';
-}
-
-.freq-queue-preview:not([open]) .freq-queue-toggle::after {
-  content: ' ▼';
-}
-
-.freq-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 0 8px;
-}
-
-.freq-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  background: var(--white);
-  border: 0.5px solid var(--border);
-  border-radius: 99px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s, transform 0.1s;
-}
-
-.freq-chip:hover {
-  border-color: var(--accent);
-  transform: translateY(-1px);
-}
-
-.freq-chip-rank {
-  font-size: 11px;
+.freq-en-word {
+  display: block;
+  font-size: 17px;
   font-weight: 700;
-  color: var(--text-3);
-}
-
-.freq-browse-section {
-  border-top: 0.5px solid var(--border);
-  margin-top: 12px;
-}
-
-.freq-browse-lbl {
-  border-top: none;
   color: var(--text);
-  font-size: 15px;
-  text-transform: none;
-  letter-spacing: 0;
-  font-weight: 700;
-  padding: 16px 0 4px;
+  margin-bottom: 4px;
 }
 
 .freq-browse-hdr {
@@ -1670,5 +1564,178 @@
 
   .freq-practice-en {
     font-size: 16px;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PRACTICE HUB
+   ══════════════════════════════════════════════ */
+.nav-due-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: auto;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.nav-due-badge[hidden] {
+  display: none;
+}
+
+.practice-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px;
+  margin-bottom: 18px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.practice-hero-main {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.practice-hero-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.practice-hero-sub {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.practice-hero-btn {
+  flex: 0 0 auto;
+}
+
+.practice-today-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.deck-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.deck-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.deck-card.is-due {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+}
+
+.deck-card.is-empty {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.deck-card.is-empty:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.deck-card-count {
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.deck-card.is-empty .deck-card-count {
+  color: var(--text-3);
+}
+
+.deck-card-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.deck-card-sub {
+  display: block;
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+.card-state-tag {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.card-state-tag.is-new {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.rating-breakdown {
+  display: grid;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .practice-hero-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .practice-today-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .deck-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
