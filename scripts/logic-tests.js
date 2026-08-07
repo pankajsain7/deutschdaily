@@ -58,6 +58,7 @@ const source = [
     ensureFreqDailyQueue,
     getFreqReviewIds,
     getFreqRatedIds,
+    getFreqUnratedLearnedIds,
     markFreqLearned,
     unmarkFreqLearned,
     toggleFreqLearned,
@@ -468,6 +469,17 @@ assert.strictEqual(
   'import keeps the newest persisted vocabulary rating',
 );
 
+reset({
+  freqAttempts: [
+    { id: '3', date: '2026-08-01', result: 'good' },
+    { id: '3', date: '2026-08-02', result: 'again' },
+    { id: '4', date: '2026-08-02', result: 'manual' },
+  ],
+});
+assert.strictEqual(t.DB().freqRatingState['3'].rating, 'again', 'old flashcard attempts migrate to their latest replay rating');
+assert(!t.DB().freqRatingState['4'], 'manual learned actions never create a replay rating');
+assert.strictEqual(t.DB().freqRatingState['3'].updatedAt, '2026-08-02T12:00:00.000Z', 'migrated ratings receive stable ISO timestamps');
+
 // scheduleFreq: new entry with each rating
 reset({});
 let freqAgain = t.scheduleFreq('1', 'again');
@@ -580,6 +592,10 @@ assert(t.renderProgressOverview().includes('Vocab learned'), 'progress overview 
 assert(t.renderPracticeHub().includes('Practice again'), 'practice hub renders persistent replay groups');
 assert(!t.renderPracticeHub().includes('English → German'), 'vocabulary practice no longer offers English-to-German cards');
 assert(!t.renderPracticeHub().includes('Shortcuts'), 'practice hub no longer shows shortcut hints');
+
+reset({ freqLearned: ['12'] });
+assert.strictEqual(JSON.stringify(t.getFreqUnratedLearnedIds()), '["12"]', 'learned cards without a real response remain available for safe rating');
+assert(t.renderPracticeHub().includes('Build your replay groups'), 'practice hub gives learned words a safe path into replay groups');
 assert(!t.renderTodayVocab().includes('undefined'), 'today vocab card renders without holes');
 assert(!t.renderFrequency().includes('undefined'), 'vocabulary browse view renders without holes');
 t.ensureFreqDailyQueue();

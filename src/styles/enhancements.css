@@ -1609,6 +1609,23 @@
   min-width: 0;
 }
 
+.practice-hero-complete {
+  justify-content: flex-start;
+  background: linear-gradient(135deg, #f0fdf4, var(--white));
+  border-color: #bbf7d0;
+}
+
+.practice-hero-status {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+}
+
 .practice-hero-title {
   font-size: 20px;
   font-weight: 800;
@@ -1647,6 +1664,35 @@
   padding: 14px;
 }
 
+.practice-onboarding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: var(--radius-md);
+}
+
+.practice-onboarding-copy { min-width: 0; }
+
+.practice-onboarding-title {
+  margin-bottom: 3px;
+  color: #5b21b6;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.practice-onboarding-sub {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.practice-onboarding-btn { flex: 0 0 auto; }
+
 .practice-attention-grid {
   grid-template-columns: minmax(200px, 280px);
 }
@@ -1675,8 +1721,14 @@
   background: var(--accent-soft);
 }
 
+.deck-card.is-all:not(.is-empty) { border-color: var(--accent-border); }
+.deck-card.is-again:not(.is-empty) { border-color: #fecaca; }
+.deck-card.is-hard:not(.is-empty) { border-color: #fde68a; }
+.deck-card.is-good:not(.is-empty) { border-color: #bbf7d0; }
+.deck-card.is-easy:not(.is-empty) { border-color: #bae6fd; }
+
 .deck-card.is-empty {
-  opacity: 0.55;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
@@ -1697,6 +1749,11 @@
 .deck-card.is-empty .deck-card-count {
   color: var(--text-3);
 }
+
+.deck-card.is-again:not(.is-empty) .deck-card-count { color: var(--red); }
+.deck-card.is-hard:not(.is-empty) .deck-card-count { color: #b45309; }
+.deck-card.is-good:not(.is-empty) .deck-card-count { color: var(--green); }
+.deck-card.is-easy:not(.is-empty) .deck-card-count { color: #0284c7; }
 
 .deck-card-title {
   display: block;
@@ -1742,6 +1799,13 @@
     flex: 1 1 100%;
     justify-content: center;
   }
+
+  .practice-onboarding {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .practice-onboarding-btn { width: 100%; justify-content: center; }
 
   .practice-today-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));

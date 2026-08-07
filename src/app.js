@@ -515,17 +515,17 @@ ${cards}`;
 
 // ─── PRACTICE ────────────────────────────────
 const PRACTICE_RATING_DECKS = [
-  { key: 'all', title: 'All reviewed', sub: 'Every word you have rated in flashcards', ids: () => getFreqRatedIds() },
+  { key: 'all', title: 'All reviewed', sub: 'Every flashcard you have rated', ids: () => getFreqRatedIds() },
   { key: 'again', title: 'Again', sub: 'Latest rating: Again', ids: () => getFreqRatedIds('again') },
   { key: 'hard', title: 'Hard', sub: 'Latest rating: Hard', ids: () => getFreqRatedIds('hard') },
   { key: 'good', title: 'Good', sub: 'Latest rating: Good', ids: () => getFreqRatedIds('good') },
   { key: 'easy', title: 'Easy', sub: 'Latest rating: Easy', ids: () => getFreqRatedIds('easy') },
 ];
 
-function renderPracticeDeckCard(title, sub, empty, ids, mode = 'replay', isAttention = false) {
+function renderPracticeDeckCard(title, sub, empty, ids, mode = 'replay', isAttention = false, tone = '') {
   const disabled = ids.length === 0;
   const start = `startFrequencyPractice({ids:${idsArg(ids)},mode:'${mode}'})`;
-  return `<button class="deck-card${disabled ? ' is-empty' : ''}${isAttention && ids.length ? ' is-due' : ''}" ${disabled ? 'disabled aria-disabled="true"' : `onclick="${start}"`} type="button">
+  return `<button class="deck-card${disabled ? ' is-empty' : ''}${isAttention && ids.length ? ' is-due' : ''}${tone ? ` is-${tone}` : ''}" ${disabled ? 'disabled aria-disabled="true"' : `onclick="${start}"`} type="button">
   <span class="deck-card-count">${ids.length}</span>
   <span class="deck-card-title">${esc(title)}</span>
   <span class="deck-card-sub">${esc(disabled ? empty : sub)}</span>
@@ -543,8 +543,20 @@ function renderPracticeHub() {
     deck.sub,
     'Rate vocabulary cards to build this replay group.',
     deck.ids(),
+    'replay',
+    false,
+    deck.key,
   )).join('');
   const attentionIds = getFreqLeechIds();
+  const unratedLearnedIds = getFreqUnratedLearnedIds();
+  const ratingSeedIds = unratedLearnedIds.slice(0, 20);
+  const onboarding = ratingSeedIds.length ? `<div class="practice-onboarding">
+  <div class="practice-onboarding-copy">
+    <div class="practice-onboarding-title">Build your replay groups</div>
+    <div class="practice-onboarding-sub">${unratedLearnedIds.length} learned word${unratedLearnedIds.length !== 1 ? 's' : ''} do not have a flashcard rating yet. Rate ${ratingSeedIds.length} now; this will not change their review dates.</div>
+  </div>
+  <button class="btn btn-secondary practice-onboarding-btn" onclick="startFrequencyPractice({ids:${idsArg(ratingSeedIds)},mode:'replay'})" type="button">Rate ${ratingSeedIds.length} words</button>
+</div>` : '';
 
   const hero = sessionIds.length
     ? `<div class="practice-hero">
@@ -554,9 +566,12 @@ function renderPracticeHub() {
   </div>
   <button class="btn btn-primary practice-hero-btn" onclick="startFrequencyPractice({ids:${idsArg(sessionIds)},mode:'scheduled'})" type="button">${ICO.target} Start review</button>
 </div>`
-    : `<div class="callout callout-success">
-  <div class="callout-title">${ICO.check} You are done for today</div>
-  <div class="callout-sub">No reviews due and no new words left in the queue. Use a replay group below if you want another round.</div>
+    : `<div class="practice-hero practice-hero-complete">
+  <div class="practice-hero-status">${ICO.check}</div>
+  <div class="practice-hero-main">
+    <div class="practice-hero-title">Daily review complete</div>
+    <div class="practice-hero-sub">No cards are due today. Your scheduled reviews are saved; an optional replay below will not change them.</div>
+  </div>
 </div>`;
 
   return `<div style="padding-top:14px">
@@ -565,11 +580,13 @@ function renderPracticeHub() {
 
 ${hero}
 
+${onboarding}
+
 <div class="sec-lbl">Practice again</div>
 <div class="deck-grid practice-replay-grid">${replayCards}</div>
 
-<div class="sec-lbl">Needs attention</div>
-<div class="deck-grid practice-attention-grid">${renderPracticeDeckCard('Hard words', `Words forgotten ${LEECH_LAPSES} or more times`, 'No problem words yet.', attentionIds, 'replay', true)}</div>
+${attentionIds.length ? `<div class="sec-lbl">Needs attention</div>
+<div class="deck-grid practice-attention-grid">${renderPracticeDeckCard('Hard words', `Forgotten ${LEECH_LAPSES} or more times`, 'No problem words yet.', attentionIds, 'replay', true, 'attention')}</div>` : ''}
   </div>`;
 }
 

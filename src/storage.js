@@ -212,6 +212,18 @@ function normalizeFreqRatingState(value, validIds) {
   });
   return out;
 }
+function migrateFreqRatingsFromAttempts(ratingState, attempts) {
+  const migrated = { ...ratingState };
+  const explicitRatingIds = new Set(Object.keys(ratingState));
+  attempts.forEach(attempt => {
+    if (!attempt || explicitRatingIds.has(attempt.id) || !['again', 'hard', 'good', 'easy'].includes(attempt.result)) return;
+    // Older saves recorded the response but did not yet have rating metadata.
+    // Attempts only carried a date, so preserve their order within that day.
+    const updatedAt = new Date(`${attempt.date}T12:00:00.000Z`).toISOString();
+    migrated[attempt.id] = { rating: attempt.result, updatedAt };
+  });
+  return migrated;
+}
 function normalizeSettings(value) {
   return {
     externalTts: true,
@@ -243,6 +255,7 @@ function normalizeDb(raw = {}) {
   Object.entries(historyWords).forEach(([key, ids]) => { history[key] = ids.length; });
   const dailyQueueDate = normalizeDateKey(safe.dailyQueueDate);
   const todayK = today();
+  const freqAttempts = normalizeFrequencyAttempts(safe.freqAttempts, validFreqIds);
   const normalized = {
     version: DB_VERSION,
     todayTab: safe.todayTab === 'sentences' ? 'sentences' : 'vocab',
@@ -262,8 +275,11 @@ function normalizeDb(raw = {}) {
     freqLearned: new Set(uniqueValidIds(safe.freqLearned, validFreqIds)),
     freqFavorites: new Set(uniqueValidIds(safe.freqFavorites, validFreqIds)),
     freqSrs: normalizeSrs(safe.freqSrs, validFreqIds),
-    freqRatingState: normalizeFreqRatingState(safe.freqRatingState, validFreqIds),
-    freqAttempts: normalizeFrequencyAttempts(safe.freqAttempts, validFreqIds),
+    freqRatingState: migrateFreqRatingsFromAttempts(
+      normalizeFreqRatingState(safe.freqRatingState, validFreqIds),
+      freqAttempts,
+    ),
+    freqAttempts,
     freqDailyGoal: clampNumber(safe.freqDailyGoal, 1, 60, DEFAULT_FREQ_DAILY_GOAL),
     freqDailyQueue,
     freqDailyQueueDate,
@@ -650,6 +666,16 @@ function getFreqRatedIds(rating) {
     .filter(([id, state]) => validFrequencyRankSet().has(id) && state && validRatings.includes(state.rating) && (!rating || state.rating === rating))
     .sort((a, b) => String(b[1].updatedAt).localeCompare(String(a[1].updatedAt)) || Number(a[0]) - Number(b[0]))
     .map(([id]) => id);
+}
+function getFreqUnratedLearnedIds(limit = Infinity) {
+  return [...DB.freqLearned]
+    .filter(id => validFrequencyRankSet().has(id) && !DB.freqRatingState[id])
+    .sort((a, b) => {
+      const aDate = String((DB.freqSrs[a] || {}).lastReview || '');
+      const bDate = String((DB.freqSrs[b] || {}).lastReview || '');
+      return aDate.localeCompare(bDate) || Number(a) - Number(b);
+    })
+    .slice(0, limit);
 }
 function recordFreqRating(id, rating, updatedAt = new Date().toISOString()) {
   const sid = String(id);
