@@ -605,19 +605,54 @@ function loadMoreFreq() { V.freqPage = (V.freqPage || 1) + 1; render(); }
 // ══════════════════════════════════════════════
 // FREQUENCY DICTIONARY
 // ══════════════════════════════════════════════
-function freqDisplay(entry) {
-  return entry ? entry.german : '';
+const POS_EXPANSION = {
+  'M': 'der (m)',
+  'F': 'die (f)',
+  'N': 'das (n)',
+  'art': 'article',
+  'prn': 'pronoun',
+  'vb': 'verb',
+  'vb2': 'verb',
+  'av': 'auxiliary verb',
+  'adj': 'adjective',
+  'adv': 'adverb',
+  'prp': 'preposition',
+  'con': 'conjunction',
+  'prt': 'particle',
+  'nu': 'numeral',
+  'i': 'interjection'
+};
+
+function getFreqArticle(entry) {
+  if (!entry || !entry.pos) return '';
+  const parts = entry.pos.split(/[;,]/).map(p => p.trim());
+  if (parts.includes('M')) return 'der';
+  if (parts.includes('F')) return 'die';
+  if (parts.includes('N')) return 'das';
+  return '';
 }
+
+function freqDisplay(entry) {
+  if (!entry) return '';
+  const art = getFreqArticle(entry);
+  if (art && entry.german && /^[A-ZÄÖÜ]/.test(entry.german)) {
+    return `${art} ${entry.german}`;
+  }
+  return entry.german;
+}
+
 function freqPosLabel(entry) {
   if (!entry || !entry.pos) return '';
-  return entry.pos.split(/[;,]/).map(p => p.trim()).filter(Boolean).join(' · ');
+  return entry.pos.split(/[;,]/).map(p => p.trim()).filter(Boolean).map(p => POS_EXPANSION[p] || p).join(' · ');
 }
+
 function freqSentenceWithHighlight(entry) {
   if (!entry || !entry.germanSentence) return '';
   const word = esc(entry.german).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`(^|[^\\p{L}])(${word})(?=[^\\p{L}]|$)`, 'giu');
   return esc(entry.germanSentence).replace(regex, '$1<strong lang="de">$2</strong>');
 }
+
 function freqCardsForView() {
   const due = new Set(getFreqReviewIds());
   const q = V.query.trim().toLowerCase();
@@ -631,7 +666,9 @@ function freqCardsForView() {
     if (V.freqFilter === 'learned' && !DB.freqLearned.has(id)) return false;
     if (V.freqFilter === 'saved' && !DB.freqFavorites.has(id)) return false;
     if (!q) return true;
-    return [entry.german, entry.english, entry.pos, entry.germanSentence, entry.englishSentence]
+    const art = getFreqArticle(entry);
+    const displayWord = art ? `${art} ${entry.german}` : entry.german;
+    return [entry.german, displayWord, art, entry.english, entry.pos, freqPosLabel(entry), entry.germanSentence, entry.englishSentence]
       .filter(Boolean)
       .some(value => String(value).toLowerCase().includes(q));
   });
@@ -2304,7 +2341,7 @@ function renderFrequencyPractice() {
   const scheduledMode = isScheduledFrequencyPractice(FP.mode);
   const iv = freqRatingPreview(id);
   const speakText = entry.germanSentence || entry.german;
-  const frontHtml = `<div class="practice-de freq-practice-word" lang="de">${esc(entry.german)}</div>`;
+  const frontHtml = `<div class="practice-de freq-practice-word" lang="de">${esc(freqDisplay(entry))}</div>`;
   const backHtml = `<div class="practice-en freq-practice-en">${esc(entry.english)}</div>`;
   ov.innerHTML = `
   <div class="practice-hdr">
