@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+[hidden],
+.hid {
+  display: none !important;
+}
+
 :root {
   color-scheme: light;
 

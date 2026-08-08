@@ -1566,6 +1566,11 @@
   margin-bottom: 4px;
 }
 
+.freq-en-word.hid,
+.freq-en-word[hidden] {
+  display: none !important;
+}
+
 .freq-browse-hdr {
   display: flex;
   align-items: center;

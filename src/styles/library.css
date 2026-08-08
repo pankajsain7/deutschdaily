@@ -1,52 +1,77 @@
-/* ─── Learned Page / Library Tabs ─── */
+/* ─── Learned Page / Library Layout & Controls ─── */
 .lib-tabs {
   display: flex;
   background: var(--border);
   border-radius: 10px;
   padding: 2px;
   gap: 0;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
-/* ─── Progress Tabs (Overview / Activity) ─── */
-.progress-tabs {
-  display: flex;
-  background: #E8EAED;
-  border-radius: 12px;
-  padding: 3px;
-  gap: 0;
-  margin: 4px 0 18px;
-}
-
-.progress-tab {
+.lib-tab {
   flex: 1;
-  padding: 9px 12px;
-  border-radius: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   color: var(--text-2);
   font-family: 'Inter', sans-serif;
   border: none;
   background: none;
-  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+  transition: all 0.15s;
   text-align: center;
 }
 
-.progress-tab:hover {
-  color: var(--text);
-}
-
-.progress-tab.on {
+.lib-tab.on {
   background: var(--white);
   color: var(--text);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-weight: 600;
 }
 
-.progress-tab:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.lib-tab-count {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-left: 2px;
 }
+
+.lib-type-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.lib-type-btn {
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--text-2);
+  font: 500 12px 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lib-type-btn.on {
+  background: var(--white);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+}
+
+.lib-type-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Progress Controls handled in progress.css */
+
 
 .progress-body {
   padding-top: 2px;
@@ -89,58 +114,6 @@
 .load-more-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-}
-
-.lib-tab {
-  flex: 1;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--text-2);
-  font-family: 'Inter', sans-serif;
-  border: none;
-  background: none;
-  transition: all 0.15s;
-  text-align: center;
-}
-
-.lib-tab.on {
-  background: var(--white);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.lib-type-toggle {
-  display: inline-flex;
-  gap: 2px;
-  padding: 2px;
-  margin: -6px 0 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-}
-
-.lib-type-btn {
-  border: 0;
-  border-radius: 6px;
-  padding: 6px 12px;
-  background: transparent;
-  color: var(--text-2);
-  font: 500 12px 'Inter', sans-serif;
-  cursor: pointer;
-}
-
-.lib-type-btn.on {
-  background: var(--white);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.lib-type-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
 }
 
 .learned-cta {

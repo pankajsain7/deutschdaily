@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
@@ -41,7 +41,7 @@ function normalizePatternFilter(value) {
 }
 
 function stateFromUrl(href) {
-  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -84,6 +84,7 @@ function stateFromUrl(href) {
     } else {
       fallback.view = 'progress';
       fallback.progressTab = normalizeProgressTab(tab || (viewParam === 'history' ? 'activity' : 'overview'));
+      fallback.progressType = type === 'sentences' ? 'sentences' : 'vocab';
     }
   } else {
     fallback.view = view;
@@ -110,6 +111,7 @@ function urlFromState(state = V) {
     if (state.libType === 'sentences') params.set('type', 'sentences');
   } else if (view === 'progress') {
     if (state.progressTab && state.progressTab !== 'overview') params.set('tab', state.progressTab);
+    if (state.progressType === 'sentences') params.set('type', 'sentences');
   } else if (view === 'history-day' && state.historyDay) {
     params.set('day', state.historyDay);
   }
@@ -131,6 +133,7 @@ function applyUrlState(href) {
   V.freqRange = next.freqRange;
   V.historyDay = next.historyDay;
   V.progressTab = next.progressTab;
+  V.progressType = next.progressType || 'vocab';
 }
 function syncUrl(replace = false) {
   if (!window.history || !window.location) return;
@@ -725,9 +728,9 @@ function renderFreqCard(entry, i) {
 </div>
 <button class="vocab-term reveal-btn" onclick="toggleFreqReveal('${id}')" aria-expanded="false" type="button" lang="de">${esc(freqDisplay(entry))}</button>
 <div class="freq-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-<button class="vocab-en hid reveal-btn" id="fen-${id}" onclick="toggleFreqWordMeaning('${id}')" aria-hidden="true" hidden type="button">
+<button class="vocab-en hid reveal-btn" id="fen-${id}" onclick="toggleFreqWordMeaning('${id}')" aria-hidden="true" hidden type="button" title="Click sentence to toggle word meaning">
   <span class="freq-en-sentence">${esc(entry.englishSentence)}</span>
-  <span class="freq-en-word hid" id="few-${id}" aria-hidden="true" hidden>${esc(entry.english)}</span>
+  <span class="freq-en-word hid" id="few-${id}" aria-hidden="true" hidden><span style="font-weight:400;font-size:12px;color:var(--text-3);display:block;margin-top:4px">Word meaning:</span>${esc(entry.english)}</span>
 </button>
 <div class="card-actions">
   <button class="act-btn speak-btn" data-id="freq-${id}" onclick="speak(${jsArg(entry.germanSentence || entry.german)},'freq-${id}')" type="button">
@@ -768,10 +771,17 @@ function toggleFreqWordMeaning(id) {
   const wordMeaning = document.getElementById('few-' + id);
   const englishSentence = document.getElementById('fen-' + id);
   if (!wordMeaning || !englishSentence || englishSentence.classList.contains('hid')) return;
-  wordMeaning.hidden = false;
-  wordMeaning.setAttribute('aria-hidden', 'false');
-  wordMeaning.classList.remove('hid');
-  englishSentence.setAttribute('aria-expanded', 'true');
+  if (wordMeaning.classList.contains('hid')) {
+    wordMeaning.hidden = false;
+    wordMeaning.setAttribute('aria-hidden', 'false');
+    wordMeaning.classList.remove('hid');
+    englishSentence.setAttribute('aria-expanded', 'true');
+  } else {
+    wordMeaning.hidden = true;
+    wordMeaning.setAttribute('aria-hidden', 'true');
+    wordMeaning.classList.add('hid');
+    englishSentence.setAttribute('aria-expanded', 'false');
+  }
 }
 function syncFreqCardState(id) {
   const card = document.getElementById('fc-' + id);
@@ -1310,13 +1320,13 @@ function renderSaved() {
   const showSentences = V.libType === 'sentences';
   const savedCount = showSentences ? favSents.length : favFreq.length;
   const learnedCount = showSentences ? learnedSents.length : learnedFreq.length;
-  const tabs = `<div class="lib-tabs">
-<button class="lib-tab${V.libTab === 'learned' ? ' on' : ''}" onclick="setLibTab('learned')" type="button">Learned <span class="lib-tab-count">${learnedCount}</span></button>
-<button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')" type="button">Saved <span class="lib-tab-count">${savedCount}</span></button>
+  const tabs = `<div class="lib-tabs" role="tablist">
+    <button class="lib-tab${V.libTab === 'learned' ? ' on' : ''}" onclick="setLibTab('learned')" type="button">Learned <span class="lib-tab-count">${learnedCount}</span></button>
+    <button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')" type="button">Saved <span class="lib-tab-count">${savedCount}</span></button>
   </div>`;
   const typeToggle = `<div class="lib-type-toggle" role="tablist" aria-label="Library item type">
-<button class="lib-type-btn${showSentences ? ' on' : ''}" onclick="setLibType('sentences')" role="tab" aria-selected="${showSentences}" type="button">Sentences</button>
-<button class="lib-type-btn${showSentences ? '' : ' on'}" onclick="setLibType('vocab')" role="tab" aria-selected="${!showSentences}" type="button">Vocab</button>
+    <button class="lib-type-btn${showSentences ? '' : ' on'}" onclick="setLibType('vocab')" role="tab" aria-selected="${!showSentences}" type="button">Vocab</button>
+    <button class="lib-type-btn${showSentences ? ' on' : ''}" onclick="setLibType('sentences')" role="tab" aria-selected="${showSentences}" type="button">Sentences</button>
   </div>`;
 
   // SRS due-for-review section
@@ -1343,7 +1353,7 @@ function renderSaved() {
 </div>` : '';
   const reviewSection = showSentences ? sentenceReviewSection : frequencyReviewSection;
 
-  if (V.libTab === 'learned') return renderLearnedTab(`${tabs}${typeToggle}`, showSentences ? learnedSents : [], showSentences ? [] : learnedFreq, showSentences);
+  if (V.libTab === 'learned') return renderLearnedTab(tabs, typeToggle, showSentences ? learnedSents : [], showSentences ? [] : learnedFreq, showSentences);
   if (!savedCount) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}${reviewSection}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">${ICO.starOutline}</div>No saved ${showSentences ? 'sentences' : 'vocabulary'} yet.<br><span style="font-size:13px">Tap Save on any ${showSentences ? 'sentence' : 'vocabulary'} card.</span></div></div>`;
   const favIds = JSON.stringify(favSents.map(s => s.id)).replace(/"/g, "'");
   const favFreqIds = idsArg(favFreq.map(entry => String(entry.rank)));
@@ -1367,8 +1377,8 @@ ${favFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}` : '';
 ${showSentences ? sentenceSection : frequencySection}</div>`;
 }
 
-function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
-  if (!learnedSents.length && !learnedFreq.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">${ICO.book}</div>No learned items yet.<br><span style="font-size:13px">Mark a sentence or vocabulary card learned to track it here.</span></div></div>`;
+function renderLearnedTab(tabs, typeToggle, learnedSents, learnedFreq, showSentences) {
+  if (!learnedSents.length && !learnedFreq.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}${typeToggle}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">${ICO.book}</div>No learned items yet.<br><span style="font-size:13px">Mark a sentence or vocabulary card learned to track it here.</span></div></div>`;
 
   // SRS due sentences (filtered to the currently selected library type)
   const dueIds = showSentences ? getSrsReviewIds() : [];
@@ -1407,10 +1417,7 @@ function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
     </div>
     ${dueFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}
   ` : '';
-  const dueSection = sentenceDueSection || frequencyDueSection ? `${sentenceDueSection}${frequencyDueSection}` : `<div class="callout callout-success">
-      <div class="callout-title">${ICO.check} All caught up</div>
-      <div class="callout-sub">No items due for review right now. Check back later.</div>
-    </div>`;
+  const dueSection = sentenceDueSection || frequencyDueSection ? `${sentenceDueSection}${frequencyDueSection}` : '';
 
   // Reviewed today section
   const reviewedSection = reviewedTodaySents.length ? `
@@ -1438,6 +1445,7 @@ function renderLearnedTab(tabs, learnedSents, learnedFreq, showSentences) {
   return `<div style="padding-top:14px">
 <h2 class="page-title">Library</h2>
 ${tabs}
+${typeToggle}
 ${dueSection}
 ${reviewedSection}
 ${allSentenceSection}
@@ -1467,99 +1475,207 @@ function reviewForecast(srsMap, days = 7) {
     return { key, count, label: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : parseDateKey(key).toLocaleDateString('en-DE', { weekday: 'short' }) };
   });
 }
-function renderProgressOverview() {
+function setProgressType(type) {
+  V.progressType = type === 'sentences' ? 'sentences' : 'vocab';
+  commitState();
+}
+
+function renderProgressDashboard() {
+  const studiedDates = new Set([...DB.attempts, ...DB.patternAttempts, ...DB.freqAttempts].filter(a => a.result !== 'skip').map(a => a.date));
+  Object.keys(DB.historyWords).forEach(k => studiedDates.add(k));
+  const days = getHistoryDays(30);
+
+  // ── helpers ──────────────────────────────────
+  function forecastChart(srsMap) {
+    const fc = reviewForecast(srsMap, 7);
+    const maxF = Math.max(...fc.map(r => r.count), 1);
+    return `<div class="forecast-row">${fc.map(r => `<div class="forecast-day"><div class="forecast-count">${r.count}</div><div class="forecast-bar"><span class="${r.count ? '' : 'zero'}" style="height:${Math.max(8, Math.round(r.count / maxF * 100))}%"></span></div><div class="forecast-label">${r.label}</div></div>`).join('')}</div>`;
+  }
+  function sectionCard(title, badge, bodyHtml, subtitle) {
+    const badgeHtml = badge ? `<span class="progress-section-badge${badge.cls ? ' ' + badge.cls : ''}">${badge.text}</span>` : '';
+    const subHtml = subtitle ? `<span class="progress-section-sub">${subtitle}</span>` : '';
+    return `<div class="progress-section">
+  <div class="progress-section-hdr">
+    <div class="progress-section-title">${title}${subHtml}</div>${badgeHtml}
+  </div>
+  <div class="progress-section-body">${bodyHtml}</div>
+</div>`;
+  }
+
+  // ── Data ──────────────────────────────────────
   const vocabTotal = FREQUENCY_DICTIONARY_SIZE;
   const vocabDone = DB.freqLearned.size;
   const vocabCompletion = pct(vocabDone, vocabTotal);
   const vocabDue = getFreqReviewIds().length;
-  const vocabOverdue = Object.entries(DB.freqSrs).filter(([id, s]) => DB.freqLearned.has(id) && s.nextReview && s.nextReview < today()).length;
   const vocabMastered = Object.entries(DB.freqSrs).filter(([id, s]) => DB.freqLearned.has(id) && s.level >= 5).length;
   const leechIds = getFreqLeechIds();
+  const streak = DB.streak;
+  const activeDaysTotal = studiedDates.size;
 
-  const histRows = [];
-  for (let i = 6; i >= 0; i--) {
-    const key = addDaysISO(-i);
-    const cnt = DB.freqAttempts.filter(a => a.date === key && a.result !== 'skip').length;
-    const d = parseDateKey(key);
-    const label = i === 0 ? 'Today' : i === 1 ? 'Yest' : d.toLocaleDateString('en-DE', { weekday: 'short' });
-    histRows.push({ label, cnt, isToday: i === 0 });
-  }
-  const maxH = Math.max(...histRows.map(r => r.cnt), 1);
-  const studiedDates = new Set([...DB.attempts, ...DB.patternAttempts, ...DB.freqAttempts].filter(a => a.result !== 'skip').map(a => a.date));
-  Object.keys(DB.historyWords).forEach(k => studiedDates.add(k));
+  // Retention rate (all-time vocab)
+  const vocabAttempts = DB.freqAttempts.filter(a => a.result !== 'skip');
+  const totalGot = vocabAttempts.filter(a => a.result === 'good' || a.result === 'easy').length;
+  const totalAgain = vocabAttempts.filter(a => a.result === 'again' || a.result === 'hard').length;
+  const retention = totalGot + totalAgain ? pct(totalGot, totalGot + totalAgain) : 0;
 
-  const todayFreq = DB.freqAttempts.filter(a => a.date === today() && a.result !== 'skip');
-  const newToday = DB.freqDailyQueueDone.size;
-  const reviewsToday = todayFreq.filter(a => a.wasDue).length;
+  // ── 1. Smart Hero Banner ─────────────────────
+  const heroHtml = `
+<div class="dash-hero">
+  <div class="dash-hero-card">
+    <div class="dash-hero-icon" style="color:var(--accent)">${ICO.vocab}</div>
+    <div class="dash-hero-num">${vocabDone}</div>
+    <div class="dash-hero-lbl">Words Learned</div>
+    <div class="dash-hero-sub">${vocabCompletion}% of ${vocabTotal}</div>
+    <div class="dash-hero-bar"><div class="dash-hero-bar-fill" style="width:${vocabCompletion}%"></div></div>
+  </div>
+  <div class="dash-hero-card">
+    <div class="dash-hero-icon" style="color:var(--amber)">${ICO.flame}</div>
+    <div class="dash-hero-num">${streak}</div>
+    <div class="dash-hero-lbl">Day Streak</div>
+    <div class="dash-hero-sub">${activeDaysTotal} active days total</div>
+  </div>
+  <div class="dash-hero-card">
+    <div class="dash-hero-icon" style="color:${retention >= 80 ? 'var(--green)' : retention >= 60 ? 'var(--amber)' : 'var(--red)'}">${ICO.target}</div>
+    <div class="dash-hero-num ${retention >= 80 ? 'accent-green' : retention >= 60 ? 'accent-amber' : 'accent-red'}">${retention}%</div>
+    <div class="dash-hero-lbl">Retention Rate</div>
+    <div class="dash-hero-sub">${totalGot + totalAgain} total reviews</div>
+  </div>
+  <div class="dash-hero-card${vocabDue > 0 ? ' has-due' : ''}">
+    <div class="dash-hero-icon" style="color:${vocabDue > 0 ? 'var(--red)' : 'var(--green)'}">${vocabDue > 0 ? ICO.calendar : ICO.check}</div>
+    <div class="dash-hero-num${vocabDue > 0 ? ' accent-red' : ''}">${vocabDue}</div>
+    <div class="dash-hero-lbl">Due for Review</div>
+    <div class="dash-hero-sub">${vocabMastered} mastered</div>
+    ${vocabDue > 0 ? `<button class="dash-hero-action" onclick="startFrequencyPractice({ids:${idsArg(getFreqReviewIds())},mode:'due'})" type="button">Review now →</button>` : ''}
+  </div>
+</div>`;
 
-  const ratings = ['again', 'hard', 'good', 'easy'];
-  const ratingCounts = ratings.map(r => ({ r, n: DB.freqAttempts.filter(a => a.result === r).length }));
-  const ratingTotal = ratingCounts.reduce((sum, c) => sum + c.n, 0);
-  const retention = ratingTotal ? pct(ratingCounts[2].n + ratingCounts[3].n, ratingTotal) : 0;
+  // ── 2. Practice Velocity Chart (14 days) ──────
+  const velocityDays = days.slice(0, 14).reverse(); // oldest first, last 14 days
+  const velData = velocityDays.map(d => {
+    const newWords = d.vocabLearnedCount || 0;
+    const reps = d.frequencyPracticeCount || 0;
+    const total = reps + newWords;
+    return { label: d.shortLabel, total, reps, newWords, key: d.key };
+  });
+  const maxReps = Math.max(...velData.map(v => v.total), 1);
+  const velChartW = 600, velChartH = 120;
+  const velBarW = Math.max(16, (velChartW / velData.length) * 0.55);
+  const velGap = (velChartW - velBarW * velData.length) / (velData.length + 1);
 
-  const forecast = reviewForecast(DB.freqSrs, 7);
-  const maxForecast = Math.max(...forecast.map(r => r.count), 1);
-
-  const barChart = `<div class="hist-chart">
-${histRows.map(r => {
-    const heightPct = Math.max(Math.round(r.cnt / maxH * 100), r.cnt > 0 ? 8 : 0);
-    return `<div class="hist-col"><div class="hist-bar-wrap"><div class="hist-bar-inner${r.isToday ? ' today' : ''}${r.cnt === 0 ? ' zero' : ''}" style="height:${heightPct}%">${r.cnt > 0 ? `<span class="hist-bar-num">${r.cnt}</span>` : ''}</div></div><div class="hist-day-lbl${r.isToday ? ' today' : ''}">${r.label}</div></div>`;
-  }).join('')}
-  </div>`;
-  const forecastChart = `<div class="forecast-row">${forecast.map(r => `<div class="forecast-day"><div class="forecast-count">${r.count}</div><div class="forecast-bar"><span class="${r.count ? '' : 'zero'}" style="height:${Math.max(8, Math.round(r.count / maxForecast * 100))}%"></span></div><div class="forecast-label">${r.label}</div></div>`).join('')}</div>`;
-
-  const leechRows = leechIds.slice(0, 8).map(id => {
-    const entry = freqById(id);
-    if (!entry) return '';
-    const lapses = (DB.freqSrs[id] || {}).lapses || 0;
-    return `<div class="insight-row"><div><strong lang="de">${esc(entry.german)}</strong><span>${esc(entry.english)} · forgotten ${lapses}×</span></div><button onclick="startFrequencyPractice({ids:['${id}'],mode:'free'})" type="button">Practice</button></div>`;
+  const velBars = velData.map((d, i) => {
+    const x = velGap + i * (velBarW + velGap);
+    if (d.total === 0) {
+      return `<rect x="${x}" y="${velChartH - 4}" width="${velBarW}" height="4" rx="2" fill="var(--border-strong)" opacity="0.35"/>
+        <text x="${x + velBarW / 2}" y="${velChartH + 14}" text-anchor="middle" fill="var(--text-3)" font-size="9" font-weight="500">${d.label}</text>`;
+    }
+    const h = Math.max(6, (d.total / maxReps) * (velChartH - 22));
+    const y = velChartH - h;
+    return `<rect x="${x}" y="${y}" width="${velBarW}" height="${h}" rx="3" fill="var(--accent)" opacity="0.8"/>
+      <text x="${x + velBarW / 2}" y="${y - 5}" text-anchor="middle" fill="var(--accent)" font-size="10" font-weight="700">${d.total}</text>
+      <text x="${x + velBarW / 2}" y="${velChartH + 14}" text-anchor="middle" fill="var(--text-3)" font-size="9" font-weight="500">${d.label}</text>`;
   }).join('');
 
-  return `<div class="progress-body">
-<div class="stats-grid">
-  <div class="stat-box"><div class="stat-lbl">Vocab learned</div><div class="stat-num">${vocabDone}</div><div class="stat-sub">of ${vocabTotal} words</div></div>
-  <div class="stat-box"><div class="stat-lbl">Completion</div><div class="stat-num">${vocabCompletion}%</div><div class="stat-sub">of the deck</div></div>
-  <div class="stat-box"><div class="stat-lbl">Streak</div><div class="stat-num">${DB.streak}</div><div class="stat-sub">study days in a row</div></div>
-  <div class="stat-box"><div class="stat-lbl">Days studied</div><div class="stat-num">${studiedDates.size}</div><div class="stat-sub">with activity</div></div>
+  const totalReps14 = velData.reduce((s, v) => s + v.reps, 0);
+  const totalNew14 = velData.reduce((s, v) => s + v.newWords, 0);
+  const activePracticeDays14 = velData.filter(v => v.total > 0).length;
+
+  const velocityChartHtml = `<div class="svg-chart-wrap">
+  <svg class="svg-chart" viewBox="0 0 ${velChartW} ${velChartH + 20}" preserveAspectRatio="none">
+    ${velBars}
+  </svg>
+  <div class="svg-chart-footer">
+    <span><strong>${totalReps14}</strong> reviews · <strong>${totalNew14}</strong> new words</span>
+    <span><strong>${activePracticeDays14}</strong> active days</span>
+  </div>
+</div>`;
+
+  // ── 3. Retention Trend Chart (14 days) ───────
+  const retentionDays = days.slice(0, 14).reverse(); // oldest first, last 14 days
+  const retData = retentionDays.map(d => {
+    const dayAttempts = d.frequencyAttempts ? d.frequencyAttempts.filter(a => a.result !== 'skip') : [];
+    const dayGot = dayAttempts.filter(a => a.result === 'good' || a.result === 'easy').length;
+    const dayFail = dayAttempts.filter(a => a.result === 'again' || a.result === 'hard').length;
+    const total = dayGot + dayFail;
+    return { label: d.shortLabel, pct: total ? pct(dayGot, total) : -1, total, key: d.key };
+  });
+  const retChartH = 120, retChartW = 600;
+  const retBarW = Math.max(16, (retChartW / retData.length) * 0.55);
+  const retGap = (retChartW - retBarW * retData.length) / (retData.length + 1);
+
+  const retBars = retData.map((d, i) => {
+    const x = retGap + i * (retBarW + retGap);
+    if (d.pct < 0) {
+      return `<rect x="${x}" y="${retChartH - 4}" width="${retBarW}" height="4" rx="2" fill="var(--border-strong)" opacity="0.4"/>
+        <text x="${x + retBarW / 2}" y="${retChartH + 14}" text-anchor="middle" fill="var(--text-3)" font-size="9" font-weight="500">${d.label}</text>`;
+    }
+    const h = Math.max(6, (d.pct / 100) * (retChartH - 20));
+    const y = retChartH - h;
+    const color = d.pct >= 80 ? 'var(--green)' : d.pct >= 60 ? 'var(--amber)' : 'var(--red)';
+    return `<rect x="${x}" y="${y}" width="${retBarW}" height="${h}" rx="3" fill="${color}" opacity="0.75"/>
+      <text x="${x + retBarW / 2}" y="${y - 5}" text-anchor="middle" fill="${color}" font-size="10" font-weight="700">${d.pct}%</text>
+      <text x="${x + retBarW / 2}" y="${retChartH + 14}" text-anchor="middle" fill="var(--text-3)" font-size="9" font-weight="500">${d.label}</text>`;
+  }).join('');
+
+  // Target line at 80%
+  const targetY = retChartH - (80 / 100) * (retChartH - 20);
+  const retTargetLine = `<line x1="0" y1="${targetY}" x2="${retChartW}" y2="${targetY}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+    <text x="${retChartW - 4}" y="${targetY - 4}" text-anchor="end" fill="var(--accent)" font-size="9" font-weight="600" opacity="0.7">80% target</text>`;
+
+  const retentionChartHtml = `<div class="svg-chart-wrap">
+  <svg class="svg-chart" viewBox="0 0 ${retChartW} ${retChartH + 20}" preserveAspectRatio="none">
+    ${retTargetLine}
+    ${retBars}
+  </svg>
+  <div class="svg-chart-footer">
+    <span>Overall: <strong class="${retention >= 80 ? 'c-green' : retention >= 60 ? 'c-amber' : 'c-red'}">${retention}%</strong> retention</span>
+    <span><span class="ret-legend-dot good"></span>≥80% <span class="ret-legend-dot ok"></span>60-79% <span class="ret-legend-dot bad"></span>&lt;60%</span>
+  </div>
+</div>`;
+
+  // ── 4. Activity Heatmap (30 days) ────────────
+  const maxActivity = Math.max(...days.map(d => d.activityCount), 1);
+  const heatChrono = [...days].reverse();
+  const heatCells = heatChrono.map(d => {
+    const level = d.activityCount === 0 ? 0 : Math.max(1, Math.min(4, Math.ceil(d.activityCount / maxActivity * 4)));
+    const detail = d.activityCount ? `${d.vocabLearnedCount} new · ${d.frequencyPracticeCount} reps` : 'No activity';
+    return `<button class="history-heat-cell level-${level}${d.isToday ? ' today' : ''}" onclick="navHistoryDay('${d.key}')" title="${esc(d.fullDateStr)}: ${esc(detail)}" type="button">${d.date.getDate()}</button>`;
+  }).join('');
+  const heatmapHtml = `<div class="history-heatmap">${heatCells}</div>
+<div class="heatmap-legend">
+  <span>Less</span>
+  <span class="heatmap-legend-cell level-0"></span>
+  <span class="heatmap-legend-cell level-1"></span>
+  <span class="heatmap-legend-cell level-2"></span>
+  <span class="heatmap-legend-cell level-3"></span>
+  <span class="heatmap-legend-cell level-4"></span>
+  <span>More</span>
+</div>`;
+
+  // ── 5. Leech / Hard Words ────────────────────
+  const leechHtml = leechIds.length ? `<div class="attention-list">${leechIds.slice(0, 8).map(id => {
+    const e = freqById(id); if (!e) return '';
+    const lapses = (DB.freqSrs[id] || {}).lapses || 0;
+    return `<div class="attention-item"><div><span class="attention-word" lang="de">${esc(e.german)}</span><span class="attention-sub">${esc(e.english)}</span></div><div style="display:flex;gap:8px;align-items:center"><span class="attention-badge">${ICO.alert} ${lapses}× forgotten</span><button class="attention-btn" onclick="startFrequencyPractice({ids:['${id}'],mode:'free'})" type="button">Practice</button></div></div>`;
+  }).join('')}</div>` : `<div class="progress-empty"><div class="progress-empty-icon">${ICO.check}</div>No problem words yet. Keep it up!</div>`;
+
+  // ── Assemble ─────────────────────────────────
+  return `<div class="progress-dashboard">
+${heroHtml}
+${sectionCard('Practice Velocity', { text: `${totalReps14} reviews` }, velocityChartHtml, 'Last 14 days')}
+${sectionCard('Retention Trend', retention ? { text: `${retention}% overall`, cls: retention >= 80 ? '' : retention >= 60 ? 'warn' : 'danger' } : null, retentionChartHtml, 'Last 14 days')}
+${sectionCard('Activity Map', { text: 'last 30 days' }, heatmapHtml, 'Click any day for details')}
+${sectionCard('Review Forecast', null, forecastChart(DB.freqSrs), 'Next 7 days')}
+${sectionCard('Needs Attention', leechIds.length ? { text: `${leechIds.length} hard word${leechIds.length !== 1 ? 's' : ''}`, cls: 'warn' } : null, leechHtml)}
+<div class="progress-section">
+  <div class="progress-section-hdr"><div class="progress-section-title">Data & Backup</div></div>
+  <div class="progress-section-body"><div class="progress-data-actions">
+    <button class="btn btn-secondary" onclick="exportData()" type="button">${ICO.upload} Export backup</button>
+    <button class="btn btn-secondary" onclick="importData()" type="button">${ICO.download} Import backup</button>
+  </div></div>
 </div>
-
-<div class="stats-sec-hdr">Spaced repetition</div>
-<div class="stats-grid stats-grid-three">
-  <div class="stat-box"><div class="stat-lbl">Due today</div><div class="stat-num${vocabDue > 0 ? ' is-warn' : ''}">${vocabDue}</div><div class="stat-sub">scheduled reviews</div></div>
-  <div class="stat-box"><div class="stat-lbl">Overdue</div><div class="stat-num${vocabOverdue > 0 ? ' is-danger' : ''}">${vocabOverdue}</div><div class="stat-sub">from earlier days</div></div>
-  <div class="stat-box"><div class="stat-lbl">Mastered</div><div class="stat-num">${vocabMastered}</div><div class="stat-sub">interval of months+</div></div>
-  <div class="stat-box"><div class="stat-lbl">New today</div><div class="stat-num">${newToday}</div><div class="stat-sub">of ${DB.freqDailyGoal} target</div></div>
-  <div class="stat-box"><div class="stat-lbl">Reviews today</div><div class="stat-num">${reviewsToday}</div><div class="stat-sub">due cards answered</div></div>
-  <div class="stat-box"><div class="stat-lbl">Hard words</div><div class="stat-num${leechIds.length > 0 ? ' is-warn' : ''}">${leechIds.length}</div><div class="stat-sub">${LEECH_LAPSES}+ lapses</div></div>
-</div>
-
-<div class="stats-sec-hdr">Review forecast</div>
-${forecastChart}
-
-<div class="stats-sec-hdr">Practice activity — past 7 days</div>
-${barChart}
-
-<div class="stats-sec-hdr">Answer breakdown</div>
-${ratingTotal ? `<div class="rating-breakdown">${ratingCounts.map(c => `<div class="prog-row"><div class="prog-lbl" style="min-width:70px;text-transform:capitalize">${c.r}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct(c.n, ratingTotal)}%"></div></div><div class="prog-pct">${pct(c.n, ratingTotal)}%</div><div class="prog-cnt">${c.n}</div></div>`).join('')}</div>
-<div class="callout"><div class="callout-title">Retention ${retention}%</div><div class="callout-sub">Share of answers rated Good or Easy across ${ratingTotal} rating${ratingTotal !== 1 ? 's' : ''}.</div></div>` : '<div class="empty-mini">Rate some flashcards in Practice and the breakdown appears here.</div>'}
-
-<div class="stats-sec-hdr">Needs attention</div>
-${leechRows || '<div class="empty-mini">No problem words. Words appear here once you forget them repeatedly.</div>'}
-
-<div class="stats-sec-hdr">Sentences &amp; patterns</div>
-<div class="stats-grid stats-grid-three">
-  <div class="stat-box"><div class="stat-lbl">Sentences learned</div><div class="stat-num">${DB.learned.size}</div><div class="stat-sub">of ${SENTENCES.length}</div></div>
-  <div class="stat-box"><div class="stat-lbl">Sentences due</div><div class="stat-num">${getSrsReviewIds().length}</div><div class="stat-sub">scheduled today</div></div>
-  <div class="stat-box"><div class="stat-lbl">Patterns understood</div><div class="stat-num">${DB.understood.size}</div><div class="stat-sub">${getPatternReviewIds().length} due</div></div>
-</div>
-
-<div class="stats-sec-hdr">Data</div>
-<div class="btn-row" style="margin-bottom:20px">
-  <button class="btn btn-secondary" onclick="exportData()" type="button">${ICO.upload} Export backup</button>
-  <button class="btn btn-secondary" onclick="importData()" type="button">${ICO.download} Import backup</button>
-</div>
-  </div>`;
+</div>`;
 }
+
 
 // ══════════════════════════════════════════════
 // ACTIONS
@@ -2368,8 +2484,8 @@ function renderFrequencyPractice() {
       ${frontHtml}
       ${FP.revealed ? `
         <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-        <button class="practice-use freq-practice-en" onclick="frequencyPracticeRevealWordMeaning()" type="button" aria-label="Show the English meaning of ${esc(freqDisplay(entry))}">${esc(entry.englishSentence)}</button>
-        ${FP.wordMeaningRevealed ? `<div class="freq-practice-word-meaning">${backHtml}</div>` : ''}
+        <button class="practice-use freq-practice-en" onclick="frequencyPracticeRevealWordMeaning()" type="button" aria-label="Toggle English word meaning of ${esc(freqDisplay(entry))}">${esc(entry.englishSentence)}</button>
+        ${FP.wordMeaningRevealed ? `<div class="freq-practice-word-meaning"><span style="font-size:12px;font-weight:600;color:var(--text-3);display:block;margin-bottom:2px">Word Meaning</span>${backHtml}</div>` : ''}
       ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the answer</button>`}
     </div>
     <div style="display:flex;justify-content:center;margin:10px 0">
@@ -2396,8 +2512,8 @@ function frequencyPracticeReveal() {
   renderFrequencyPractice();
 }
 function frequencyPracticeRevealWordMeaning() {
-  if (!FP.revealed || FP.wordMeaningRevealed) return;
-  FP.wordMeaningRevealed = true;
+  if (!FP.revealed) return;
+  FP.wordMeaningRevealed = !FP.wordMeaningRevealed;
   renderFrequencyPractice();
 }
 function frequencyPracticeAnswer(rating) {
@@ -2960,8 +3076,26 @@ function getHistoryDaySummary(key, dayIndex = 0) {
   const reviews = [...sentenceAttempts, ...patternAttempts, ...frequencyAttempts].filter(a => a.wasDue && a.result !== 'skip').length;
   const attemptSentenceIds = historyValidSentenceIds(sentenceAttempts.map(a => a.id));
   const missedSentenceIds = historyValidSentenceIds(sentenceAttempts.filter(a => a.result === 'again').map(a => a.id));
-  const topicCounts = {};
 
+  // Vocab metrics for date key
+  const vocabLearnedIds = [];
+  frequencyAttempts.forEach(a => {
+    if (a.isNew && !vocabLearnedIds.includes(a.id)) vocabLearnedIds.push(a.id);
+  });
+  const vocabLearnedEntries = vocabLearnedIds.map(id => freqById(id)).filter(Boolean);
+  const vocabGot = answeredFrequencyAttempts.filter(a => a.result === 'good' || a.result === 'easy').length;
+  const vocabAgain = answeredFrequencyAttempts.filter(a => a.result === 'again' || a.result === 'hard').length;
+  const vocabAccuracy = vocabGot + vocabAgain ? pct(vocabGot, vocabGot + vocabAgain) : 0;
+
+  const vocabPracticedMap = {};
+  answeredFrequencyAttempts.forEach(a => {
+    if (!vocabPracticedMap[a.id]) vocabPracticedMap[a.id] = { word: freqById(a.id), got: 0, again: 0 };
+    if (a.result === 'good' || a.result === 'easy') vocabPracticedMap[a.id].got++;
+    else if (a.result === 'again' || a.result === 'hard') vocabPracticedMap[a.id].again++;
+  });
+  const vocabPracticedEntries = Object.values(vocabPracticedMap).filter(v => v.word);
+
+  const topicCounts = {};
   [...sentenceIds, ...attemptSentenceIds].forEach(id => {
     const s = historySentence(id);
     if (!s) return;
@@ -2985,6 +3119,14 @@ function getHistoryDaySummary(key, dayIndex = 0) {
     sentenceIds,
     sentenceAttempts,
     patternAttempts,
+    frequencyAttempts,
+    vocabLearnedIds,
+    vocabLearnedEntries,
+    vocabLearnedCount: vocabLearnedEntries.length,
+    vocabPracticedEntries,
+    vocabGot,
+    vocabAgain,
+    vocabAccuracy,
     practiceCount: answeredAttempts.length + answeredFrequencyAttempts.length,
     sentencePracticeCount: answeredSentenceAttempts.length,
     patternPracticeCount: answeredPatternAttempts.length,
@@ -2994,7 +3136,7 @@ function getHistoryDaySummary(key, dayIndex = 0) {
     skipped,
     reviews,
     accuracy: pct(got, got + again),
-    activityCount: sentenceIds.length + answeredAttempts.length + answeredFrequencyAttempts.length + skipped,
+    activityCount: vocabLearnedEntries.length + sentenceIds.length + answeredAttempts.length + answeredFrequencyAttempts.length + skipped,
     missedSentenceIds,
     topTopics,
   };
@@ -3118,23 +3260,40 @@ function renderHistoryTopicFocus(days) {
 }
 
 function renderHistoryDayRow(day) {
+  const isVocabMode = V.progressType === 'vocab';
   const previewIds = day.sentenceIds.length
     ? day.sentenceIds
     : historyValidSentenceIds(day.sentenceAttempts.filter(a => historyIsPracticeResult(a.result)).map(a => a.id));
-  const preview = previewIds.slice(0, 3).map(id => {
-    const s = historySentence(id);
-    return s ? s.de : '';
-  }).filter(Boolean).join(' · ');
+
+  const preview = isVocabMode
+    ? (day.vocabLearnedEntries.length ? day.vocabLearnedEntries : day.vocabPracticedEntries.map(r => r.word)).slice(0, 4).map(w => w.german).join(' · ')
+    : previewIds.slice(0, 3).map(id => {
+        const s = historySentence(id);
+        return s ? s.de : '';
+      }).filter(Boolean).join(' · ');
+
   const hasAccuracy = day.got + day.again > 0;
-  const metricHtml = day.activityCount
-    ? `<div class="history-row-metrics">
-        ${day.sentenceIds.length ? `<span class="history-pill green">${day.sentenceIds.length} new</span>` : ''}
-        ${day.practiceCount ? `<span class="history-pill blue">${day.practiceCount} practiced</span>` : ''}
-        ${day.reviews ? `<span class="history-pill amber">${day.reviews} reviews</span>` : ''}
-        ${hasAccuracy ? `<span class="history-pill${day.accuracy < 70 ? ' red' : ''}">${day.accuracy}% recall</span>` : ''}
-        ${day.skipped ? `<span class="history-pill">${day.skipped} skipped</span>` : ''}
-      </div>`
-    : `<div class="history-row-metrics"><span class="history-pill">No activity recorded</span></div>`;
+  const hasVocabAccuracy = day.vocabGot + day.vocabAgain > 0;
+
+  const metricHtml = isVocabMode
+    ? (day.activityCount
+        ? `<div class="history-row-metrics">
+            ${day.vocabLearnedCount ? `<span class="history-pill green">${day.vocabLearnedCount} new words</span>` : ''}
+            ${day.frequencyPracticeCount ? `<span class="history-pill blue">${day.frequencyPracticeCount} practiced</span>` : ''}
+            ${hasVocabAccuracy ? `<span class="history-pill${day.vocabAccuracy < 70 ? ' red' : ''}">${day.vocabAccuracy}% recall</span>` : ''}
+            ${day.reviews ? `<span class="history-pill amber">${day.reviews} reviews</span>` : ''}
+          </div>`
+        : `<div class="history-row-metrics"><span class="history-pill">No vocab activity recorded</span></div>`)
+    : (day.activityCount
+        ? `<div class="history-row-metrics">
+            ${day.sentenceIds.length ? `<span class="history-pill green">${day.sentenceIds.length} new</span>` : ''}
+            ${day.sentencePracticeCount + day.patternPracticeCount ? `<span class="history-pill blue">${day.sentencePracticeCount + day.patternPracticeCount} practiced</span>` : ''}
+            ${day.reviews ? `<span class="history-pill amber">${day.reviews} reviews</span>` : ''}
+            ${hasAccuracy ? `<span class="history-pill${day.accuracy < 70 ? ' red' : ''}">${day.accuracy}% recall</span>` : ''}
+            ${day.skipped ? `<span class="history-pill">${day.skipped} skipped</span>` : ''}
+          </div>`
+        : `<div class="history-row-metrics"><span class="history-pill">No activity recorded</span></div>`);
+
   return `<button class="history-day-row${day.isToday ? ' today' : ''}" onclick="navHistoryDay('${day.key}')" type="button">
     <span class="history-day-top">
       <span>
@@ -3144,7 +3303,7 @@ function renderHistoryDayRow(day) {
       <span class="history-day-score">${day.activityCount}<span>actions</span></span>
     </span>
     ${metricHtml}
-    ${preview ? `<span class="history-preview">${esc(preview)}${previewIds.length > 3 ? ' ...' : ''}</span>` : ''}
+    ${preview ? `<span class="history-preview">${esc(preview)}${(isVocabMode ? day.vocabLearnedEntries.length > 4 : previewIds.length > 3) ? ' ...' : ''}</span>` : ''}
     ${historyTopicPills(day.topTopics)}
   </button>`;
 }
@@ -3178,7 +3337,6 @@ function renderHistoryPracticeRows(day) {
         ${r.skip ? `<span class="history-pill">${r.skip} skip</span>` : ''}
         ${r.total ? `<span class="history-pill">${r.accuracy}%</span>` : ''}
         ${r.due ? `<span class="history-pill amber">review</span>` : ''}
-        <button class="history-mini-btn" onclick="startPractice({ids:${idsArg([r.sentence.id])},skipSessionFilter:true})" type="button">Practice</button>
       </div>
     </div>`).join('')}
   </div>`;
@@ -3213,7 +3371,6 @@ function renderHistoryPatternRows(day) {
         ${r.skip ? `<span class="history-pill">${r.skip} skip</span>` : ''}
         ${r.total ? `<span class="history-pill">${r.accuracy}%</span>` : ''}
         ${r.due ? `<span class="history-pill amber">review</span>` : ''}
-        <button class="history-mini-btn" onclick="startPatternPractice({ids:${idsArg([r.pattern.id])}})" type="button">Practice</button>
       </div>
     </div>`).join('')}
   </div>`;
@@ -3238,45 +3395,66 @@ function setProgressTab(tab) {
 }
 
 function renderProgress() {
-  const tab = normalizeProgressTab(V.progressTab);
   return `<div style="padding-top:14px">
     <h2 class="page-title">Progress</h2>
-    <p class="page-sub">Stats, streaks, and your day-by-day learning history in one place</p>
-    <div class="progress-tabs" role="tablist" aria-label="Progress sections">
-      <button class="progress-tab${tab === 'overview' ? ' on' : ''}" role="tab" aria-selected="${tab === 'overview'}" onclick="setProgressTab('overview')" type="button">Overview</button>
-      <button class="progress-tab${tab === 'activity' ? ' on' : ''}" role="tab" aria-selected="${tab === 'activity'}" onclick="setProgressTab('activity')" type="button">Activity</button>
-    </div>
-    ${tab === 'activity' ? renderProgressActivity() : renderProgressOverview()}
+    <p class="page-sub">Your learning analytics at a glance</p>
+    ${renderProgressDashboard()}
   </div>`;
 }
 
-function renderProgressActivity() {
-  const days = getHistoryDays(30);
-  const activeDays = days.filter(d => d.activityCount > 0).length;
-  const totalNew = days.reduce((acc, d) => acc + d.sentenceIds.length, 0);
-  const totalPractice = days.reduce((acc, d) => acc + d.practiceCount, 0);
-  const totalGot = days.reduce((acc, d) => acc + d.got, 0);
-  const totalAgain = days.reduce((acc, d) => acc + d.again, 0);
-  const avgAccuracy = totalGot + totalAgain ? `${pct(totalGot, totalGot + totalAgain)}%` : '0%';
-  const timelineDays = days.filter(d => d.activityCount > 0 || d.isToday).slice(0, 14);
-  const thisWeekTotal = days.filter(d => d.dayIndex < 7).reduce((acc, d) => acc + d.activityCount, 0);
+function renderHistoryDayStatsDashboard(day) {
+  const freqAttempts = day.frequencyAttempts.filter(a => a.result !== 'skip');
+  const counts = [
+    { r: 'easy', n: freqAttempts.filter(a => a.result === 'easy').length, color: 'var(--accent)' },
+    { r: 'good', n: freqAttempts.filter(a => a.result === 'good').length, color: 'var(--green)' },
+    { r: 'hard', n: freqAttempts.filter(a => a.result === 'hard').length, color: 'var(--amber)' },
+    { r: 'again', n: freqAttempts.filter(a => a.result === 'again').length, color: 'var(--red)' },
+  ];
+  const totalRatings = counts.reduce((sum, c) => sum + c.n, 0);
 
-  return `<div class="history-page">
-    <div class="history-head">
-      <div class="history-headline-stat"><strong>${thisWeekTotal}</strong><span>actions this week</span></div>
+  const ratingBreakdownHtml = totalRatings ? `<div class="history-panel">
+    <div class="history-panel-title"><strong>Vocabulary performance breakdown</strong><span>${totalRatings} rating${totalRatings !== 1 ? 's' : ''}</span></div>
+    <div class="rating-breakdown">
+      ${counts.map(c => `<div class="prog-row">
+        <div class="prog-lbl" style="min-width:60px;text-transform:capitalize">${c.r}</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${pct(c.n, totalRatings)}%;background:${c.color}"></div></div>
+        <div class="prog-pct">${pct(c.n, totalRatings)}%</div>
+        <div class="prog-cnt">${c.n}</div>
+      </div>`).join('')}
     </div>
-    ${renderHistoryQuickActions()}
-    <div class="history-stat-grid">
-      ${renderHistoryStat('New learned', totalNew, 'sentences added', 'var(--green)')}
-      ${renderHistoryStat('Practice reps', totalPractice, 'sentences, patterns & vocab', 'var(--blue)')}
-      ${renderHistoryStat('Active days', activeDays, 'out of 30 days', 'var(--amber)')}
-      ${renderHistoryStat('Recall', avgAccuracy, 'practice accuracy', totalGot + totalAgain && pct(totalGot, totalGot + totalAgain) < 70 ? 'var(--red)' : 'var(--green)')}
+    <div class="retention-callout" style="margin-top:14px">
+      <div class="retention-pct">${day.vocabAccuracy}%</div>
+      <div>
+        <div class="retention-label">Day retention rate</div>
+        <div class="retention-sub">Good + Easy recall accuracy across ${totalRatings} rating${totalRatings !== 1 ? 's' : ''}</div>
+      </div>
     </div>
-    ${renderHistoryHeatmap(days)}
-    ${renderHistoryTopicFocus(days)}
-    <div class="history-section-label"><span>Recent activity</span><span>${activeDays} active day${activeDays !== 1 ? 's' : ''}</span></div>
-    ${timelineDays.length ? timelineDays.map(renderHistoryDayRow).join('') : `<div class="empty-state"><div class="empty-icon">${ICO.calendar}</div>No history yet.<br><span class="empty-sub">Complete practice or mark sentences learned to fill this tab.</span></div>`}
-  </div>`;
+  </div>` : '';
+
+  const sentenceAttempts = [...day.sentenceAttempts, ...day.patternAttempts].filter(a => a.result !== 'skip');
+  const sentenceTotal = sentenceAttempts.length;
+  const sentenceSectionHtml = sentenceTotal ? `<div class="history-panel">
+    <div class="history-panel-title"><strong>Sentence & Pattern summary</strong><span>${sentenceTotal} action${sentenceTotal !== 1 ? 's' : ''}</span></div>
+    <div class="srs-grid">
+      <div class="srs-cell">
+        <div class="srs-cell-val">${day.sentenceIds.length}</div>
+        <div class="srs-cell-lbl">Sentences learned</div>
+        <div class="srs-cell-sub">added on this day</div>
+      </div>
+      <div class="srs-cell">
+        <div class="srs-cell-val">${day.sentencePracticeCount + day.patternPracticeCount}</div>
+        <div class="srs-cell-lbl">Practice reps</div>
+        <div class="srs-cell-sub">sentences & patterns</div>
+      </div>
+      <div class="srs-cell">
+        <div class="srs-cell-val">${day.accuracy}%</div>
+        <div class="srs-cell-lbl">Sentence recall</div>
+        <div class="srs-cell-sub">${day.got} got · ${day.again} again</div>
+      </div>
+    </div>
+  </div>` : '';
+
+  return `${ratingBreakdownHtml}${sentenceSectionHtml}`;
 }
 
 function renderHistoryDay() {
@@ -3286,10 +3464,13 @@ function renderHistoryDay() {
   const day = getHistoryDaySummary(key);
   const sents = day.sentenceIds.map(id => historySentence(id)).filter(Boolean);
   const missedPatternIds = historyValidPatternIds(day.patternAttempts.filter(a => a.result === 'again').map(a => a.id));
-  const hasActivity = day.activityCount > 0 || day.sentenceAttempts.length > 0 || day.patternAttempts.length > 0;
+  const hasActivity = day.activityCount > 0 || day.sentenceAttempts.length > 0 || day.patternAttempts.length > 0 || day.frequencyAttempts.length > 0 || day.vocabLearnedCount > 0;
   const accuracyLabel = day.got + day.again ? `${day.accuracy}%` : '0%';
+  const vocabAccuracyLabel = day.vocabGot + day.vocabAgain ? `${day.vocabAccuracy}%` : '0%';
+
   const dayActions = [
-    sents.length ? `<button class="history-inline-btn primary" onclick="startPractice({ids:${idsArg(day.sentenceIds)},skipSessionFilter:true})" type="button">Practice learned (${sents.length})</button>` : '',
+    day.vocabLearnedEntries.length ? `<button class="history-inline-btn primary" onclick="startFrequencyPractice({ids:${idsArg(day.vocabLearnedIds)},mode:'free'})" type="button">Practice day's vocab (${day.vocabLearnedEntries.length})</button>` : '',
+    sents.length ? `<button class="history-inline-btn primary" onclick="startPractice({ids:${idsArg(day.sentenceIds)},skipSessionFilter:true})" type="button">Practice day's sentences (${sents.length})</button>` : '',
     day.missedSentenceIds.length ? `<button class="history-inline-btn" onclick="startPractice({ids:${idsArg(day.missedSentenceIds)},skipSessionFilter:true})" type="button">Retry misses (${day.missedSentenceIds.length})</button>` : '',
     missedPatternIds.length ? `<button class="history-inline-btn" onclick="startPatternPractice({ids:${idsArg(missedPatternIds)}})" type="button">Retry patterns (${missedPatternIds.length})</button>` : '',
   ].filter(Boolean).join('');
@@ -3298,11 +3479,13 @@ function renderHistoryDay() {
     <div class="history-day-hero-label">${esc(day.label)}</div>
     <div class="history-day-hero-title">${esc(day.fullDateStr)}</div>
     <div class="history-row-metrics">
-      <span class="history-pill green">${day.sentenceIds.length} new</span>
-      <span class="history-pill blue">${day.practiceCount} practiced</span>
-      <span class="history-pill amber">${day.reviews} reviews</span>
-      <span class="history-pill${day.got + day.again && day.accuracy < 70 ? ' red' : ''}">${accuracyLabel} recall</span>
-      ${day.skipped ? `<span class="history-pill">${day.skipped} skipped</span>` : ''}
+      ${day.vocabLearnedCount ? `<span class="history-pill green">${day.vocabLearnedCount} vocab learned</span>` : ''}
+      ${day.frequencyPracticeCount ? `<span class="history-pill blue">${day.frequencyPracticeCount} vocab reps</span>` : ''}
+      ${day.sentenceIds.length ? `<span class="history-pill green">${day.sentenceIds.length} sents learned</span>` : ''}
+      ${day.sentencePracticeCount ? `<span class="history-pill blue">${day.sentencePracticeCount} sents reps</span>` : ''}
+      ${day.reviews ? `<span class="history-pill amber">${day.reviews} reviews</span>` : ''}
+      ${day.vocabGot + day.vocabAgain > 0 ? `<span class="history-pill${day.vocabAccuracy < 70 ? ' red' : ''}">${vocabAccuracyLabel} vocab recall</span>` : ''}
+      ${day.got + day.again > 0 ? `<span class="history-pill${day.accuracy < 70 ? ' red' : ''}">${accuracyLabel} sentence recall</span>` : ''}
     </div>
     ${historyTopicPills(day.topTopics, 5)}
   </div>`;
@@ -3316,9 +3499,7 @@ function renderHistoryDay() {
   return `<button class="back-btn" onclick="backToActivity()">← Progress</button>
     ${hero}
     ${dayActions ? `<div class="history-day-actions">${dayActions}</div>` : ''}
-    ${renderHistoryPracticeRows(day)}
-    ${renderHistoryPatternRows(day)}
-    ${sents.length ? `<div class="history-section-label"><span>New learned</span><span>${sents.length} sentence${sents.length !== 1 ? 's' : ''}</span></div>${sents.map((s, i) => renderSentenceCard(s, i, true)).join('')}` : ''}`;
+    ${renderHistoryDayStatsDashboard(day)}`;
 }
 
 if (window.addEventListener) {
