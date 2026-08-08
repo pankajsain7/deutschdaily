@@ -729,9 +729,9 @@ function renderFreqCard(entry, i) {
 </div>
 <button class="vocab-term reveal-btn" onclick="toggleFreqReveal('${id}')" aria-expanded="false" type="button" lang="de">${esc(freqDisplay(entry))}</button>
 <div class="freq-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-<button class="vocab-en hid reveal-btn" id="fen-${id}" onclick="toggleFreqReveal('${id}')" aria-hidden="true" hidden type="button">
-  <span class="freq-en-word">${esc(entry.english)}</span>
+<button class="vocab-en hid reveal-btn" id="fen-${id}" onclick="toggleFreqWordMeaning('${id}')" aria-hidden="true" hidden type="button">
   <span class="freq-en-sentence">${esc(entry.englishSentence)}</span>
+  <span class="freq-en-word hid" id="few-${id}" aria-hidden="true" hidden>${esc(entry.english)}</span>
 </button>
 <div class="card-actions">
   <button class="act-btn speak-btn" data-id="freq-${id}" onclick="speak(${jsArg(entry.germanSentence || entry.german)},'freq-${id}')" type="button">
@@ -756,11 +756,26 @@ function toggleFreqReveal(id) {
     en.classList.remove('hid');
     if (card) card.querySelectorAll('.reveal-btn').forEach(btn => btn.setAttribute('aria-expanded', 'true'));
   } else {
+    const wordMeaning = document.getElementById('few-' + id);
     en.classList.add('hid');
     en.hidden = true;
     en.setAttribute('aria-hidden', 'true');
+    if (wordMeaning) {
+      wordMeaning.hidden = true;
+      wordMeaning.setAttribute('aria-hidden', 'true');
+      wordMeaning.classList.add('hid');
+    }
     if (card) card.querySelectorAll('.reveal-btn').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
   }
+}
+function toggleFreqWordMeaning(id) {
+  const wordMeaning = document.getElementById('few-' + id);
+  const englishSentence = document.getElementById('fen-' + id);
+  if (!wordMeaning || !englishSentence || englishSentence.classList.contains('hid')) return;
+  wordMeaning.hidden = false;
+  wordMeaning.setAttribute('aria-hidden', 'false');
+  wordMeaning.classList.remove('hid');
+  englishSentence.setAttribute('aria-expanded', 'true');
 }
 function syncFreqCardState(id) {
   const card = document.getElementById('fc-' + id);
@@ -2262,7 +2277,7 @@ function startFrequencyPractice(opts) {
   if (!entries.length) return;
   P.active = false;
   PP.active = false;
-  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, answered: {}, missedIds: [], ratingById: {} };
+  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, wordMeaningRevealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, answered: {}, missedIds: [], ratingById: {} };
   renderFrequencyPractice();
 }
 function renderFrequencyPractice() {
@@ -2281,11 +2296,10 @@ function renderFrequencyPractice() {
     const pct = answeredCount ? Math.round(strong / answeredCount * 100) : 0;
     const sessionRatedIds = Object.keys(FP.ratingById);
     const sessionRatingIds = rating => sessionRatedIds.filter(id => FP.ratingById[id] === rating);
-    const ratingButtons = ['again', 'hard', 'good', 'easy']
-      .map(rating => {
-        const ids = sessionRatingIds(rating);
-        return ids.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(ids)},mode:'replay'})" type="button">Review ${rating} (${ids.length})</button>` : '';
-      }).join('');
+    const difficultIds = [...sessionRatingIds('again'), ...sessionRatingIds('hard')];
+    const difficultAction = difficultIds.length
+      ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(difficultIds)},mode:'replay'})" type="button">Review difficult <span>${difficultIds.length}</span></button>`
+      : '';
     const dueLeft = getFreqReviewIds().length;
     const scheduleNote = isScheduledFrequencyPractice(FP.mode)
       ? 'Review intervals updated — next reviews scheduled.'
@@ -2306,9 +2320,11 @@ function renderFrequencyPractice() {
       </div>
       <div class="prac-sum-note">${scheduleNote} ${dueLeft ? `${dueLeft} card${dueLeft !== 1 ? 's' : ''} still due today.` : ''}</div>
       <div class="prac-sum-actions">
-        ${sessionRatedIds.length ? `<button class="prac-sum-retry" onclick="startFrequencyPractice({ids:${idsArg(sessionRatedIds)},mode:'replay'})" type="button">Review all (${sessionRatedIds.length})</button>` : ''}
-        ${ratingButtons}
-        <button class="prac-sum-done" onclick="closePractice()" type="button">Done</button>
+        <div class="prac-sum-action-main">
+          ${difficultAction}
+          <button class="prac-sum-done" onclick="closePractice()" type="button">Done</button>
+        </div>
+        ${sessionRatedIds.length ? `<button class="prac-sum-replay-all" onclick="startFrequencyPractice({ids:${idsArg(sessionRatedIds)},mode:'replay'})" type="button">Review all ${sessionRatedIds.length} cards</button>` : ''}
       </div>
     </div>
   </div>`;
@@ -2337,9 +2353,9 @@ function renderFrequencyPractice() {
       <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))} ${isNew ? '<span class="card-state-tag is-new">New</span>' : '<span class="card-state-tag">Review</span>'}</div>
       ${frontHtml}
       ${FP.revealed ? `
-        ${backHtml}
         <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-        <div class="practice-use">${esc(entry.englishSentence)}</div>
+        <button class="practice-use freq-practice-en" onclick="frequencyPracticeRevealWordMeaning()" type="button" aria-label="Show the English meaning of ${esc(freqDisplay(entry))}">${esc(entry.englishSentence)}</button>
+        ${FP.wordMeaningRevealed ? `<div class="freq-practice-word-meaning">${backHtml}</div>` : ''}
       ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the answer</button>`}
     </div>
     <div style="display:flex;justify-content:center;margin:10px 0">
@@ -2362,7 +2378,12 @@ function renderFrequencyPractice() {
   }
 }
 function frequencyPracticeReveal() {
-  FP.revealed = !FP.revealed;
+  FP.revealed = true;
+  renderFrequencyPractice();
+}
+function frequencyPracticeRevealWordMeaning() {
+  if (!FP.revealed || FP.wordMeaningRevealed) return;
+  FP.wordMeaningRevealed = true;
   renderFrequencyPractice();
 }
 function frequencyPracticeAnswer(rating) {
@@ -2399,6 +2420,7 @@ function frequencyPracticeAnswer(rating) {
   save();
   FP.idx++;
   FP.revealed = false;
+  FP.wordMeaningRevealed = false;
   renderFrequencyPractice();
 }
 function frequencyPracticeNext() {
@@ -2413,6 +2435,7 @@ function frequencyPracticeNext() {
     }
     FP.idx++;
     FP.revealed = false;
+    FP.wordMeaningRevealed = false;
     renderFrequencyPractice();
   }
 }

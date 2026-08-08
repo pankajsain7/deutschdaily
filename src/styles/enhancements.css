@@ -1447,13 +1447,102 @@
 .vocab-rate.easy { background: #2563EB; }
 
 .vocab-sum-stats {
+  display: grid;
+  width: 100%;
   grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.vocab-sum-stats .prac-sum-stat {
+  min-width: 0;
+  padding: 16px 12px 14px;
+  border-radius: 16px;
+  border-top-width: 3px;
+}
+
+.vocab-sum-stats .prac-sum-stat:nth-child(1) { border-top-color: var(--red); }
+.vocab-sum-stats .prac-sum-stat:nth-child(2) { border-top-color: var(--amber); }
+.vocab-sum-stats .prac-sum-stat:nth-child(3) { border-top-color: var(--green); }
+.vocab-sum-stats .prac-sum-stat:nth-child(4) { border-top-color: var(--accent); }
+
+.vocab-sum-stats .prac-sum-n {
+  font-size: 30px;
+}
+
+.prac-sum-action-main {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+}
+
+.prac-sum-actions {
+  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prac-sum-actions .prac-sum-retry,
+.prac-sum-actions .prac-sum-done {
+  min-width: 148px;
+  min-height: 48px;
+  padding: 12px 18px;
+}
+
+.prac-sum-retry span {
+  display: inline-grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  margin-left: 5px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 18%);
+  font-size: 12px;
+}
+
+.prac-sum-done {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.prac-sum-done:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.prac-sum-replay-all {
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.prac-sum-replay-all:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
 }
 
 @media (max-width: 640px) {
   .vocab-rating-btns,
   .vocab-sum-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .prac-sum-action-main {
+    flex-direction: column-reverse;
+  }
+
+  .prac-sum-actions .prac-sum-retry,
+  .prac-sum-actions .prac-sum-done {
+    width: 100%;
   }
 
   .vocab-detail-row,
@@ -1519,6 +1608,26 @@
   font-weight: 400;
 }
 
+.freq-card .vocab-en {
+  cursor: pointer;
+}
+
+.freq-card .freq-en-sentence {
+  text-decoration: underline dotted var(--border-strong);
+  text-underline-offset: 4px;
+}
+
+.freq-card .vocab-en:hover .freq-en-sentence,
+.freq-card .vocab-en:focus-visible .freq-en-sentence {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+.freq-card .freq-en-word {
+  margin-top: 10px;
+  color: var(--text);
+}
+
 .freq-practice-card {
   text-align: center;
 }
@@ -1549,6 +1658,38 @@
   font-weight: 400;
   color: var(--text-2);
   margin-bottom: 12px;
+}
+
+button.freq-practice-en {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline dotted var(--border-strong);
+  text-underline-offset: 5px;
+}
+
+button.freq-practice-en:hover,
+button.freq-practice-en:focus-visible {
+  color: var(--accent);
+  outline: none;
+  text-decoration-color: currentColor;
+}
+
+.freq-practice-word-meaning {
+  margin: 14px auto 2px;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.freq-practice-word-meaning .freq-practice-en {
+  margin: 0;
+  color: var(--text);
+  font-weight: 650;
 }
 
 @media (max-width: 640px) {
