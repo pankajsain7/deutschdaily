@@ -2251,25 +2251,8 @@ function closePractice() { P.active = false; PP.active = false; FP.active = fals
 // FREQUENCY PRACTICE MODE
 // ==============================
 
-function intervalLabel(days) {
-  if (days <= 0) return '<10m';
-  if (days === 1) return '1d';
-  if (days < 30) return `${days}d`;
-  if (days < 365) return `${Math.round(days / 30)}mo`;
-  return `${(days / 365).toFixed(1)}y`;
-}
-
 function isScheduledFrequencyPractice(mode) {
   return ['scheduled', 'due', 'new', 'session'].includes(mode);
-}
-
-function freqRatingPreview(id) {
-  const isNew = !DB.freqLearned.has(id) || !DB.freqSrs[id];
-  const card = DB.freqSrs[id] || { interval: 0, ease: 2.5 };
-  return ['again', 'hard', 'good', 'easy'].reduce((acc, rating) => {
-    acc[rating] = intervalLabel(freqRatingInterval(card, rating, isNew));
-    return acc;
-  }, {});
 }
 
 function startFrequencyPractice(opts) {
@@ -2338,8 +2321,6 @@ function renderFrequencyPractice() {
   const total = FP.queue.length;
   const pct = Math.round(FP.idx / total * 100);
   const isNew = !DB.freqLearned.has(id);
-  const scheduledMode = isScheduledFrequencyPractice(FP.mode);
-  const iv = freqRatingPreview(id);
   const speakText = entry.germanSentence || entry.german;
   const frontHtml = `<div class="practice-de freq-practice-word" lang="de">${esc(freqDisplay(entry))}</div>`;
   const backHtml = `<div class="practice-en freq-practice-en">${esc(entry.english)}</div>`;
@@ -2368,12 +2349,11 @@ function renderFrequencyPractice() {
     </div>
     ${FP.revealed ? `
       <div class="vocab-rating-btns">
-        <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again${scheduledMode ? `<span class="vocab-rate-iv">${iv.again}</span>` : ''}</button>
-        <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard${scheduledMode ? `<span class="vocab-rate-iv">${iv.hard}</span>` : ''}</button>
-        <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good${scheduledMode ? `<span class="vocab-rate-iv">${iv.good}</span>` : ''}</button>
-        <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy${scheduledMode ? `<span class="vocab-rate-iv">${iv.easy}</span>` : ''}</button>
-      </div>
-      <div class="vocab-rating-help">${scheduledMode ? (isNew ? 'Again puts the card back later in this session.' : 'Again resets the interval to 1 day and counts as a lapse.') : 'Practice-only replay — ratings are saved, but your review schedule is unchanged.'}</div>` : ''}
+        <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again</button>
+        <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard</button>
+        <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good</button>
+        <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy</button>
+      </div>` : ''}
   </div>`;
   document.body.appendChild(ov);
   if (!FP.revealed) {
