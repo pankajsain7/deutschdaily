@@ -281,7 +281,7 @@ function render() {
 }
 
 function updateHeader() {
-  const showVocab = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'practice';
+  const showVocab = (V.view === 'today' && V.todayTab === 'vocab') || ['frequency', 'practice', 'progress', 'history-day'].includes(V.view);
   const tot = showVocab ? (typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length) : SENTENCES.length;
   const done = showVocab ? DB.freqLearned.size : DB.learned.size;
   const pct = tot ? Math.round(done / tot * 100) : 0;
@@ -317,7 +317,7 @@ function updateNavBtns() {
   });
   const sc = document.getElementById('sb-learned-count');
   const scLbl = document.getElementById('sb-learned-lbl');
-  const showVocabStat = (V.view === 'today' && V.todayTab === 'vocab') || V.view === 'frequency' || V.view === 'practice';
+  const showVocabStat = (V.view === 'today' && V.todayTab === 'vocab') || ['frequency', 'practice', 'progress', 'history-day'].includes(V.view);
   if (sc) sc.textContent = showVocabStat ? DB.freqLearned.size : DB.learned.size;
   if (scLbl) scLbl.textContent = showVocabStat ? 'vocab learned' : 'sentences learned';
 }
@@ -389,10 +389,10 @@ function renderTodayVocab() {
   const dueCount = getFreqReviewIds().length;
   const newEntries = DB.freqDailyQueue.map(id => freqById(id)).filter(Boolean).sort((a, b) => a.rank - b.rank);
   const queueDone = newEntries.filter(entry => DB.freqDailyQueueDone.has(String(entry.rank))).length;
-  const total = typeof FREQUENCY_DICTIONARY === 'undefined' ? 0 : FREQUENCY_DICTIONARY.length;
+  const reviewedToday = DB.freqAttempts.filter(attempt => attempt.date === today() && attempt.wasDue && attempt.result !== 'skip').length;
   const queuePct = newEntries.length ? Math.min(100, Math.round(queueDone / newEntries.length * 100)) : 0;
   const queueIdsJson = idsArg(newEntries.map(entry => String(entry.rank)));
-  const goalOptions = [10, 15, 20, 30].map(n => `<button class="vocab-goal-opt${DB.freqDailyGoal === n ? ' on' : ''}" onclick="setFreqGoal(${n})" aria-pressed="${DB.freqDailyGoal === n}" type="button">${n}</button>`).join('');
+  const done = queueDone >= newEntries.length && newEntries.length > 0;
   const reviewBanner = dueCount ? `<div class="review-section vocab-review-section">
   <div class="review-section-hdr">
     <div class="review-section-title">${ICO.repeat} ${dueCount} word${dueCount !== 1 ? 's' : ''} due for review</div>
@@ -404,27 +404,23 @@ function renderTodayVocab() {
   return `<div>
 <div class="goal-card vocab-goal-card">
   <div class="goal-top">
-    <div><div class="goal-title">Today's new words</div><div class="goal-date">${newEntries.length} word${newEntries.length !== 1 ? 's' : ''} you have not learned yet</div></div>
+    <div><div class="goal-title">Today's vocabulary</div><div class="goal-date">${new Date().toLocaleDateString('en-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
     <div class="goal-top-actions">
       <div class="today-segmented-control" role="tablist" aria-label="Today practice category">
         <button class="today-seg-btn on" onclick="setTodayTab('vocab')" role="tab" aria-selected="true" type="button">Vocab</button>
         <button class="today-seg-btn" onclick="setTodayTab('sentences')" role="tab" aria-selected="false" type="button">Sentences</button>
       </div>
-      <button class="goal-btn" onclick="refreshFreqQueue()" type="button">New batch</button>
+      <button class="goal-btn" onclick="openFreqGoalModal()" type="button">Goal: ${DB.freqDailyGoal}</button>
     </div>
   </div>
   <div class="goal-nums">
-    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">Learned today</div></div>
+    <div><div class="gnum-v">${queueDone}</div><div class="gnum-l">New learned</div></div>
     <div><div class="gnum-v">${Math.max(0, newEntries.length - queueDone)}</div><div class="gnum-l">Remaining</div></div>
-    <div><div class="gnum-v">${dueCount}</div><div class="gnum-l">Due to review</div></div>
-    <div><div class="gnum-v">${DB.freqLearned.size}</div><div class="gnum-l">Learned</div></div>
-    <div><div class="gnum-v">${total - DB.freqLearned.size}</div><div class="gnum-l">Left in deck</div></div>
+    <div><div class="gnum-v">${dueCount}</div><div class="gnum-l">Due today</div></div>
+    <div><div class="gnum-v">${reviewedToday}</div><div class="gnum-l">Reviews</div></div>
+    <div><div class="gnum-v">${DB.freqDailyGoal}</div><div class="gnum-l">Daily goal</div></div>
   </div>
-  <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>
-  <div class="vocab-goal-row">
-    <span>New words per day</span>
-    <div class="vocab-goal-options">${goalOptions}</div>
-  </div>
+  ${done ? `<div class="goal-complete">${ICO.check} Daily vocabulary goal complete. Review due words or start a new batch when you are ready.</div>` : `<div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${queuePct}%"></div></div>`}
 </div>
 
 ${reviewBanner}
@@ -828,7 +824,11 @@ function setFreqGoal(n) {
   DB.freqDailyQueue = [];
   DB.freqDailyQueueDate = null;
   save();
-  render();
+  document.querySelectorAll('.goal-opt').forEach(el => {
+    const selected = parseInt(el.textContent, 10) === DB.freqDailyGoal;
+    el.classList.toggle('sel', selected);
+    el.setAttribute('aria-pressed', String(selected));
+  });
 }
 function refreshFreqQueue() {
   DB.freqDailyQueue = [];
@@ -1830,7 +1830,21 @@ function updateSpeakBtns() {
 }
 
 function openGoalModal() {
+  const title = document.getElementById('goal-modal-title');
+  const subtitle = document.getElementById('goal-modal-sub');
+  if (title) title.textContent = 'Set Daily Goal';
+  if (subtitle) subtitle.textContent = 'How many new sentences to learn each day?';
   document.getElementById('goal-opts').innerHTML = [5, 8, 10, 12, 15, 20, 25, 30].map(v => `<button class="goal-opt${DB.dailyGoal === v ? ' sel' : ''}" onclick="setGoal(${v})" aria-pressed="${DB.dailyGoal === v}" type="button">${v}</button>`).join('');
+  document.getElementById('goal-modal').style.display = 'flex';
+  const selected = document.querySelector('.goal-opt.sel');
+  if (selected) selected.focus();
+}
+function openFreqGoalModal() {
+  const title = document.getElementById('goal-modal-title');
+  const subtitle = document.getElementById('goal-modal-sub');
+  if (title) title.textContent = 'Set Vocabulary Goal';
+  if (subtitle) subtitle.textContent = 'How many new words to learn each day?';
+  document.getElementById('goal-opts').innerHTML = [5, 10, 15, 20, 25, 30, 40, 50, 60].map(v => `<button class="goal-opt${DB.freqDailyGoal === v ? ' sel' : ''}" onclick="setFreqGoal(${v})" aria-pressed="${DB.freqDailyGoal === v}" type="button">${v}</button>`).join('');
   document.getElementById('goal-modal').style.display = 'flex';
   const selected = document.querySelector('.goal-opt.sel');
   if (selected) selected.focus();

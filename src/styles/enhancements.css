@@ -1612,17 +1612,6 @@
   cursor: pointer;
 }
 
-.freq-card .freq-en-sentence {
-  text-decoration: underline dotted var(--border-strong);
-  text-underline-offset: 4px;
-}
-
-.freq-card .vocab-en:hover .freq-en-sentence,
-.freq-card .vocab-en:focus-visible .freq-en-sentence {
-  color: var(--accent);
-  text-decoration-color: currentColor;
-}
-
 .freq-card .freq-en-word {
   margin-top: 10px;
   color: var(--text);
@@ -1667,15 +1656,12 @@ button.freq-practice-en {
   background: transparent;
   font-family: inherit;
   cursor: pointer;
-  text-decoration: underline dotted var(--border-strong);
-  text-underline-offset: 5px;
 }
 
-button.freq-practice-en:hover,
 button.freq-practice-en:focus-visible {
-  color: var(--accent);
   outline: none;
-  text-decoration-color: currentColor;
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  border-radius: 4px;
 }
 
 .freq-practice-word-meaning {
