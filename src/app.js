@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'saved', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
@@ -41,7 +41,7 @@ function normalizePatternFilter(value) {
 }
 
 function stateFromUrl(href) {
-  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'saved', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -75,7 +75,7 @@ function stateFromUrl(href) {
     fallback.patFilter = normalizePatternFilter(filter);
   } else if (view === 'saved') {
     fallback.view = 'saved';
-    fallback.libTab = VALID_LIBRARY_TABS.has(tab) ? tab : 'saved';
+    fallback.libTab = VALID_LIBRARY_TABS.has(tab) ? tab : 'learned';
     fallback.libType = VALID_LIBRARY_TYPES.has(type) ? type : 'vocab';
   } else if (view === 'progress' || view === 'history-day') {
     if (day) {
@@ -106,7 +106,7 @@ function urlFromState(state = V) {
   } else if (view === 'patterns') {
     params.set('filter', normalizePatternFilter(state.patFilter));
   } else if (view === 'saved') {
-    if (state.libTab && state.libTab !== 'saved') params.set('tab', state.libTab);
+    if (state.libTab && state.libTab !== 'learned') params.set('tab', state.libTab);
     if (state.libType === 'sentences') params.set('type', 'sentences');
   } else if (view === 'progress') {
     if (state.progressTab && state.progressTab !== 'overview') params.set('tab', state.progressTab);
@@ -1299,7 +1299,7 @@ ${informal ? `<div class="pat-informal">
 }
 
 // ─── SAVED / LIBRARY ─────────────────────────
-function setLibTab(tab) { V.libTab = VALID_LIBRARY_TABS.has(tab) ? tab : 'saved'; commitState(); }
+function setLibTab(tab) { V.libTab = VALID_LIBRARY_TABS.has(tab) ? tab : 'learned'; commitState(); }
 function setLibType(type) { V.libType = VALID_LIBRARY_TYPES.has(type) ? type : 'vocab'; commitState(); }
 
 function renderSaved() {
@@ -1311,8 +1311,8 @@ function renderSaved() {
   const savedCount = showSentences ? favSents.length : favFreq.length;
   const learnedCount = showSentences ? learnedSents.length : learnedFreq.length;
   const tabs = `<div class="lib-tabs">
-<button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')" type="button">Saved <span class="lib-tab-count">${savedCount}</span></button>
 <button class="lib-tab${V.libTab === 'learned' ? ' on' : ''}" onclick="setLibTab('learned')" type="button">Learned <span class="lib-tab-count">${learnedCount}</span></button>
+<button class="lib-tab${V.libTab === 'saved' ? ' on' : ''}" onclick="setLibTab('saved')" type="button">Saved <span class="lib-tab-count">${savedCount}</span></button>
   </div>`;
   const typeToggle = `<div class="lib-type-toggle" role="tablist" aria-label="Library item type">
 <button class="lib-type-btn${showSentences ? ' on' : ''}" onclick="setLibType('sentences')" role="tab" aria-selected="${showSentences}" type="button">Sentences</button>

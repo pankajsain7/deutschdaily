@@ -410,7 +410,7 @@ assert.strictEqual(t.getViewState().view, 'saved', 'library URL opens Library ta
 assert.strictEqual(t.getViewState().libTab, 'learned', 'library URL selects learned subtab');
 assert.strictEqual(t.getViewState().libType, 'vocab', 'Library defaults to vocabulary items');
 const sentenceLibraryUrl = t.urlFromState({ view: 'saved', libTab: 'learned', libType: 'sentences' });
-assert.strictEqual(sentenceLibraryUrl, '/DEDaily.html?view=library&tab=learned&type=sentences', 'Library URL preserves sentence item type');
+assert.strictEqual(sentenceLibraryUrl, '/DEDaily.html?view=library&type=sentences', 'Library URL preserves sentence item type with Learned as the default tab');
 
 t.applyUrlState('http://localhost/DEDaily.html?view=practice');
 assert.strictEqual(t.getViewState().view, 'practice', 'practice URL opens the Practice tab');
@@ -602,6 +602,7 @@ t.ensureFreqDailyQueue();
 assert(t.DB().freqDailyQueue.every(id => !t.DB().freqLearned.has(id)), 'today vocab never re-offers a learned word');
 
 reset({ freqLearned: ['1'], freqFavorites: ['2'] });
+t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=saved');
 assert(t.renderSaved().includes('saved frequency word'), 'Library Saved tab includes saved frequency words');
 t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=learned');
 assert(t.renderSaved().includes('learned frequency word'), 'Library Learned tab includes learned frequency words');
