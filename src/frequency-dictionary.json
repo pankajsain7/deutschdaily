@@ -220,7 +220,7 @@
     "german": "dass",
     "english": "that",
     "pos": "con",
-    "germanSentence": "Auch wenn die Fakten dagegen sprachen, bestand er darauf, dass er es nicht das gestohlen hatte.",
+    "germanSentence": "Auch wenn die Fakten dagegen sprachen, bestand er darauf, dass er es nicht gestohlen hatte.",
     "ipa": "",
     "englishSentence": "Even when the facts demonstrated the opposite, he maintained he hadn't stolen it."
   },
@@ -985,7 +985,7 @@
     "german": "(he)raus",
     "english": "out",
     "pos": "adv",
-    "germanSentence": "Gehe nicht ohne Regenschirm aus.",
+    "germanSentence": "Gehe nicht ohne Regenschirm raus.",
     "ipa": "(hə)ɾɑos",
     "englishSentence": "Don't go out without an umbrella."
   },
@@ -1201,9 +1201,9 @@
     "german": "Herr",
     "english": "Mister",
     "pos": "M",
-    "germanSentence": "Wie geht es Ihrer Frau?",
+    "germanSentence": "Guten Tag, Herr Müller.",
     "ipa": "hɛɾ",
-    "englishSentence": "How's your wife?"
+    "englishSentence": "Good day, Mr. Müller."
   },
   {
     "rank": 135,
@@ -2076,7 +2076,7 @@
     "pos": "M",
     "germanSentence": "Der Krieg dauerte drei Jahre.",
     "ipa": "kɾik",
-    "englishSentence": "The war lasted for two years."
+    "englishSentence": "The war lasted for three years."
   },
   {
     "rank": 232,
@@ -2832,7 +2832,7 @@
     "pos": "con",
     "germanSentence": "Er ist nicht Lehrer, sondern Anwalt.",
     "ipa": "zɔndəʁn",
-    "englishSentence": "He isn't a teacher, but a doctor."
+    "englishSentence": "He isn't a teacher, but a lawyer."
   },
   {
     "rank": 316,
@@ -3117,8 +3117,8 @@
     "rank": 347,
     "german": "Teil",
     "english": "part",
-    "pos": "",
-    "germanSentence": "M/N Du bist nicht länger Teil meines Lebens.",
+    "pos": "M/N",
+    "germanSentence": "Du bist nicht länger Teil meines Lebens.",
     "ipa": "",
     "englishSentence": "You're no longer part of my life."
   },
@@ -3244,7 +3244,7 @@
     "german": "Erde",
     "english": "earth",
     "pos": "F",
-    "germanSentence": "Die Erde ist viereinhalb Milliarde alt.",
+    "germanSentence": "Die Erde ist viereinhalb Milliarden Jahre alt.",
     "ipa": "eʁdə",
     "englishSentence": "The earth is four and a half billion years old."
   },
@@ -3802,7 +3802,7 @@
     "german": "acht",
     "english": "eight",
     "pos": "nu",
-    "germanSentence": "Sie fing um acht Uhr an, den Bericht zu schreiben, und war um zwölf Uhr damit aχt fertig.",
+    "germanSentence": "Sie fing um acht Uhr an, den Bericht zu schreiben, und war um zwölf Uhr damit fertig.",
     "ipa": "",
     "englishSentence": "She began writing a report at eight, finishing it at twelve."
   },
@@ -4099,7 +4099,7 @@
     "german": "Krankenhaus",
     "english": "hospital",
     "pos": "N",
-    "germanSentence": "Der alte Mann wurde von einem Auto angefahren und sofort ins Krankenhaus",
+    "germanSentence": "Der alte Mann wurde von einem Auto angefahren und sofort ins Krankenhaus gebracht.",
     "ipa": "kɾaŋkənhɑos gebracht.",
     "englishSentence": "The old man was hit by a car and was immediately taken to the hospital."
   },
@@ -5745,8 +5745,8 @@
     "rank": 639,
     "german": "Taxi",
     "english": "taxi",
-    "pos": "",
-    "germanSentence": "N/M Hier können wir ein Taxi nehmen.",
+    "pos": "N/M",
+    "germanSentence": "Hier können wir ein Taxi nehmen.",
     "ipa": "",
     "englishSentence": "We can get a taxi here."
   },
@@ -5964,7 +5964,7 @@
     "pos": "N",
     "germanSentence": "Wenn deine Freunde anfangen, dir Komplimente zu machen, wie jung du doch aussiehst, so ist dies ein klares Zeichen dafür, dass du alt wirst.",
     "ipa": "tsaeçən",
-    "englishSentence": "When your friends begin to flatter you on how young you look, it's a sure sign"
+    "englishSentence": "When your friends begin to flatter you on how young you look, it's a sure sign you're getting old."
   },
   {
     "rank": 664,
@@ -6324,7 +6324,7 @@
     "pos": "prp; adv",
     "germanSentence": "Dieses 3-Sterne-Hotel liegt in der Frankfurter Innenstadt gegenüber dem Hauptbahnhof.",
     "ipa": "gegənybəʁ",
-    "englishSentence": "This 3-star hotel is situated in Frankfurt city center, opposite the main railway"
+    "englishSentence": "This 3-star hotel is situated in Frankfurt city center, opposite the main railway station."
   },
   {
     "rank": 704,
@@ -7485,7 +7485,7 @@
     "pos": "adj; N",
     "germanSentence": "Deutsche Sprache – schwere Sprache, sagen die Deutschen gerne, aber eigentlich ist Deutsch gar nicht so schwer.",
     "ipa": "dɔøtʃ",
-    "englishSentence": "German language – difficult language, the Germans like to say, but actually"
+    "englishSentence": "German language – difficult language, the Germans like to say, but actually German isn't that hard."
   },
   {
     "rank": 833,
@@ -8057,7 +8057,7 @@
   {
     "rank": 896,
     "german": "Gang",
-    "english": "gear, aisle gang",
+    "english": "gear, aisle, gang",
     "pos": "M",
     "germanSentence": "John geht den Gang entlang.",
     "ipa": "gaŋ",
@@ -8079,7 +8079,7 @@
     "pos": "adj; adv",
     "germanSentence": "Es gibt zurzeit noch rund 5.300 offene Lehrstellen, denen etwa 2.300 Bewerber gegenüberstehen.",
     "ipa": "ɾʊnt",
-    "englishSentence": "At the moment, there are still some 5,300 vacant apprenticeship places, with some"
+    "englishSentence": "At the moment, there are still some 5,300 vacant apprenticeship places, with some 2,300 applicants."
   },
   {
     "rank": 899,
@@ -11911,7 +11911,7 @@
     "german": "möglicherweise",
     "english": "possibly",
     "pos": "adv",
-    "germanSentence": "Diese und möglicherweise noch andere Sätze müssen aus dem Korpus entfernt",
+    "germanSentence": "Diese und möglicherweise noch andere Sätze müssen aus dem Korpus entfernt werden.",
     "ipa": "møklɪçɛɾvaezə werden.",
     "englishSentence": "These and possibly other sentences need to be removed from the corpus."
   },
@@ -12199,7 +12199,7 @@
     "german": "wonach",
     "english": "for what",
     "pos": "adv; cntr",
-    "germanSentence": "Kommt darauf an, worauf du suchst.",
+    "germanSentence": "Kommt darauf an, wonach du suchst.",
     "ipa": "",
     "englishSentence": "It depends on what you are looking for."
   },
@@ -12316,7 +12316,7 @@
     "german": "Land",
     "english": "country",
     "pos": "N",
-    "germanSentence": "Das Erdbeben führte zu einer Katastrophe, größer als jede, die das Land je gesehen lant hatte.",
+    "germanSentence": "Das Erdbeben führte zu einer Katastrophe, größer als jede, die das Land je gesehen hatte.",
     "ipa": "",
     "englishSentence": "The earthquake caused a catastrophe greater than any the country had ever known."
   },
@@ -12738,8 +12738,8 @@
     "rank": 1416,
     "german": "Virus",
     "english": "virus",
-    "pos": "",
-    "germanSentence": "N/M Das Virus fängt an zu mutieren.",
+    "pos": "N/M",
+    "germanSentence": "Das Virus fängt an zu mutieren.",
     "ipa": "fiɾus",
     "englishSentence": "The virus is starting to mutate."
   },
@@ -15590,7 +15590,7 @@
   {
     "rank": 1733,
     "german": "Aufregung",
-    "english": "excitement,",
+    "english": "excitement",
     "pos": "F",
     "germanSentence": "Jane war außer sich vor Aufregung.",
     "ipa": "ɑofɾegʊŋ",
@@ -15616,7 +15616,7 @@
   },
   {
     "rank": 1736,
-    "german": "marsch",
+    "german": "Marsch",
     "english": "march",
     "pos": "M",
     "germanSentence": "Ein langer Marsch liegt vor uns.",
@@ -16222,7 +16222,7 @@
     "german": "weglaufen",
     "english": "run away",
     "pos": "vb",
-    "germanSentence": "Du willst immer weglaufe, Jane.",
+    "germanSentence": "Du willst immer weglaufen, Jane.",
     "ipa": "vɛklɑofən",
     "englishSentence": "You always want to run away, Jane."
   },
@@ -17138,7 +17138,7 @@
   {
     "rank": 1905,
     "german": "Übersetzung",
-    "english": "translation,",
+    "english": "translation",
     "pos": "F",
     "germanSentence": "Ich werde diese Übersetzung ändern.",
     "ipa": "ybəʁzɛtsʊŋ",
@@ -18435,7 +18435,7 @@
     "rank": 2049,
     "german": "Verräter",
     "english": "traitor",
-    "pos": "F",
+    "pos": "M",
     "germanSentence": "Du hättest sterben sollen, du Verräter.",
     "ipa": "fɛʁɾɛtəʁ",
     "englishSentence": "You should have died over there, traitor."
@@ -19680,7 +19680,7 @@
     "pos": "vb2",
     "germanSentence": "Deshalb hat man sich davor zu hüten.",
     "ipa": "hytən",
-    "englishSentence": "He's headed for the ravine."
+    "englishSentence": "Therefore one must beware of that."
   },
   {
     "rank": 2188,
@@ -20748,8 +20748,8 @@
     "rank": 2306,
     "german": "Keks",
     "english": "biscuit",
-    "pos": "",
-    "germanSentence": "M/N Ich habe einen Keks gegessen.",
+    "pos": "M/N",
+    "germanSentence": "Ich habe einen Keks gegessen.",
     "ipa": "kɛks",
     "englishSentence": "I ate a biscuit."
   },
@@ -21054,8 +21054,8 @@
     "rank": 2340,
     "german": "Ex",
     "english": "ex",
-    "pos": "",
-    "germanSentence": "M/F; pfx Dann ist es kein Wunder, dass sie deine Ex ist.",
+    "pos": "M/F; pfx",
+    "germanSentence": "Dann ist es kein Wunder, dass sie deine Ex ist.",
     "ipa": "",
     "englishSentence": "No wonder she is your ex-girlfriend then."
   },
@@ -21116,7 +21116,7 @@
   {
     "rank": 2347,
     "german": "Lunge",
-    "english": "lung,",
+    "english": "lung",
     "pos": "F",
     "germanSentence": "Das sind die beiden Flügel der Lunge.",
     "ipa": "lʊŋə",
@@ -22125,8 +22125,8 @@
     "rank": 2459,
     "german": "irre",
     "english": "crazy, maniac",
-    "pos": "adj;",
-    "germanSentence": "M/F Dieser Irre ist zu allem fähig.",
+    "pos": "adj; M/F",
+    "germanSentence": "Dieser Irre ist zu allem fähig.",
     "ipa": "ɪɾə",
     "englishSentence": "This maniac is capable of anything."
   },
@@ -22722,6 +22722,6 @@
     "pos": "F",
     "germanSentence": "Vergebung ist auch eine Tugend.",
     "ipa": "fɛʁgəbʊŋ",
-    "englishSentence": "Forgiveness is a virtue, too. 292 eben-adv; adj just; even"
+    "englishSentence": "Forgiveness is a virtue, too."
   }
 ]
