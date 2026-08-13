@@ -182,6 +182,8 @@ for (const entry of FREQUENCY_DICTIONARY) {
   record(typeof entry.english === 'string' && entry.english.trim().length > 0, `frequency rank ${rank} empty or non-string english`);
   record(typeof entry.germanSentence === 'string' && entry.germanSentence.trim().length > 0, `frequency rank ${rank} empty german sentence`);
   record(typeof entry.englishSentence === 'string' && entry.englishSentence.trim().length > 0, `frequency rank ${rank} empty english sentence`);
+  record(/[.?!…»”"\'’“]$/.test(entry.germanSentence.trim()), `frequency rank ${rank} german sentence missing terminal punctuation`);
+  record(/[.?!…»”"\'’“]$/.test(entry.englishSentence.trim()), `frequency rank ${rank} english sentence missing terminal punctuation`);
 }
 
 const sortedRanks = [...freqRanks].sort((a, b) => a - b);

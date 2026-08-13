@@ -1,3 +1,4 @@
+// Top 2000 Frequency Dictionary Data with Example Sentences
 const FREQUENCY_DICTIONARY = [
   {
     "rank": 1,
@@ -1165,7 +1166,7 @@ const FREQUENCY_DICTIONARY = [
     "german": "selbst",
     "english": "self; even",
     "pos": "prn; adv",
-    "germanSentence": "Ich werde diesen Kuchen für mich selbst behalten",
+    "germanSentence": "Ich werde diesen Kuchen für mich selbst behalten.",
     "ipa": "zɛlpst",
     "englishSentence": "I'll keep this cake for myself."
   },
@@ -8529,7 +8530,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv",
     "germanSentence": "Ich lief voraus, um alle zu warnen.",
     "ipa": "",
-    "englishSentence": "I ran ahead to warn everybody"
+    "englishSentence": "I ran ahead to warn everybody."
   },
   {
     "rank": 949,
@@ -10626,7 +10627,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Mit viel Mühe wurde diese Union möglich.",
     "ipa": "myə",
-    "englishSentence": "Much effort has gone into making this union possible"
+    "englishSentence": "Much effort has gone into making this marriage possible."
   },
   {
     "rank": 1182,
@@ -11463,7 +11464,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Das ist mit John so abgemacht.",
     "ipa": "apmaχən",
-    "englishSentence": "That is how it is arranged with John"
+    "englishSentence": "That is how it was agreed with John."
   },
   {
     "rank": 1275,
@@ -12633,7 +12634,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M",
     "germanSentence": "Eine Woche hat sieben Tage: Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag und Sonntag.",
     "ipa": "dɔnəʁstak",
-    "englishSentence": "A week has seven days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"
+    "englishSentence": "A week has seven days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, and Sunday."
   },
   {
     "rank": 1405,
@@ -13713,7 +13714,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M",
     "germanSentence": "Unter dem Kühlschrank ist es nicht.",
     "ipa": "kylʃɾaŋk",
-    "englishSentence": "It is not under the fridge"
+    "englishSentence": "It is not under the fridge."
   },
   {
     "rank": 1525,
@@ -14442,7 +14443,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv",
     "germanSentence": "Er entschied sich, das Haus nicht zu kaufen, denn erstens war es zu teuer, und zweitens war es zu weit von seinem Büro entfernt.",
     "ipa": "tsvaetəns",
-    "englishSentence": "He decided not to buy the house because firstly it was too expensive, and secondly,"
+    "englishSentence": "He decided not to buy the house because firstly it was too expensive, and secondly, it was too far from his office."
   },
   {
     "rank": 1606,
@@ -14928,7 +14929,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Er zitiert oft die Bibel.",
     "ipa": "bibəl",
-    "englishSentence": "He often quotes the Bible"
+    "englishSentence": "He often quotes from the Bible."
   },
   {
     "rank": 1660,
@@ -18708,7 +18709,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Sie könnten dann die Effektivität der Durchführung überwachen.",
     "ipa": "ybəʁvaχən",
-    "englishSentence": "They would then be able to monitor how effective the implementation process"
+    "englishSentence": "They could then monitor the effectiveness of the implementation."
   },
   {
     "rank": 2080,
@@ -22344,7 +22345,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "N",
     "germanSentence": "Sag mir, dass du ein Feuerzeug hast.",
     "ipa": "fɔøəʁtsɔøk",
-    "englishSentence": "Tell me you have got a lighter"
+    "englishSentence": "Tell me you have got a lighter."
   },
   {
     "rank": 2484,

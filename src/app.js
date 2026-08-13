@@ -814,10 +814,12 @@ function syncFreqCardState(id) {
 function toggleFreqLearnedUi(id) {
   toggleFreqLearned(id);
   syncFreqCardState(id);
+  updateHeader();
 }
 function toggleFreqFavUi(id) {
   toggleFreqFav(id);
   syncFreqCardState(id);
+  updateHeader();
 }
 function setFreqFilter(filter) {
   V.freqFilter = VALID_FREQ_FILTERS.has(filter) ? filter : 'all';
@@ -1396,7 +1398,7 @@ function renderLearnedTab(tabs, typeToggle, learnedSents, learnedFreq, showSente
   const dueIdsJson = JSON.stringify(dueSents.map(s => s.id)).replace(/"/g, "'");
   const dueFreqIdsJson = idsArg(dueFreqIds);
 
-  // Due for practice section with individual cards
+  // Due for practice section banner
   const sentenceDueSection = dueSents.length ? `
     <div class="review-section">
       <div class="review-section-hdr">
@@ -1405,7 +1407,6 @@ function renderLearnedTab(tabs, typeToggle, learnedSents, learnedFreq, showSente
       </div>
       <div class="review-section-sub">These sentences are scheduled for review today — spaced repetition in action.</div>
     </div>
-    ${dueSents.map((s, i) => renderSentenceCard(s, i, true)).join('')}
   ` : '';
   const frequencyDueSection = dueFreq.length ? `
     <div class="review-section">
@@ -1415,7 +1416,6 @@ function renderLearnedTab(tabs, typeToggle, learnedSents, learnedFreq, showSente
       </div>
       <div class="review-section-sub">These vocabulary cards are scheduled for review today.</div>
     </div>
-    ${dueFreq.map((entry, i) => renderFreqCard(entry, i)).join('')}
   ` : '';
   const dueSection = sentenceDueSection || frequencyDueSection ? `${sentenceDueSection}${frequencyDueSection}` : '';
 
@@ -1750,7 +1750,27 @@ function toggleUnderstood(id) {
 }
 
 function setFilter(f) { V.filter = VALID_FILTERS.has(f) ? f : 'all'; commitState(); }
-function setQuery(q) { V.query = q; V.freqPage = 1; clearTimeout(window._qt); window._qt = setTimeout(render, 300); }
+function setQuery(q) {
+  V.query = q;
+  V.freqPage = 1;
+  clearTimeout(window._qt);
+  window._qt = setTimeout(() => {
+    const activeEl = document.activeElement;
+    const isSearchInput = activeEl && activeEl.classList && activeEl.classList.contains('search-input');
+    const selStart = isSearchInput ? activeEl.selectionStart : null;
+    const selEnd = isSearchInput ? activeEl.selectionEnd : null;
+    render();
+    if (isSearchInput) {
+      const input = document.querySelector('.search-input');
+      if (input) {
+        input.focus();
+        if (selStart !== null && selEnd !== null) {
+          try { input.setSelectionRange(selStart, selEnd); } catch (_) {}
+        }
+      }
+    }
+  }, 300);
+}
 function refreshQueue() { DB.dailyQueueDate = null; save(); nav('today'); }
 
 // ─── TTS ─────────────────────────────────────
@@ -2527,6 +2547,7 @@ function frequencyPracticeAnswer(rating) {
     return;
   }
   const id = String(current.rank);
+  const isNew = !DB.freqLearned.has(id);
   const intervalBefore = DB.freqSrs[id] ? DB.freqSrs[id].interval || 0 : 0;
   const scheduledMode = isScheduledFrequencyPractice(FP.mode);
   const scheduled = scheduledMode
@@ -2546,12 +2567,13 @@ function frequencyPracticeAnswer(rating) {
       FP.queue.splice(Math.min(FP.queue.length, FP.idx + 3), 0, current);
     }
   }
-  recordFreqAttempt({ id, result: rating, intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue });
+  recordFreqAttempt({ id, result: rating, intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue, isNew: isNew && scheduled.learned });
   save();
   FP.idx++;
   FP.revealed = false;
   FP.wordMeaningRevealed = false;
   renderFrequencyPractice();
+  updateHeader();
 }
 function frequencyPracticeNext() {
   if (FP.idx < FP.queue.length) {
@@ -2956,7 +2978,8 @@ function mergeAttempts(currentAttempts = [], importedAttempts = []) {
       a.mode || '',
       a.direction || '',
       a.result || '',
-      a.wasDue ? 'due' : 'new',
+      a.wasDue ? 'due' : 'notdue',
+      a.isNew ? 'isnew' : 'notnew',
       a.intervalBefore || 0,
       a.intervalAfter || 0,
     ].join('|');

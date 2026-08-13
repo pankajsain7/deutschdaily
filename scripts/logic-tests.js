@@ -45,7 +45,7 @@ const source = [
     mergeSrsMaps,
     validFrequencyRankSet,
     getHistoryDaySummary,
-    renderProgressOverview,
+    renderProgressDashboard,
     renderSaved,
     renderTodayVocab,
     renderFrequency,
@@ -588,7 +588,7 @@ const frequencyHistory = t.getHistoryDaySummary(t.today());
 assert.strictEqual(frequencyHistory.frequencyPracticeCount, 1, 'answered frequency cards count in daily history');
 assert.strictEqual(frequencyHistory.skipped, 1, 'frequency skips count in daily history');
 assert.strictEqual(frequencyHistory.reviews, 1, 'due frequency answers count as reviews');
-assert(t.renderProgressOverview().includes('Vocab learned'), 'progress overview leads with vocabulary stats');
+assert(t.renderProgressDashboard().includes('Words Learned'), 'progress overview leads with vocabulary stats');
 assert(t.renderPracticeHub().includes('Practice again'), 'practice hub renders persistent replay groups');
 assert(!t.renderPracticeHub().includes('English → German'), 'vocabulary practice no longer offers English-to-German cards');
 assert(!t.renderPracticeHub().includes('Shortcuts'), 'practice hub no longer shows shortcut hints');
@@ -613,6 +613,43 @@ reset({});
 t.markFreqLearned('5', 'manual');
 assert(t.DB().freqLearned.has('5'), 'manual freq learned is tracked');
 assert.strictEqual(t.DB().freqAttempts[0].result, 'manual', 'manual freq learned records attempt');
+assert.strictEqual(t.DB().freqAttempts[0].isNew, true, 'manual freq learned marks attempt as isNew');
+
+// getHistoryDaySummary computes vocab metrics
+const todaySummary = t.getHistoryDaySummary(t.today());
+assert.strictEqual(todaySummary.vocabLearnedCount, 1, 'history day summary counts newly learned vocab');
+assert(todaySummary.vocabLearnedIds.includes('5'), 'history day summary includes learned vocab id');
+
+// frequencyPracticeAnswer tracks isNew for new words
+reset({});
+t.startFrequencyPractice({ ids: ['10', '11'], mode: 'scheduled' });
+t.frequencyPracticeAnswer('good');
+assert.strictEqual(t.DB().freqAttempts[0].isNew, true, 'first rating of a new word records isNew: true');
+
+// mergeAttempts preserves isNew
+const mergedAttempts = t.mergeAttempts(
+  [{ id: '10', date: t.today(), result: 'good', wasDue: false, isNew: true, intervalBefore: 0, intervalAfter: 3 }],
+  [{ id: '11', date: t.today(), result: 'good', wasDue: false, isNew: true, intervalBefore: 0, intervalAfter: 3 }]
+);
+assert.strictEqual(mergedAttempts.length, 2, 'mergeAttempts merges distinct attempts');
+assert.strictEqual(mergedAttempts[0].isNew, true, 'mergeAttempts preserves isNew');
+
+// Library learned tab does not duplicate cards
+reset({
+  learned: ['un1'],
+  srs: { un1: { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) } },
+  freqLearned: ['1'],
+  freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3) } }
+});
+t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=learned&type=sentences');
+const sentenceHtml = t.renderSaved();
+const scMatches = (sentenceHtml.match(/id="sc-un1"/g) || []).length;
+assert.strictEqual(scMatches, 1, 'Sentence card exists exactly once in Learned tab without duplicate IDs');
+
+t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=learned&type=vocab');
+const vocabHtml = t.renderSaved();
+const fcMatches = (vocabHtml.match(/id="fc-1"/g) || []).length;
+assert.strictEqual(fcMatches, 1, 'Frequency vocab card exists exactly once in Learned tab without duplicate IDs');
 
 reset({ freqLearned: ['5'], freqSrs: { '5': { interval: 3, ease: 2.5, level: 1, nextReview: t.addDaysISO(3), lastReview: t.today() } } });
 t.unmarkFreqLearned('5');

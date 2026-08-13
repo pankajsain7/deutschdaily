@@ -195,6 +195,7 @@ function normalizeFrequencyAttempts(value, validIds) {
       date: normalizeDateKey(raw.date) || today(),
       result: ['again', 'hard', 'good', 'easy', 'manual', 'skip'].includes(raw.result) ? raw.result : 'again',
       wasDue: Boolean(raw.wasDue),
+      isNew: Boolean(raw.isNew || raw.result === 'manual' || (Number(raw.intervalBefore || 0) === 0 && Number(raw.intervalAfter || 0) > 0)),
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
     };
@@ -689,9 +690,13 @@ function isFreqScheduledFuture(id) {
   const srs = DB.freqSrs[id];
   return Boolean(srs && srs.nextReview && srs.nextReview > today());
 }
-function recordFreqAttempt({ id, result, intervalBefore = 0, intervalAfter = 0, wasDue = false }) {
+function recordFreqAttempt({ id, result, intervalBefore = 0, intervalAfter = 0, wasDue = false, isNew }) {
   if (!validFrequencyRankSet().has(String(id))) return;
-  DB.freqAttempts.push({ id: String(id), date: today(), result, wasDue, intervalBefore, intervalAfter });
+  const sid = String(id);
+  const computedIsNew = typeof isNew === 'boolean'
+    ? isNew
+    : Boolean(result === 'manual' || (Number(intervalBefore || 0) === 0 && Number(intervalAfter || 0) > 0));
+  DB.freqAttempts.push({ id: sid, date: today(), result, wasDue: Boolean(wasDue), isNew: computedIsNew, intervalBefore, intervalAfter });
   if (DB.freqAttempts.length > 1000) DB.freqAttempts = DB.freqAttempts.slice(-1000);
 }
 function freqRatingInterval(card, rating, isNew) {
@@ -739,9 +744,10 @@ function scheduleFreq(id, rating) {
 }
 function markFreqLearned(id, source = 'manual') {
   if (!validFrequencyRankSet().has(String(id))) return false;
+  const isNew = !DB.freqLearned.has(String(id));
   const scheduled = scheduleFreq(id, 'good');
   if (source === 'manual') {
-    recordFreqAttempt({ id, result: 'manual', intervalBefore: scheduled.intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue });
+    recordFreqAttempt({ id, result: 'manual', intervalBefore: scheduled.intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue, isNew });
   }
   save();
   return true;
