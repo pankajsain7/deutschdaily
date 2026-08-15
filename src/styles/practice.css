@@ -473,6 +473,13 @@
   border-color: var(--border-strong);
 }
 
+.practice-exit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--border);
+  pointer-events: none;
+}
+
 .practice-prog-wrap {
   flex: 1;
 }

@@ -1624,6 +1624,17 @@
 
 .freq-practice-card {
   text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.12s var(--ease), box-shadow 0.12s var(--ease);
+}
+
+.freq-practice-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.freq-practice-card:active {
+  transform: scale(0.995);
 }
 
 .freq-practice-word {
@@ -1978,4 +1989,198 @@ button.freq-practice-en:focus-visible {
   .practice-attention-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .practice-hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .practice-hero-actions .btn { width: 100%; justify-content: center; }
+
+  .session-timer { display: none; }
+  .kbd-hint { display: none; }
 }
+
+/* ─── Practice Hero Actions ─── */
+.practice-hero-actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+/* ─── Today's Progress Stats ─── */
+.practice-stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s;
+}
+
+.practice-stat-card.stat-good {
+  border-color: #bbf7d0;
+  background: linear-gradient(135deg, #f0fdf4, var(--white));
+}
+
+.practice-stat-card.stat-warn {
+  border-color: #fde68a;
+  background: linear-gradient(135deg, #fffbeb, var(--white));
+}
+
+.practice-stat-val {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.practice-stat-of {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.practice-stat-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 4px;
+}
+
+/* ─── Week Activity Chart ─── */
+.practice-week-chart {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.practice-week-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.practice-week-title .ico {
+  width: 14px;
+  height: 14px;
+}
+
+.practice-week-bars {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  align-items: end;
+  height: 56px;
+}
+
+.practice-week-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  gap: 4px;
+}
+
+.practice-week-bar-bg {
+  flex: 1;
+  width: 100%;
+  max-width: 28px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.practice-week-bar-fill {
+  width: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  min-height: 2px;
+  transition: height 0.3s ease;
+}
+
+.practice-week-day {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.practice-week-day.is-today {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ─── Session Timer ─── */
+.session-timer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 10px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.session-timer .ico {
+  width: 13px;
+  height: 13px;
+}
+
+/* ─── Interval Preview on Rating Buttons ─── */
+.rate-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.rate-interval {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.82;
+  margin-top: 2px;
+}
+
+/* ─── Card Streak Indicator ─── */
+.card-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.card-streak.correct {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.card-streak.wrong {
+  background: #fee2e2;
+  color: #dc2626;
+}
+

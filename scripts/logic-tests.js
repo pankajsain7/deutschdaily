@@ -31,6 +31,11 @@ const source = [
     getPatternReviewIds,
     practiceAnswer,
     practiceNext,
+    startPractice,
+    setPracticeDir,
+    startPatternPractice,
+    patternPracticeAnswer,
+    patternPracticeNext,
     renderKursplan,
     setPracticeState: value => { P = value; },
     getPracticeState: () => P,
@@ -66,6 +71,12 @@ const source = [
     startFrequencyPractice,
     frequencyPracticeAnswer,
     frequencyPracticeNext,
+    frequencyPracticePrev,
+    frequencyPracticeReveal,
+    practiceReveal,
+    practicePrev,
+    patternPracticeReveal,
+    patternPracticePrev,
     getFreqLeechIds,
     getNewFreqPool,
     shouldPromptReview,
@@ -73,6 +84,7 @@ const source = [
     renderPracticeHub,
     mergeFreqRatingStates,
     getFrequencyPracticeState: () => FP,
+    getPatternPracticeState: () => PP,
   };`
 ].join('\n');
 
@@ -564,9 +576,9 @@ assert.strictEqual(t.DB().freqDailyQueue[0], '2', 'the freq daily queue starts a
 reset({});
 t.startFrequencyPractice({ ids: ['1'] });
 t.frequencyPracticeNext();
-assert.strictEqual(t.getFrequencyPracticeState().skipped, 1, 'skipping increments the frequency practice skip count');
-assert.strictEqual(t.DB().freqAttempts[0].result, 'skip', 'frequency skips are recorded as skips');
-assert(!t.DB().freqLearned.has('1'), 'skipping does not schedule or learn a frequency card');
+assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'unrated frequency card cannot be skipped with next()');
+assert.strictEqual(t.getFrequencyPracticeState().skipped, 0, 'skipping is restricted without rating');
+assert.strictEqual(t.DB().freqAttempts.length, 0, 'no skip attempt recorded for unrated card');
 
 reset({});
 const sixtyFrequencyIds = Array.from({ length: 60 }, (_, index) => String(index + 1));
@@ -661,5 +673,56 @@ t.toggleFreqFav('7');
 assert(t.DB().freqFavorites.has('7'), 'toggle freq fav adds to favorites');
 t.toggleFreqFav('7');
 assert(!t.DB().freqFavorites.has('7'), 'toggle freq fav removes from favorites');
+
+t.startFrequencyPractice({ ids: ['1', '2'], mode: 'replay' });
+assert.strictEqual(t.getFrequencyPracticeState().revealed, false, 'vocab flashcard starts unrevealed');
+t.frequencyPracticeReveal();
+assert.strictEqual(t.getFrequencyPracticeState().revealed, true, 'frequencyPracticeReveal unhides english translation');
+t.frequencyPracticeReveal();
+assert.strictEqual(t.getFrequencyPracticeState().revealed, false, 'frequencyPracticeReveal hides english translation on second call');
+assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'starts at card 0');
+t.frequencyPracticeNext();
+assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'does not advance on next without rating');
+t.frequencyPracticeAnswer('good');
+assert.strictEqual(t.getFrequencyPracticeState().idx, 1, 'advances to card 1 after rating card 0');
+t.frequencyPracticePrev();
+assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'goes backward to card 0 on prev');
+t.frequencyPracticeNext();
+assert.strictEqual(t.getFrequencyPracticeState().idx, 1, 'advances to card 1 on next since card 0 was already rated');
+t.frequencyPracticePrev();
+assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'goes backward to card 0 on prev');
+t.frequencyPracticePrev();
+assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'does not go below card 0 on prev');
+
+t.startPractice({ ids: ['un1', 'un2'], skipSessionFilter: true });
+t.setPracticeDir('de2en');
+assert.strictEqual(t.getPracticeState().idx, 0, 'starts at sentence 0');
+t.practiceNext();
+assert.strictEqual(t.getPracticeState().idx, 0, 'sentence does not advance on next without rating');
+t.practiceReveal();
+assert.strictEqual(t.getPracticeState().revealed, true, 'practiceReveal unhides sentence card');
+t.practiceReveal();
+assert.strictEqual(t.getPracticeState().revealed, false, 'practiceReveal hides sentence card on second call');
+t.practiceAnswer(true);
+assert.strictEqual(t.getPracticeState().idx, 1, 'advances to sentence 1 after rating');
+t.practicePrev();
+assert.strictEqual(t.getPracticeState().idx, 0, 'sentence goes back on prev');
+t.practiceNext();
+assert.strictEqual(t.getPracticeState().idx, 1, 'sentence advances on next since sentence 0 was already rated');
+
+t.startPatternPractice({ ids: ['polite_request_modal', 'ask_meaning'] });
+assert.strictEqual(t.getPatternPracticeState().idx, 0, 'starts at pattern 0');
+t.patternPracticeNext();
+assert.strictEqual(t.getPatternPracticeState().idx, 0, 'pattern does not advance on next without rating');
+t.patternPracticeReveal();
+assert.strictEqual(t.getPatternPracticeState().revealed, true, 'patternPracticeReveal unhides pattern card');
+t.patternPracticeReveal();
+assert.strictEqual(t.getPatternPracticeState().revealed, false, 'patternPracticeReveal hides pattern card on second call');
+t.patternPracticeAnswer(true);
+assert.strictEqual(t.getPatternPracticeState().idx, 1, 'advances to pattern 1 after rating');
+t.patternPracticePrev();
+assert.strictEqual(t.getPatternPracticeState().idx, 0, 'pattern goes back on prev');
+t.patternPracticeNext();
+assert.strictEqual(t.getPatternPracticeState().idx, 1, 'pattern advances on next since pattern 0 was already rated');
 
 console.log('logic-tests passed');

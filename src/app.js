@@ -537,6 +537,17 @@ function renderPracticeHub() {
   const newIds = DB.freqDailyQueue.filter(id => !DB.freqDailyQueueDone.has(id));
   const sessionIds = [...dueIds, ...newIds.filter(id => !dueIds.includes(id))];
   const overdue = Object.entries(DB.freqSrs).filter(([id, s]) => DB.freqLearned.has(id) && s.nextReview && s.nextReview < today()).length;
+
+  // Sentence & pattern due counts
+  const sentDueIds = getSrsReviewIds();
+  const patDueIds = getPatternReviewIds();
+  const totalDueAll = sessionIds.length + sentDueIds.length + patDueIds.length;
+
+  // Today's stats
+  const stats = getTodayPracticeStats();
+  const weekData = getWeekActivityData();
+  const maxWeek = Math.max(1, ...weekData.map(d => d.total));
+
   const replayCards = PRACTICE_RATING_DECKS.map(deck => renderPracticeDeckCard(
     deck.title,
     deck.sub,
@@ -557,13 +568,21 @@ function renderPracticeHub() {
   <button class="btn btn-secondary practice-onboarding-btn" onclick="startFrequencyPractice({ids:${idsArg(ratingSeedIds)},mode:'replay'})" type="button">Rate ${ratingSeedIds.length} words</button>
 </div>` : '';
 
-  const hero = sessionIds.length
+  // ── Smart mix button (combines vocab due + sentence due) ──
+  const smartMixIds = [...dueIds.slice(0, 12), ...newIds.filter(id => !dueIds.includes(id)).slice(0, 3)];
+  const smartMixSentIds = sentDueIds.slice(0, 5);
+
+  // ── Unified hero ──
+  const hero = totalDueAll > 0
     ? `<div class="practice-hero">
   <div class="practice-hero-main">
-    <div class="practice-hero-title">${sessionIds.length} card${sessionIds.length !== 1 ? 's' : ''} ready</div>
-    <div class="practice-hero-sub">${dueIds.length} due review${dueIds.length !== 1 ? 's' : ''} · ${newIds.length} new word${newIds.length !== 1 ? 's' : ''}${overdue ? ` · ${overdue} overdue` : ''}</div>
+    <div class="practice-hero-title">${totalDueAll} card${totalDueAll !== 1 ? 's' : ''} ready</div>
+    <div class="practice-hero-sub">${dueIds.length} vocab due · ${newIds.length} new word${newIds.length !== 1 ? 's' : ''}${overdue ? ` · ${overdue} overdue` : ''}${sentDueIds.length ? ` · ${sentDueIds.length} sentence${sentDueIds.length !== 1 ? 's' : ''} due` : ''}${patDueIds.length ? ` · ${patDueIds.length} pattern${patDueIds.length !== 1 ? 's' : ''} due` : ''}</div>
   </div>
-  <button class="btn btn-primary practice-hero-btn" onclick="startFrequencyPractice({ids:${idsArg(sessionIds)},mode:'scheduled'})" type="button">${ICO.target} Start review</button>
+  <div class="practice-hero-actions">
+    <button class="btn btn-primary practice-hero-btn" onclick="startFrequencyPractice({ids:${idsArg(sessionIds)},mode:'scheduled'})" type="button">${ICO.target} Start vocab review</button>
+    ${sentDueIds.length ? `<button class="btn btn-secondary practice-hero-btn" onclick="startPractice({ids:${idsArg(sentDueIds)},isSRS:true})" type="button">${ICO.sentences} Sentence review</button>` : ''}
+  </div>
 </div>`
     : `<div class="practice-hero practice-hero-complete">
   <div class="practice-hero-status">${ICO.check}</div>
@@ -573,13 +592,61 @@ function renderPracticeHub() {
   </div>
 </div>`;
 
+  // ── Today's progress stats ──
+  const todayStats = `<div class="practice-today-stats">
+  <div class="practice-stat-card">
+    <div class="practice-stat-val">${stats.totalReviewed}</div>
+    <div class="practice-stat-lbl">Reviewed today</div>
+  </div>
+  <div class="practice-stat-card${stats.accuracy >= 80 ? ' stat-good' : stats.accuracy >= 50 ? ' stat-warn' : ''}">
+    <div class="practice-stat-val">${stats.totalReviewed > 0 ? stats.accuracy + '%' : '—'}</div>
+    <div class="practice-stat-lbl">Accuracy</div>
+  </div>
+  <div class="practice-stat-card">
+    <div class="practice-stat-val">${stats.newLearnedToday}<span class="practice-stat-of">/${DB.freqDailyGoal}</span></div>
+    <div class="practice-stat-lbl">New words</div>
+  </div>
+</div>`;
+
+  // ── Week activity mini chart ──
+  const weekChart = `<div class="practice-week-chart">
+  <div class="practice-week-title">${ICO.chart} This week</div>
+  <div class="practice-week-bars">
+    ${weekData.map(d => `<div class="practice-week-col" title="${d.day}: ${d.total} reviews">
+      <div class="practice-week-bar-bg"><div class="practice-week-bar-fill" style="height:${Math.max(4, d.total / maxWeek * 100)}%"></div></div>
+      <div class="practice-week-day${d.date === today() ? ' is-today' : ''}">${d.day}</div>
+    </div>`).join('')}
+  </div>
+</div>`;
+
+  // ── Sentence practice section ──
+  const sentenceSection = sentDueIds.length || patDueIds.length ? `<div class="sec-lbl">Sentence & pattern reviews</div>
+<div class="deck-grid" style="margin-bottom:18px">
+  ${sentDueIds.length ? `<button class="deck-card is-due" onclick="startPractice({ids:${idsArg(sentDueIds)},isSRS:true})" type="button">
+    <span class="deck-card-count">${sentDueIds.length}</span>
+    <span class="deck-card-title">Sentences due</span>
+    <span class="deck-card-sub">${sentDueIds.length} sentence${sentDueIds.length !== 1 ? 's' : ''} ready for review</span>
+  </button>` : ''}
+  ${patDueIds.length ? `<button class="deck-card is-due" onclick="startPatternPractice({ids:${idsArg(patDueIds)}})" type="button">
+    <span class="deck-card-count">${patDueIds.length}</span>
+    <span class="deck-card-title">Patterns due</span>
+    <span class="deck-card-sub">${patDueIds.length} pattern${patDueIds.length !== 1 ? 's' : ''} ready for review</span>
+  </button>` : ''}
+</div>` : '';
+
   return `<div style="padding-top:14px">
 <h2 class="page-title">Practice</h2>
 <p class="page-sub">German vocabulary flashcards with spaced repetition.</p>
 
 ${hero}
 
+${todayStats}
+
+${weekChart}
+
 ${onboarding}
+
+${sentenceSection}
 
 <div class="sec-lbl">Practice again</div>
 <div class="deck-grid practice-replay-grid">${replayCards}</div>
@@ -1998,9 +2065,9 @@ function setGoal(n) {
 // ==============================
 // PRACTICE MODE
 // ==============================
-let P = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, isSRS: false, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [], typedFeedback: null };
+let P = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, isSRS: false, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [], typedFeedback: null, lastSpokenId: null };
 let PP = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, answered: {} };
-let FP = { active: false, queue: [], idx: 0, revealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode: 'replay', answered: {}, missedIds: [], ratingById: {} };
+let FP = { active: false, queue: [], idx: 0, revealed: false, wordMeaningRevealed: false, lastSpokenId: null, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode: 'replay', answered: {}, missedIds: [], ratingById: {} };
 
 function startPractice(opts) {
   const ids = Array.isArray(opts) ? opts : opts.ids;
@@ -2018,7 +2085,7 @@ function startPractice(opts) {
     setTimeout(() => toast.remove(), 3000);
     return;
   }
-  P = { active: true, queue: shuffle([...sents]), idx: 0, revealed: false, got: 0, again: 0, skipped: 0, isSRS, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [], typedFeedback: null };
+  P = { active: true, queue: shuffle([...sents]), idx: 0, revealed: false, got: 0, again: 0, skipped: 0, isSRS, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [], typedFeedback: null, lastSpokenId: null };
   renderPractice();
 }
 
@@ -2056,7 +2123,7 @@ function practicePatternHint(s) {
   </div>`;
 }
 function practiceSpeakButton(s, safeDE, label) {
-  return `<div class="practice-speak-row">
+  return `<div class="practice-speak-row" style="display:flex;justify-content:center;align-items:center;gap:10px;margin:10px 0">
       <button class="act-btn speak-btn" data-id="prac-${s.id}" onclick="speak(${safeDE},'prac-${s.id}')" type="button">
         ${ICO.speak} <span id="prac-speak-lbl">${label}</span>
       </button>
@@ -2164,48 +2231,38 @@ function renderPractice() {
         ? `<div class="practice-use"><strong>You can answer:</strong> ${esc(s.learn.learnerReply || s.learn.expectedReply)}</div>`
         : '';
       cardBody = `
-    <div class="practice-card">
+    <div class="practice-card" onclick="if(!event.target.closest('.prac-fav-btn, .reveal-details-btn, button, a, input')) practiceReveal()" style="cursor:pointer" role="button" tabindex="0" aria-label="Toggle translation">
       ${practiceFavButton(s)}
       ${practiceTopicLabel(topic, s, gram)}
       <div class="practice-de" lang="de">${esc(s.de)}</div>
       <div class="practice-ph">${ICO.speak} ${esc(s.ph)}</div>
       ${P.revealed
           ? `<div class="practice-en">${esc(s.en)}</div><div class="practice-use">${esc(s.use)}</div>${recognitionReply}${practicePatternHint(s)}${renderRevealDetails(s, true, 'pgd-')}`
-          : `<button class="practice-reveal-hint" onclick="practiceReveal()" type="button">${recognitionMode ? 'Tap to reveal meaning and response' : 'Tap to reveal translation'}</button>`}
+          : ''}
     </div>
     ${practiceSpeakButton(s, safeDE, 'Listen')}
     ${P.revealed ? `
       <div class="practice-btns">
         <button class="prac-again-btn" onclick="practiceAnswer(false)">Still learning</button>
         <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it</button>
-      </div>` : ''}
-    <div class="kbd-hint">
-      <span class="kbd">Space</span> show/hide &nbsp;
-      <span class="kbd">←</span> prev &nbsp;
-      <span class="kbd">→</span> skip
-    </div>`;
+      </div>` : ''}`;
     } else if (effectiveDir === 'en2de') {
       // en2de — Front: English. Back: German + phonetics + usage
       cardBody = `
-    <div class="practice-card">
+    <div class="practice-card" onclick="if(!event.target.closest('.prac-fav-btn, .reveal-details-btn, button, a, input')) practiceReveal()" style="cursor:pointer" role="button" tabindex="0" aria-label="Toggle translation">
       ${practiceFavButton(s)}
       ${practiceTopicLabel(topic, s, gram)}
       <div class="practice-de practice-prompt-en">${esc(s.en)}</div>
       ${P.revealed
           ? `<div class="practice-ph">${ICO.speak} ${esc(s.ph)}</div><div class="practice-answer-de" lang="de">${esc(s.de)}</div><div class="practice-use">${esc(s.use)}</div>${practicePatternHint(s)}${renderRevealDetails(s, true, 'pgd-')}`
-          : `<button class="practice-reveal-hint" onclick="practiceReveal()" type="button">Tap to reveal German</button>`}
+          : ''}
     </div>
     ${practiceSpeakButton(s, safeDE, P.revealed ? 'Listen' : 'Audio hint')}
     ${P.revealed ? `
       <div class="practice-btns">
         <button class="prac-again-btn" onclick="practiceAnswer(false)">Still learning</button>
         <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it</button>
-      </div>` : ''}
-    <div class="kbd-hint">
-      <span class="kbd">Space</span> show/hide &nbsp;
-      <span class="kbd">←</span> prev &nbsp;
-      <span class="kbd">→</span> skip
-    </div>`;
+      </div>` : ''}`;
     } else {
       const feedback = P.typedFeedback ? `<div class="typed-feedback ${P.typedFeedback.ok ? 'ok' : 'warn'}">${P.typedFeedback.messages.map(esc).join('<br>')}</div>` : '';
       cardBody = `
@@ -2224,20 +2281,16 @@ function renderPractice() {
       <div class="practice-btns">
         <button class="prac-again-btn" onclick="practiceAnswer(false)">Still learning</button>
         <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it</button>
-      </div>` : ''}
-    <div class="kbd-hint">
-      <span class="kbd">Enter</span> check &nbsp;
-      <span class="kbd">←</span> prev &nbsp;
-      <span class="kbd">→</span> skip
-    </div>`;
+      </div>` : ''}`;
     }
 
     ov.innerHTML = `
   <div class="practice-hdr">
-    <button class="practice-exit" onclick="closePractice()">Exit</button>
+    <button class="practice-exit" onclick="closePractice()" type="button">Exit</button>
+    <button class="practice-exit" onclick="practicePrev()" type="button" ${P.idx === 0 ? 'disabled' : ''} title="Previous card (Left arrow)" aria-label="Previous card">← Prev</button>
     <div class="practice-prog-wrap">
       <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
-      <div class="practice-prog-lbl">${P.idx + 1}/${total} · ${dirLabel} · Got ${P.got} · Learning ${P.again} · Skipped ${P.skipped}</div>
+      <div class="practice-prog-lbl">${P.idx + 1}/${total} · ${dirLabel} · Got ${P.got} · Learning ${P.again}</div>
     </div>
   </div>
   <div class="practice-body">
@@ -2249,12 +2302,15 @@ function renderPractice() {
   // Auto-play audio for new card
   if (P.active && P.idx < P.queue.length && !P.revealed && !P.dirChoice) {
     const s = P.queue[P.idx];
-    // German-front cards can safely auto-play. English-front cards keep audio as a hint.
-    if (effectivePracticeDirection(s) === 'de2en') {
-      if (isMobile) {
-        speak(s.de, `prac-${s.id}`);
-      } else {
-        setTimeout(() => speak(s.de, `prac-${s.id}`), 150);
+    if (P.lastSpokenId !== s.id) {
+      P.lastSpokenId = s.id;
+      // German-front cards can safely auto-play. English-front cards keep audio as a hint.
+      if (effectivePracticeDirection(s) === 'de2en') {
+        if (isMobile) {
+          speak(s.de, `prac-${s.id}`);
+        } else {
+          setTimeout(() => speak(s.de, `prac-${s.id}`), 150);
+        }
       }
     }
   }
@@ -2394,14 +2450,8 @@ function practiceAnswer(got) {
 
 function practiceNext() {
   if (P.idx < P.queue.length) {
-    const currentCard = P.queue[P.idx];
     const attemptKey = String(P.idx);
-    if (currentCard && !P.answered[attemptKey]) {
-      P.answered[attemptKey] = 'skip';
-      P.skipped++;
-      recordAttempt({ id: currentCard.id, result: 'skip', mode: 'practice', direction: effectivePracticeDirection(currentCard), sentence: currentCard });
-      save();
-    }
+    if (!P.answered[attemptKey]) return;
     P.idx++; P.revealed = false; P.typedFeedback = null; renderPractice();
   }
 }
@@ -2427,7 +2477,7 @@ function startFrequencyPractice(opts) {
   if (!entries.length) return;
   P.active = false;
   PP.active = false;
-  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, wordMeaningRevealed: false, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, answered: {}, missedIds: [], ratingById: {} };
+  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, wordMeaningRevealed: false, lastSpokenId: null, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, answered: {}, missedIds: [], ratingById: {}, startTime: Date.now() };
   renderFrequencyPractice();
 }
 function renderFrequencyPractice() {
@@ -2490,44 +2540,64 @@ function renderFrequencyPractice() {
   const speakText = entry.germanSentence || entry.german;
   const frontHtml = `<div class="practice-de freq-practice-word" lang="de">${esc(freqDisplay(entry))}</div>`;
   const backHtml = `<div class="practice-en freq-practice-en">${esc(entry.english)}</div>`;
+
+  // Session timer
+  const elapsed = Math.floor((Date.now() - (FP.startTime || Date.now())) / 1000);
+  const timerMin = Math.floor(elapsed / 60);
+  const timerSec = String(elapsed % 60).padStart(2, '0');
+  const timerLabel = `${timerMin}:${timerSec}`;
+
+  // Card streak
+  const streak = getCardStreak(id);
+  const streakHtml = streak.count >= 2
+    ? `<span class="card-streak ${streak.type}">${streak.type === 'correct' ? '✓' : '✗'} ${streak.count}× in a row</span>`
+    : '';
+
+  // Interval previews
+  const preview = freqIntervalPreview(id);
+
   ov.innerHTML = `
   <div class="practice-hdr">
     <button class="practice-exit" onclick="closePractice()" type="button">Exit</button>
-      <div class="practice-prog-wrap">
+    <button class="practice-exit" onclick="frequencyPracticePrev()" type="button" ${FP.idx === 0 ? 'disabled' : ''} title="Previous card (Left arrow)" aria-label="Previous card">← Prev</button>
+    <div class="practice-prog-wrap">
       <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
       <div class="practice-prog-lbl">${FP.idx + 1}/${total} · Again ${FP.again} · Hard ${FP.hard} · Good ${FP.good} · Easy ${FP.easy}</div>
     </div>
+    <div class="session-timer" title="Session time">${ICO.clock} ${timerLabel}</div>
   </div>
   <div class="practice-body">
-    <div class="practice-card freq-practice-card">
-      <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))} ${isNew ? '<span class="card-state-tag is-new">New</span>' : '<span class="card-state-tag">Review</span>'}</div>
+    <div class="practice-card freq-practice-card" onclick="if(!event.target.closest('.freq-practice-meaning-toggle, button, a')) frequencyPracticeReveal()" role="button" tabindex="0" aria-label="Toggle translation">
+      <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))} ${isNew ? '<span class="card-state-tag is-new">New</span>' : '<span class="card-state-tag">Review</span>'} ${streakHtml}</div>
       ${frontHtml}
       <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
       ${FP.revealed ? `
         <div class="freq-practice-en-translation">${esc(entry.englishSentence)}</div>
-        ${FP.wordMeaningRevealed ? `<div class="freq-practice-word-meaning"><span style="font-size:12px;font-weight:600;color:var(--text-3);display:block;margin-bottom:2px">Word Meaning</span>${backHtml}</div>` : `<button class="freq-practice-meaning-toggle" onclick="frequencyPracticeRevealWordMeaning()" type="button" aria-label="Toggle English word meaning of ${esc(freqDisplay(entry))}">Show word meaning</button>`}
-      ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Press Space to reveal English</button>`}
+        ${FP.wordMeaningRevealed ? `<div class="freq-practice-word-meaning"><span style="font-size:12px;font-weight:600;color:var(--text-3);display:block;margin-bottom:2px">Word Meaning</span>${backHtml}</div>` : `<button class="freq-practice-meaning-toggle" onclick="event.stopPropagation();frequencyPracticeRevealWordMeaning()" type="button" aria-label="Toggle English word meaning of ${esc(freqDisplay(entry))}">Show word meaning</button>`}
+      ` : ''}
     </div>
-    <div style="display:flex;justify-content:center;margin:10px 0">
+    <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:10px 0">
       <button class="act-btn speak-btn" data-id="fprac-${id}" onclick="speak(${jsArg(speakText)},'fprac-${id}')" style="font-size:13px;padding:8px 18px" type="button">
         ${ICO.speak} Listen
       </button>
     </div>
     <div class="vocab-rating-btns">
-      <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again</button>
-      <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard</button>
-      <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good</button>
-      <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy</button>
+      <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button"><span class="rate-label">Again</span><span class="rate-interval">${preview.again}</span></button>
+      <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button"><span class="rate-label">Hard</span><span class="rate-interval">${preview.hard}</span></button>
+      <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button"><span class="rate-label">Good</span><span class="rate-interval">${preview.good}</span></button>
+      <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button"><span class="rate-label">Easy</span><span class="rate-interval">${preview.easy}</span></button>
     </div>
+    <div class="kbd-hint"><kbd class="kbd">1</kbd> Again <kbd class="kbd">2</kbd> Hard <kbd class="kbd">3</kbd> Good <kbd class="kbd">4</kbd> Easy · <kbd class="kbd">Space</kbd> Reveal · <kbd class="kbd">←</kbd><kbd class="kbd">→</kbd> Navigate</div>
   </div>`;
   document.body.appendChild(ov);
-  if (!FP.revealed) {
+  if (!FP.revealed && FP.lastSpokenId !== id) {
+    FP.lastSpokenId = id;
     if (isMobile) speak(speakText, `fprac-${id}`);
     else setTimeout(() => speak(speakText, `fprac-${id}`), 150);
   }
 }
 function frequencyPracticeReveal() {
-  FP.revealed = true;
+  FP.revealed = !FP.revealed;
   renderFrequencyPractice();
 }
 function frequencyPracticeRevealWordMeaning() {
@@ -2576,15 +2646,17 @@ function frequencyPracticeAnswer(rating) {
 }
 function frequencyPracticeNext() {
   if (FP.idx < FP.queue.length) {
-    const current = FP.queue[FP.idx];
     const attemptKey = String(FP.idx);
-    if (current && !FP.answered[attemptKey]) {
-      FP.answered[attemptKey] = 'skip';
-      FP.skipped++;
-      recordFreqAttempt({ id: String(current.rank), result: 'skip', intervalBefore: 0, intervalAfter: 0, wasDue: false });
-      save();
-    }
+    if (!FP.answered[attemptKey]) return;
     FP.idx++;
+    FP.revealed = false;
+    FP.wordMeaningRevealed = false;
+    renderFrequencyPractice();
+  }
+}
+function frequencyPracticePrev() {
+  if (FP.idx > 0) {
+    FP.idx--;
     FP.revealed = false;
     FP.wordMeaningRevealed = false;
     renderFrequencyPractice();
@@ -2648,14 +2720,15 @@ function renderPatternPractice() {
 
     ov.innerHTML = `
   <div class="practice-hdr">
-    <button class="practice-exit" onclick="closePractice()">Exit</button>
+    <button class="practice-exit" onclick="closePractice()" type="button">Exit</button>
+    <button class="practice-exit" onclick="patternPracticePrev()" type="button" ${PP.idx === 0 ? 'disabled' : ''} title="Previous card (Left arrow)" aria-label="Previous card">← Prev</button>
     <div class="practice-prog-wrap">
       <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
       <div class="practice-prog-lbl">${PP.idx + 1}/${total} · <span class="prac-tag">Patterns</span> · Got ${PP.got} · Learning ${PP.again}</div>
     </div>
   </div>
   <div class="practice-body">
-    <div class="practice-card">
+    <div class="practice-card" onclick="if(!event.target.closest('.pat-ex-speak, button, a')) patternPracticeReveal()" style="cursor:pointer" role="button" tabindex="0" aria-label="Toggle pattern">
       ${cat ? `<div class="practice-topic-lbl">${esc(cat.label)}</div>` : ''}
       <div class="pat-prac-question">What German pattern would you use for this situation?</div>
       <div class="pat-prac-meaning">${esc(p.meaning)}</div>
@@ -2668,10 +2741,10 @@ function renderPatternPractice() {
 	              ${p.examples.map((e, ei) => `<div class="pat-ex"><div class="pat-de" lang="de"><button class="pat-ex-speak" onclick="event.stopPropagation();speak(${jsArg(e.de)},'ppex-${p.id}-${ei}')" title="Listen" aria-label="Listen" type="button">${ICO.speak}</button> ${esc(e.de)}</div><div class="pat-en">${esc(e.en)}</div></div>`).join('')}
 	            </div>
 	          </div>`
-        : `<button class="practice-reveal-hint" onclick="patternPracticeReveal()" type="button">Tap to reveal the pattern</button>`}
+        : ''}
     </div>
     ${PP.revealed ? `
-      <div class="practice-speak-row">
+      <div class="practice-speak-row" style="display:flex;justify-content:center;align-items:center;gap:10px;margin:10px 0">
         <button class="act-btn speak-btn" data-id="pprac-${p.id}" onclick="speak(${safeDE},'pprac-${p.id}')" type="button">
           ${ICO.speak} Listen to example
         </button>
@@ -2680,11 +2753,6 @@ function renderPatternPractice() {
         <button class="prac-again-btn" onclick="patternPracticeAnswer(false)">Still learning</button>
         <button class="prac-got-btn" onclick="patternPracticeAnswer(true)">Got it</button>
       </div>` : ''}
-    <div class="kbd-hint">
-      <span class="kbd">Space</span> show/hide &nbsp;
-      <span class="kbd">←</span> prev &nbsp;
-      <span class="kbd">→</span> skip
-    </div>
   </div>`;
   }
   document.body.appendChild(ov);
@@ -2723,12 +2791,7 @@ function patternPracticeAnswer(got) {
 function patternPracticeNext() {
   if (PP.idx < PP.queue.length) {
     const p = PP.queue[PP.idx];
-    if (p && !PP.answered[p.id]) {
-      PP.answered[p.id] = 'skip';
-      PP.skipped++;
-      recordPatternAttempt({ id: p.id, result: 'skip' });
-      save();
-    }
+    if (p && !PP.answered[p.id]) return;
     PP.idx++; PP.revealed = false; renderPatternPractice();
   }
 }
@@ -2753,11 +2816,15 @@ document.addEventListener('keydown', e => {
     if (PP.idx >= PP.queue.length) return;
     if (isSpace) {
       e.preventDefault();
-      if (!PP.revealed) patternPracticeReveal();
-      else patternPracticeNext();
+      patternPracticeReveal();
       return;
     }
-    if (e.code === 'ArrowRight') { e.preventDefault(); patternPracticeNext(); return; }
+    if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      const p = PP.queue[PP.idx];
+      if (p && PP.answered[p.id]) patternPracticeNext();
+      return;
+    }
     if (e.code === 'ArrowLeft') { e.preventDefault(); patternPracticePrev(); return; }
     return;
   }
@@ -2771,7 +2838,12 @@ document.addEventListener('keydown', e => {
       frequencyPracticeReveal();
       return;
     }
-    if (e.code === 'ArrowRight') { e.preventDefault(); frequencyPracticeNext(); return; }
+    if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      if (FP.answered[String(FP.idx)]) frequencyPracticeNext();
+      return;
+    }
+    if (e.code === 'ArrowLeft') { e.preventDefault(); frequencyPracticePrev(); return; }
     if (['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
       frequencyPracticeAnswer({ 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' }[e.key]);
@@ -2786,20 +2858,14 @@ document.addEventListener('keydown', e => {
     if (P.idx >= P.queue.length) return;
     if (isSpace) {
       e.preventDefault();
-      if (!P.revealed) {
-        practiceReveal();
-      } else {
-        const currentCard = P.queue[P.idx];
-        const attemptKey = String(P.idx);
-        if (currentCard && !P.answered[attemptKey]) {
-          practiceAnswer(true);
-        } else {
-          practiceNext();
-        }
-      }
+      practiceReveal();
       return;
     }
-    if (e.code === 'ArrowRight') { e.preventDefault(); practiceNext(); return; }
+    if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      if (P.answered[String(P.idx)]) practiceNext();
+      return;
+    }
     if (e.code === 'ArrowLeft') { e.preventDefault(); practicePrev(); return; }
     return;
   }
@@ -2808,13 +2874,13 @@ document.addEventListener('keydown', e => {
   if (isSpace) {
     e.preventDefault();
     const activeEl = document.activeElement;
-    const activeCard = activeEl ? activeEl.closest('.sc, .fc') : null;
+    const activeCard = activeEl ? activeEl.closest('.sc, .fc, .vc, .freq-card') : null;
 
     if (activeEl && activeEl.tagName === 'BUTTON') {
       activeEl.blur();
     }
 
-    const cards = Array.from(document.querySelectorAll('.sc, .fc'));
+    const cards = Array.from(document.querySelectorAll('.sc, .fc, .vc, .freq-card'));
     if (!cards.length) return;
 
     let targetIdx = activeCard ? cards.indexOf(activeCard) : -1;

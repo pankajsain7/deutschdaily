@@ -801,3 +801,70 @@ function markReviewPromptSeen() {
   DB.reviewPromptDate = today();
   save();
 }
+
+// ══════════════════════════════════════════════
+// INTERVAL PREVIEW & TODAY'S STATS
+// ══════════════════════════════════════════════
+function formatInterval(days) {
+  if (days <= 0) return '<1d';
+  if (days === 1) return '1d';
+  if (days < 7) return days + 'd';
+  if (days < 30) return Math.round(days / 7) + 'w';
+  if (days < 365) return Math.round(days / 30) + 'mo';
+  return Math.round(days / 365) + 'y';
+}
+
+function freqIntervalPreview(id) {
+  const sid = String(id);
+  const isNew = !DB.freqLearned.has(sid) || !DB.freqSrs[sid];
+  const card = DB.freqSrs[sid] || blankSrsState();
+  return {
+    again: formatInterval(freqRatingInterval(card, 'again', isNew)),
+    hard:  formatInterval(freqRatingInterval(card, 'hard', isNew)),
+    good:  formatInterval(freqRatingInterval(card, 'good', isNew)),
+    easy:  formatInterval(freqRatingInterval(card, 'easy', isNew)),
+  };
+}
+
+function getTodayPracticeStats() {
+  const td = today();
+  const vocabAttempts = DB.freqAttempts.filter(a => a.date === td);
+  const sentAttempts = DB.attempts.filter(a => a.date === td);
+  const vocabReviewed = vocabAttempts.filter(a => a.result !== 'skip').length;
+  const vocabCorrect = vocabAttempts.filter(a => a.result === 'good' || a.result === 'easy' || a.result === 'got').length;
+  const sentReviewed = sentAttempts.filter(a => a.result !== 'skip').length;
+  const sentCorrect = sentAttempts.filter(a => a.result === 'got').length;
+  const totalReviewed = vocabReviewed + sentReviewed;
+  const totalCorrect = vocabCorrect + sentCorrect;
+  const accuracy = totalReviewed > 0 ? Math.round(totalCorrect / totalReviewed * 100) : 0;
+  const newLearnedToday = vocabAttempts.filter(a => a.isNew).length;
+  return { vocabReviewed, vocabCorrect, sentReviewed, sentCorrect, totalReviewed, totalCorrect, accuracy, newLearnedToday };
+}
+
+function getCardStreak(id) {
+  const sid = String(id);
+  const attempts = DB.freqAttempts.filter(a => a.id === sid).slice(-10);
+  if (!attempts.length) return { count: 0, type: 'none' };
+  let streak = 0;
+  const lastType = (attempts[attempts.length - 1].result === 'good' || attempts[attempts.length - 1].result === 'easy') ? 'correct' : 'wrong';
+  for (let i = attempts.length - 1; i >= 0; i--) {
+    const isCorrect = attempts[i].result === 'good' || attempts[i].result === 'easy';
+    if ((lastType === 'correct' && isCorrect) || (lastType === 'wrong' && !isCorrect)) streak++;
+    else break;
+  }
+  return { count: streak, type: lastType };
+}
+
+function getWeekActivityData() {
+  const data = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = dateKey(d);
+    const dayLabel = d.toLocaleDateString('en', { weekday: 'short' });
+    const vocabCount = DB.freqAttempts.filter(a => a.date === key && a.result !== 'skip').length;
+    const sentCount = DB.attempts.filter(a => a.date === key && a.result !== 'skip').length;
+    data.push({ day: dayLabel, date: key, vocab: vocabCount, sentences: sentCount, total: vocabCount + sentCount });
+  }
+  return data;
+}
