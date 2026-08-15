@@ -702,14 +702,15 @@ function recordFreqAttempt({ id, result, intervalBefore = 0, intervalAfter = 0, 
 function freqRatingInterval(card, rating, isNew) {
   const before = card.interval || 0;
   if (isNew) {
+    if (rating === 'again') return 0;
     if (rating === 'hard') return 1;
     if (rating === 'easy') return 5;
     if (rating === 'good') return FIRST_REVIEW_DAYS;
     return 0;
   }
   if (rating === 'again') return 1;
-  if (rating === 'hard') return Math.max(1, Math.round(Math.max(before, 1) * 1.2));
-  const good = Math.max(FIRST_REVIEW_DAYS, Math.round(Math.max(before, 1) * card.ease));
+  if (rating === 'hard') return Math.min(3650, Math.max(before + 1, Math.round(Math.max(before, 1) * 1.2)));
+  const good = Math.min(3650, Math.max(FIRST_REVIEW_DAYS, Math.round(Math.max(before, 1) * card.ease)));
   if (rating === 'easy') return Math.min(3650, Math.round(good * 1.3));
   return good;
 }
@@ -732,6 +733,7 @@ function scheduleFreq(id, rating) {
     card.ease = Math.max(1.3, card.ease - 0.2);
     card.lapses += 1;
   }
+  if (!isNew && safeRating === 'hard') card.ease = Math.max(1.3, card.ease - 0.05);
   if (!isNew && safeRating === 'easy') card.ease = Math.min(5, card.ease + 0.15);
   card.level = srsLevelFromInterval(card.interval);
   card.lastReview = today();

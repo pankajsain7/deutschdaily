@@ -2502,24 +2502,23 @@ function renderFrequencyPractice() {
     <div class="practice-card freq-practice-card">
       <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))} ${isNew ? '<span class="card-state-tag is-new">New</span>' : '<span class="card-state-tag">Review</span>'}</div>
       ${frontHtml}
+      <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
       ${FP.revealed ? `
-        <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
-        <button class="practice-use freq-practice-en" onclick="frequencyPracticeRevealWordMeaning()" type="button" aria-label="Toggle English word meaning of ${esc(freqDisplay(entry))}">${esc(entry.englishSentence)}</button>
-        ${FP.wordMeaningRevealed ? `<div class="freq-practice-word-meaning"><span style="font-size:12px;font-weight:600;color:var(--text-3);display:block;margin-bottom:2px">Word Meaning</span>${backHtml}</div>` : ''}
-      ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Tap to reveal the answer</button>`}
+        <div class="freq-practice-en-translation">${esc(entry.englishSentence)}</div>
+        ${FP.wordMeaningRevealed ? `<div class="freq-practice-word-meaning"><span style="font-size:12px;font-weight:600;color:var(--text-3);display:block;margin-bottom:2px">Word Meaning</span>${backHtml}</div>` : `<button class="freq-practice-meaning-toggle" onclick="frequencyPracticeRevealWordMeaning()" type="button" aria-label="Toggle English word meaning of ${esc(freqDisplay(entry))}">Show word meaning</button>`}
+      ` : `<button class="practice-reveal-hint" onclick="frequencyPracticeReveal()" type="button">Press Space to reveal English</button>`}
     </div>
     <div style="display:flex;justify-content:center;margin:10px 0">
       <button class="act-btn speak-btn" data-id="fprac-${id}" onclick="speak(${jsArg(speakText)},'fprac-${id}')" style="font-size:13px;padding:8px 18px" type="button">
         ${ICO.speak} Listen
       </button>
     </div>
-    ${FP.revealed ? `
-      <div class="vocab-rating-btns">
-        <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again</button>
-        <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard</button>
-        <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good</button>
-        <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy</button>
-      </div>` : ''}
+    <div class="vocab-rating-btns">
+      <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again</button>
+      <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard</button>
+      <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good</button>
+      <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy</button>
+    </div>
   </div>`;
   document.body.appendChild(ov);
   if (!FP.revealed) {
@@ -2773,7 +2772,7 @@ document.addEventListener('keydown', e => {
       return;
     }
     if (e.code === 'ArrowRight') { e.preventDefault(); frequencyPracticeNext(); return; }
-    if (FP.revealed && ['1', '2', '3', '4'].includes(e.key)) {
+    if (['1', '2', '3', '4'].includes(e.key)) {
       e.preventDefault();
       frequencyPracticeAnswer({ 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' }[e.key]);
       return;

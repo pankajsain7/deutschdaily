@@ -1695,6 +1695,36 @@ button.freq-practice-en:focus-visible {
   .freq-practice-en {
     font-size: 16px;
   }
+
+  .freq-practice-en-translation {
+    font-size: 15px;
+  }
+}
+
+.freq-practice-en-translation {
+  font-size: 18px;
+  color: var(--text-2);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.freq-practice-meaning-toggle {
+  display: inline-block;
+  background: none;
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: 4px;
+}
+
+.freq-practice-meaning-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* ══════════════════════════════════════════════
