@@ -10,6 +10,7 @@ const source = [
   read('src/content.js'),
   read('src/learning.js'),
   read('src/frequency-dictionary-data.js'),
+  read('src/backup-presets.js'),
   read('src/storage.js'),
   read('src/app.js'),
   'renderPractice = () => {}; updateHeader = () => {}; render = () => {};',
@@ -51,6 +52,11 @@ const source = [
     validFrequencyRankSet,
     getHistoryDaySummary,
     renderProgressDashboard,
+    renderPreviousBackupsSection,
+    getPreviousBackups,
+    getLatestBackup,
+    getBackupById,
+    importPresetBackup,
     renderSaved,
     renderTodayVocab,
     renderFrequency,
@@ -585,7 +591,7 @@ const sixtyFrequencyIds = Array.from({ length: 60 }, (_, index) => String(index 
 t.startFrequencyPractice({ ids: sixtyFrequencyIds });
 const firstCardId = String(t.getFrequencyPracticeState().queue[0].rank);
 t.frequencyPracticeAnswer('again');
-assert.strictEqual(t.getFrequencyPracticeState().queue.length, 61, 'Again requeues the card later in the session');
+assert.strictEqual(t.getFrequencyPracticeState().queue.length, 60, 'Again advances to next card without duplicate insertion in same session');
 assert.strictEqual(t.getFrequencyPracticeState().missedIds[0], firstCardId, 'Again keeps the card available for Review Again');
 
 reset({
@@ -725,4 +731,38 @@ assert.strictEqual(t.getPatternPracticeState().idx, 0, 'pattern goes back on pre
 t.patternPracticeNext();
 assert.strictEqual(t.getPatternPracticeState().idx, 1, 'pattern advances on next since pattern 0 was already rated');
 
+// --- Previous Backups & Cross-Device Sync Tests ---
+const previousBackups = t.getPreviousBackups();
+assert.ok(Array.isArray(previousBackups) && previousBackups.length >= 2, 'previous backups registry loaded with history');
+const latest = t.getLatestBackup();
+assert.ok(latest, 'latest backup snapshot exists');
+assert.strictEqual(latest.id, 'backup-2026-08-16-204748', 'latest backup ID matches');
+assert.strictEqual(latest.stats.vocabLearned, 450, 'latest backup vocab count is 450');
+assert.strictEqual(latest.stats.streak, 3, 'latest backup streak is 3');
+
+// Test DB restore from backup
+t.objToDB(latest.data);
+const restoredDb = t.DB();
+assert.strictEqual(restoredDb.freqLearned.size, 450, 'restored DB has 450 vocab items');
+assert.strictEqual(restoredDb.learned.size, 12, 'restored DB has 12 sentences');
+assert.strictEqual(restoredDb.understood.size, 6, 'restored DB has 6 patterns');
+assert.strictEqual(restoredDb.streak, 3, 'restored DB has streak 3');
+assert.strictEqual(restoredDb.lastStudy, '2026-08-16', 'restored DB lastStudy is 2026-08-16');
+assert.strictEqual(restoredDb.freqAttempts.length, 373, 'restored DB has 373 review attempts');
+assert.strictEqual(Object.keys(restoredDb.freqSrs).length, 450, 'restored DB has 450 freq SRS cards');
+
+// Test previous backup lookup by ID
+const prevSnapshot = t.getBackupById('backup-2026-08-16-201255');
+assert.ok(prevSnapshot, 'can retrieve previous snapshot by ID');
+assert.strictEqual(prevSnapshot.isLatest, false, 'older snapshot is not marked latest');
+
+// Test HTML render of previous backups section
+const backupsHtml = t.renderPreviousBackupsSection();
+assert.ok(backupsHtml.includes('Previous Backups'), 'renders section title');
+assert.ok(backupsHtml.includes('backup-2026-08-16-204748'), 'renders latest backup ID in action handlers');
+assert.ok(backupsHtml.includes('backup-2026-08-16-201255'), 'renders previous backup ID in action handlers');
+assert.ok(backupsHtml.includes('450'), 'renders 450 words stat chip');
+
 console.log('logic-tests passed');
+
+

@@ -401,7 +401,6 @@ function renderTodayVocab() {
     <div class="review-section-title">${ICO.repeat} ${dueCount} word${dueCount !== 1 ? 's' : ''} due for review</div>
     <button class="review-practice-btn" onclick="nav('practice')" type="button">Go to Practice</button>
   </div>
-  <div class="review-section-sub">Reviews are handled in the Practice tab so today's list stays new words only.</div>
 </div>` : '';
 
   return `<div>
@@ -1735,10 +1734,13 @@ ${sectionCard('Review Forecast', null, forecastChart(DB.freqSrs), 'Next 7 days')
 ${sectionCard('Needs Attention', leechIds.length ? { text: `${leechIds.length} hard word${leechIds.length !== 1 ? 's' : ''}`, cls: 'warn' } : null, leechHtml)}
 <div class="progress-section">
   <div class="progress-section-hdr"><div class="progress-section-title">Data & Backup</div></div>
-  <div class="progress-section-body"><div class="progress-data-actions">
-    <button class="btn btn-secondary" onclick="exportData()" type="button">${ICO.upload} Export backup</button>
-    <button class="btn btn-secondary" onclick="importData()" type="button">${ICO.download} Import backup</button>
-  </div></div>
+  <div class="progress-section-body">
+    <div class="progress-data-actions">
+      <button class="btn btn-secondary" onclick="exportData()" type="button">${ICO.upload} Export backup</button>
+      <button class="btn btn-secondary" onclick="importData()" type="button">${ICO.download} Import backup</button>
+    </div>
+    ${renderPreviousBackupsSection()}
+  </div>
 </div>
 </div>`;
 }
@@ -2553,9 +2555,6 @@ function renderFrequencyPractice() {
     ? `<span class="card-streak ${streak.type}">${streak.type === 'correct' ? '✓' : '✗'} ${streak.count}× in a row</span>`
     : '';
 
-  // Interval previews
-  const preview = freqIntervalPreview(id);
-
   ov.innerHTML = `
   <div class="practice-hdr">
     <button class="practice-exit" onclick="closePractice()" type="button">Exit</button>
@@ -2568,7 +2567,7 @@ function renderFrequencyPractice() {
   </div>
   <div class="practice-body">
     <div class="practice-card freq-practice-card" onclick="if(!event.target.closest('.freq-practice-meaning-toggle, button, a')) frequencyPracticeReveal()" role="button" tabindex="0" aria-label="Toggle translation">
-      <div class="practice-topic-lbl">Rank #${entry.rank} · ${esc(freqPosLabel(entry))} ${isNew ? '<span class="card-state-tag is-new">New</span>' : '<span class="card-state-tag">Review</span>'} ${streakHtml}</div>
+      <div class="practice-topic-lbl">${esc(freqPosLabel(entry))} ${streakHtml}</div>
       ${frontHtml}
       <div class="freq-practice-sentence" lang="de">${freqSentenceWithHighlight(entry)}</div>
       ${FP.revealed ? `
@@ -2582,12 +2581,12 @@ function renderFrequencyPractice() {
       </button>
     </div>
     <div class="vocab-rating-btns">
-      <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button"><span class="rate-label">Again</span><span class="rate-interval">${preview.again}</span></button>
-      <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button"><span class="rate-label">Hard</span><span class="rate-interval">${preview.hard}</span></button>
-      <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button"><span class="rate-label">Good</span><span class="rate-interval">${preview.good}</span></button>
-      <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button"><span class="rate-label">Easy</span><span class="rate-interval">${preview.easy}</span></button>
+      <button class="vocab-rate again" onclick="frequencyPracticeAnswer('again')" type="button">Again</button>
+      <button class="vocab-rate hard" onclick="frequencyPracticeAnswer('hard')" type="button">Hard</button>
+      <button class="vocab-rate good" onclick="frequencyPracticeAnswer('good')" type="button">Good</button>
+      <button class="vocab-rate easy" onclick="frequencyPracticeAnswer('easy')" type="button">Easy</button>
     </div>
-    <div class="kbd-hint"><kbd class="kbd">1</kbd> Again <kbd class="kbd">2</kbd> Hard <kbd class="kbd">3</kbd> Good <kbd class="kbd">4</kbd> Easy · <kbd class="kbd">Space</kbd> Reveal · <kbd class="kbd">←</kbd><kbd class="kbd">→</kbd> Navigate</div>
+
   </div>`;
   document.body.appendChild(ov);
   if (!FP.revealed && FP.lastSpokenId !== id) {
@@ -2632,9 +2631,6 @@ function frequencyPracticeAnswer(rating) {
 
   if (rating === 'again') {
     FP.missedIds.push(id);
-    if (!FP.queue.slice(FP.idx + 1).some(e => String(e.rank) === id)) {
-      FP.queue.splice(Math.min(FP.queue.length, FP.idx + 3), 0, current);
-    }
   }
   recordFreqAttempt({ id, result: rating, intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue, isNew: isNew && scheduled.learned });
   save();
@@ -2956,6 +2952,7 @@ function exportData() {
 function importData() {
   const existing = document.getElementById('dd-modal');
   if (existing) existing.remove();
+  const latestBackup = typeof getLatestBackup === 'function' ? getLatestBackup() : null;
   const modal = document.createElement('div');
   modal.id = 'dd-modal';
   modal.setAttribute('role', 'dialog');
@@ -2969,6 +2966,19 @@ function importData() {
     <button class="data-modal-close" onclick="document.getElementById('dd-modal').remove()" aria-label="Close">×</button>
   </div>
   <div class="data-modal-sub">Pick a backup file <strong>or</strong> paste JSON text directly below. Your current progress will be <strong>merged</strong> (not overwritten).</div>
+
+  ${latestBackup ? `
+  <div class="import-preset-banner">
+    <div class="import-preset-info">
+      <span class="import-preset-tag">PREVIOUS BACKUP</span>
+      <span class="import-preset-title">${escapeHtml(latestBackup.title || 'Latest Backup')}</span>
+      <span class="import-preset-sub">${escapeHtml(latestBackup.dateLabel || '')} — ${latestBackup.stats?.vocabLearned || 0} words, ${latestBackup.stats?.sentencesLearned || 0} sentences</span>
+    </div>
+    <div class="import-preset-acts">
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('dd-modal').remove(); importPresetBackup('${escapeHtml(latestBackup.id)}');" type="button">Import</button>
+    </div>
+  </div>` : ''}
+
   <textarea id="import-ta" class="data-modal-ta" placeholder="Paste your backup JSON here..."></textarea>
   <div id="import-err" class="data-modal-err"></div>
   <div class="btn-row">
@@ -3101,7 +3111,8 @@ function applyImport(text) {
   objToDB(merged);
   save();
   render();
-  document.getElementById('dd-modal').remove();
+  const ddModal = document.getElementById('dd-modal');
+  if (ddModal) ddModal.remove();
   // Show success toast
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#16A34A;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
@@ -3110,10 +3121,122 @@ function applyImport(text) {
   setTimeout(() => toast.remove(), 3000);
 }
 
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
+function renderPreviousBackupsSection() {
+  const backups = typeof getPreviousBackups === 'function' ? getPreviousBackups() : [];
+  if (!backups.length) return '';
 
+  return `
+  <div class="previous-backups-container">
+    <div class="previous-backups-hdr">
+      <div class="previous-backups-title-row">
+        <div class="previous-backups-title">
+          <span>Previous Backups</span>
+          <span class="backup-count-badge">${backups.length}</span>
+        </div>
+      </div>
+    </div>
+    <div class="backup-cards-list">
+      ${backups.map((b, idx) => {
+        const isLatest = b.isLatest || idx === 0;
+        const stats = b.stats || {};
+        const vocabCount = stats.vocabLearned ?? (b.data && b.data.freqLearned ? b.data.freqLearned.length : 0);
+        const sentenceCount = stats.sentencesLearned ?? (b.data && b.data.learned ? b.data.learned.length : 0);
+        const patternCount = stats.patternsLearned ?? (b.data && b.data.understood ? b.data.understood.length : 0);
+        return `
+        <div class="backup-card ${isLatest ? 'is-latest' : ''}">
+          <div class="backup-card-top">
+            <div class="backup-info">
+              <div class="backup-name-row">
+                <span class="backup-name">${escapeHtml(b.title || 'Backup Snapshot')}</span>
+              </div>
+              <div class="backup-time">
+                <span>${escapeHtml(b.dateLabel || b.timestamp)}</span>
+              </div>
+            </div>
+            <div class="backup-quick-acts">
+              <button class="btn btn-primary btn-sm" onclick="importPresetBackup('${escapeHtml(b.id)}')" type="button">Import</button>
+            </div>
+          </div>
+          <div class="backup-stats-row">
+            <span class="backup-stat-chip"><strong>${vocabCount}</strong> words</span>
+            <span class="backup-stat-chip"><strong>${sentenceCount}</strong> sentences</span>
+            <span class="backup-stat-chip"><strong>${patternCount}</strong> patterns</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
 
-// ─── HISTORY ─────────────────────────────────
+function importPresetBackup(backupId) {
+  const backup = typeof getBackupById === 'function' ? getBackupById(backupId) : null;
+  if (!backup || !backup.data) {
+    showAppToast('Backup not found.', false);
+    return;
+  }
+
+  const vocabCount = backup.stats?.vocabLearned || (backup.data.freqLearned ? backup.data.freqLearned.length : 0);
+  const sentenceCount = backup.stats?.sentencesLearned || (backup.data.learned ? backup.data.learned.length : 0);
+  const dateStr = backup.dateLabel || backup.timestamp || '';
+
+  if (!window.confirm(`Import backup from ${dateStr}?\n\nThis will add ${vocabCount} words and ${sentenceCount} sentences to your current progress. Nothing is deleted.`)) return;
+
+  try {
+    const imported = normalizeDb(backup.data);
+    const current = dbToObj();
+    const mergeHW = (a, b) => {
+      const out = Object.assign({}, a || {});
+      Object.entries(b || {}).forEach(([k, arr]) => { out[k] = [...new Set([...(out[k] || []), ...arr])]; });
+      return out;
+    };
+    const merged = {
+      learned: [...new Set([...current.learned, ...imported.learned])],
+      favorites: [...new Set([...current.favorites, ...imported.favorites])],
+      understood: [...new Set([...current.understood, ...imported.understood])],
+      streak: Math.max(current.streak || 0, imported.streak || 0),
+      lastStudy: laterDateKey(current.lastStudy, imported.lastStudy),
+      dailyGoal: DB.dailyGoal,
+      dailyQueue: DB.dailyQueue,
+      dailyQueueDate: DB.dailyQueueDate,
+      dailyQueueDone: [...new Set([...current.dailyQueueDone, ...imported.dailyQueueDone])],
+      history: Object.assign({}, imported.history, current.history),
+      historyWords: mergeHW(imported.historyWords, current.historyWords),
+      srs: mergeSrsMaps(current.srs, imported.srs),
+      patternSrs: mergeSrsMaps(current.patternSrs, imported.patternSrs),
+      freqLearned: [...new Set([...current.freqLearned, ...imported.freqLearned])],
+      freqFavorites: [...new Set([...current.freqFavorites, ...imported.freqFavorites])],
+      freqSrs: mergeSrsMaps(current.freqSrs, imported.freqSrs),
+      freqRatingState: mergeFreqRatingStates(current.freqRatingState, imported.freqRatingState),
+      freqAttempts: mergeAttempts(current.freqAttempts, imported.freqAttempts),
+      freqDailyGoal: DB.freqDailyGoal,
+      freqDailyQueue: DB.freqDailyQueue,
+      freqDailyQueueDate: DB.freqDailyQueueDate,
+      freqDailyQueueDone: [...new Set([...current.freqDailyQueueDone, ...imported.freqDailyQueueDone])],
+      reviewPromptDate: DB.reviewPromptDate,
+      attempts: mergeAttempts(current.attempts, imported.attempts),
+      patternAttempts: mergeAttempts(current.patternAttempts, imported.patternAttempts),
+      settings: current.settings,
+    };
+    objToDB(merged);
+    save();
+    render();
+    showAppToast(`Imported ${merged.freqLearned.length} words, ${merged.learned.length} sentences`, true);
+  } catch (e) {
+    console.error('Import failed:', e);
+    showAppToast('Import failed. Check console for details.', false);
+  }
+}
+
 function historySentence(id) {
   return SENTENCES.find(s => s.id === id) || null;
 }
