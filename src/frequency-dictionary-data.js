@@ -133,7 +133,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "prp",
     "germanSentence": "Kann ich mit Karte zahlen?",
     "ipa": "mɪt",
-    "englishSentence": "Can I pay with a credit card?"
+    "englishSentence": "Can I pay by card?"
   },
   {
     "rank": 16,
@@ -165,7 +165,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 19,
     "german": "so",
-    "english": "so, such; so",
+    "english": "so; such",
     "pos": "adv; con",
     "germanSentence": "John ist immer so nett.",
     "ipa": "",
@@ -264,7 +264,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 30,
     "german": "noch",
-    "english": "yet; nor",
+    "english": "still; yet; nor",
     "pos": "adv; con",
     "germanSentence": "Ich will eigentlich noch kein Kind.",
     "ipa": "nɔχ",
@@ -363,7 +363,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 41,
     "german": "mal",
-    "english": "times",
+    "english": "once; sometimes; just",
     "pos": "adv",
     "germanSentence": "Jeder macht mal einen Fehler.",
     "ipa": "",
@@ -570,7 +570,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 64,
     "german": "los",
-    "english": "wrong; loose",
+    "english": "going on; wrong; loose",
     "pos": "adv; adj",
     "germanSentence": "Was war los mit deiner Mutter?",
     "ipa": "",
@@ -925,7 +925,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "prp",
     "germanSentence": "Ab Freitag soll es warm werden.",
     "ipa": "",
-    "englishSentence": "It's going to be hot from Friday on."
+    "englishSentence": "It's going to be warm from Friday onward."
   },
   {
     "rank": 104,
@@ -1022,7 +1022,7 @@ const FREQUENCY_DICTIONARY = [
     "german": "klar",
     "english": "clear; clearly",
     "pos": "adj; adv",
-    "germanSentence": "Ich frage mich, ob John klar ist, wie einsam ich bin.",
+    "germanSentence": "Ich frage mich, ob John erkennt, wie einsam ich bin.",
     "ipa": "klaɾ",
     "englishSentence": "I wonder if John realizes how lonely I am."
   },
@@ -1501,7 +1501,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv; con",
     "germanSentence": "Sonst gehe ich zur Konkurrenz.",
     "ipa": "zɔnst",
-    "englishSentence": "Otherwise, I'll go to the competition."
+    "englishSentence": "Otherwise, I'll go to a competitor."
   },
   {
     "rank": 168,
@@ -1573,7 +1573,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adj; adv",
     "germanSentence": "Das ist eine verdammt schlechte Wahl.",
     "ipa": "fɛʁdamt",
-    "englishSentence": "That's a damn bad choice."
+    "englishSentence": "That's a really bad choice."
   },
   {
     "rank": 176,
@@ -1704,7 +1704,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 190,
     "german": "dabei",
-    "english": "with it; there",
+    "english": "at it; in doing so; there",
     "pos": "cntr; adv",
     "germanSentence": "Ich hatte wirklich Spaß dabei.",
     "ipa": "",
@@ -2149,7 +2149,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Entschuldigung, aber darunter darf niemand schauen.",
     "ipa": "ʃɑoən",
-    "englishSentence": "Forgive me, but no one must look under there."
+    "englishSentence": "Sorry, but no one is allowed to look underneath."
   },
   {
     "rank": 240,
@@ -2253,7 +2253,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 251,
     "german": "Wagen",
-    "english": "car; dare",
+    "english": "car; vehicle",
     "pos": "M; vb2",
     "germanSentence": "Ich sagte dir doch, dass du im Wagen bleiben sollst!",
     "ipa": "vagən",
@@ -2523,7 +2523,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 281,
     "german": "schwer",
-    "english": "hard, heavy; hard",
+    "english": "difficult; hard; heavy",
     "pos": "adj; adv",
     "germanSentence": "Das ist schwer zu sagen.",
     "ipa": "ʃveɾ",
@@ -2604,7 +2604,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 290,
     "german": "Seite",
-    "english": "page, site",
+    "english": "page; side",
     "pos": "F",
     "germanSentence": "Auf Seite 25 finden Sie weitere Informationen.",
     "ipa": "zaetə",
@@ -2653,7 +2653,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv",
     "germanSentence": "John fragte Jane, wohin er den Sack mit Hundefutter stellen sollte.",
     "ipa": "vohɪn",
-    "englishSentence": "John asked Jane where she wanted him to put the bag of dog food."
+    "englishSentence": "John asked Jane where he should put the bag of dog food."
   },
   {
     "rank": 296,
@@ -2739,7 +2739,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 305,
     "german": "ziemlich",
-    "english": "quite; considerable",
+    "english": "quite; fairly; considerable",
     "pos": "adv; adj",
     "germanSentence": "Ich hielt es für ziemlich witzig.",
     "ipa": "tsimlɪç",
@@ -2963,8 +2963,8 @@ const FREQUENCY_DICTIONARY = [
   },
   {
     "rank": 330,
-    "german": "d(a)rauf",
-    "english": "on it",
+    "german": "drauf",
+    "english": "on it (colloquial)",
     "pos": "adv; cntr",
     "germanSentence": "Lass mich mal ein Auge drauf werfen.",
     "ipa": "t(a)ɾɑof",
@@ -3049,7 +3049,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv",
     "germanSentence": "Es ist bizarr, aber kaum unnatürlich.",
     "ipa": "",
-    "englishSentence": "It's grotesque, yes, but hardly unnatural."
+    "englishSentence": "It's bizarre, but hardly unnatural."
   },
   {
     "rank": 340,
@@ -3360,7 +3360,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 374,
     "german": "heiraten",
-    "english": "marry",
+    "english": "marry off",
     "pos": "vb",
     "germanSentence": "Ich hätte deinen Bruder heiraten sollen.",
     "ipa": "haeɾatən",
@@ -3409,7 +3409,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv",
     "germanSentence": "Ich möchte mit Ihnen sofort danach sprechen.",
     "ipa": "",
-    "englishSentence": "I want to speak to you straight after."
+    "englishSentence": "I want to speak to you immediately afterwards."
   },
   {
     "rank": 380,
@@ -3558,7 +3558,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 396,
     "german": "still",
-    "english": "quiet; quietly",
+    "english": "silent; quietly",
     "pos": "adj; adv",
     "germanSentence": "Sei still während des Kurses.",
     "ipa": "ʃtɪl",
@@ -3580,7 +3580,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb2",
     "germanSentence": "Zum Glück bist du da, um sie zu retten!",
     "ipa": "ɾɛtən",
-    "englishSentence": "Luckily, you're here to save them!"
+    "englishSentence": "Luckily, you're here to save her!"
   },
   {
     "rank": 399,
@@ -3598,7 +3598,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Die Farbe auf dem Stuhl, auf dem Sie sitzen, ist noch feucht.",
     "ipa": "zɪtsən",
-    "englishSentence": "The paint on the seat on which you are sitting is still wet."
+    "englishSentence": "The paint on the chair you are sitting on is still wet."
   },
   {
     "rank": 401,
@@ -3616,7 +3616,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M",
     "germanSentence": "Ich bin der Typ, der vor Leuten nervös wird, deshalb bin ich ein schlechter Redner.",
     "ipa": "",
-    "englishSentence": "I'm the type who gets nervous in front of people, so I'm bad at speech making."
+    "englishSentence": "I'm the type who gets nervous in front of people, so I'm bad at public speaking."
   },
   {
     "rank": 403,
@@ -3722,7 +3722,7 @@ const FREQUENCY_DICTIONARY = [
     "german": "verschwinden",
     "english": "disappear",
     "pos": "vb",
-    "germanSentence": "Verschwinden wir hier, ehe es zu spät ist!",
+    "germanSentence": "Verschwinden wir von hier, ehe es zu spät ist!",
     "ipa": "fɛʁʃvɪndən",
     "englishSentence": "Let's get out of here before it's too late."
   },
@@ -3940,7 +3940,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M; vb",
     "germanSentence": "Dieser Laden wird um neun Uhr geschlossen.",
     "ipa": "ladən",
-    "englishSentence": "This shop is closed at nine."
+    "englishSentence": "This shop closes at nine."
   },
   {
     "rank": 439,
@@ -4264,7 +4264,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv; con",
     "germanSentence": "Bitte unterlassen Sie das Rauchen, solange die Rauchverbotssymbole leuchten.",
     "ipa": "zolaŋə",
-    "englishSentence": "Please refrain from smoking, while the non-smoking signs are on."
+    "englishSentence": "Please refrain from smoking as long as the no-smoking signs are lit."
   },
   {
     "rank": 475,
@@ -4363,7 +4363,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv; adj",
     "germanSentence": "In ihrem Herzen rührte sich plötzlich Mitleid für das Kind.",
     "ipa": "pløtslɪç",
-    "englishSentence": "Pity was suddenly stirring in her heart for the child."
+    "englishSentence": "Suddenly, she felt pity for the child."
   },
   {
     "rank": 486,
@@ -4394,8 +4394,8 @@ const FREQUENCY_DICTIONARY = [
   },
   {
     "rank": 489,
-    "german": "(da)rüber",
-    "english": "over there; about it",
+    "german": "rüber",
+    "english": "over; across (colloquial)",
     "pos": "adv; cntr",
     "germanSentence": "Ich schicke John rüber zu Jane.",
     "ipa": "(da)ɾybəʁ",
@@ -4669,7 +4669,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Es ist ein optimaler Schutz bei Sonne und Regen.",
     "ipa": "zɔnə",
-    "englishSentence": "It's optimum protection against sun and rain."
+    "englishSentence": "It offers optimal protection from sun and rain."
   },
   {
     "rank": 520,
@@ -4687,7 +4687,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Wünschen Sie sich, Sie könnten in den Weltraum reisen?",
     "ipa": "ɾaezən",
-    "englishSentence": "Do you wish you could travel to space?"
+    "englishSentence": "Do you wish you could travel into space?"
   },
   {
     "rank": 522,
@@ -4849,7 +4849,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb; vbr",
     "germanSentence": "Ich will unsere Zahnprothesen nachts ins selbe Glas legen.",
     "ipa": "legən",
-    "englishSentence": "I want us to put our teeth in the same glass at night."
+    "englishSentence": "I want us to put our dentures in the same glass at night."
   },
   {
     "rank": 540,
@@ -5133,7 +5133,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 571,
     "german": "reich",
-    "english": "rich, empire",
+    "english": "rich; wealthy",
     "pos": "adj; N",
     "germanSentence": "Nur weil ein Mann reich ist, heißt das noch nicht, dass er auch glücklich ist.",
     "ipa": "ɾaeç",
@@ -5155,7 +5155,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "N",
     "germanSentence": "Du hast früher nie Opfer gespielt.",
     "ipa": "ɔpfəʁ",
-    "englishSentence": "I have never seen you play the victim."
+    "englishSentence": "You never used to play the victim."
   },
   {
     "rank": 574,
@@ -5187,7 +5187,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 577,
     "german": "Rücken",
-    "english": "back, move",
+    "english": "back",
     "pos": "M; vb",
     "germanSentence": "Wende mir nicht den Rücken zu.",
     "ipa": "ɾʏkən",
@@ -5358,7 +5358,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 596,
     "german": "Weise",
-    "english": "way; wise",
+    "english": "way; manner",
     "pos": "F; adj",
     "germanSentence": "Es ist ziemlich komisch auf eine furchtbare Weise.",
     "ipa": "vaezə",
@@ -5421,7 +5421,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 603,
     "german": "neben",
-    "english": "next; next to",
+    "english": "next to; beside",
     "pos": "adv; prp",
     "germanSentence": "Mein Hund schlief neben mir.",
     "ipa": "nebən",
@@ -5704,7 +5704,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "cntr; adv",
     "germanSentence": "Und du wirst großartig darin sein.",
     "ipa": "daɾɪn",
-    "englishSentence": "And you're going to be great in it."
+    "englishSentence": "And you're going to be great at it."
   },
   {
     "rank": 635,
@@ -5772,7 +5772,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 642,
     "german": "unbedingt",
-    "english": "necessarily; unconditional",
+    "english": "absolutely; really; necessarily",
     "pos": "adv; adj",
     "germanSentence": "John meinte, dass Jane das gar nicht unbedingt tun müsse.",
     "ipa": "ʊnbədɪŋt",
@@ -5846,7 +5846,7 @@ const FREQUENCY_DICTIONARY = [
     "german": "Lust",
     "english": "desire, pleasure",
     "pos": "F",
-    "germanSentence": "Ich habe keine Lust sie zu küssen.",
+    "germanSentence": "Ich habe keine Lust, sie zu küssen.",
     "ipa": "lʊst",
     "englishSentence": "I have no desire to kiss her."
   },
@@ -6073,7 +6073,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vbr; vb",
     "germanSentence": "Wir beraten Sie gerne und freuen uns auf Sie.",
     "ipa": "fɾɔøən",
-    "englishSentence": "We would be happy to advise you and look forward to hearing from you."
+    "englishSentence": "We would be happy to advise you and look forward to seeing you."
   },
   {
     "rank": 676,
@@ -6082,14 +6082,14 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb; vbr",
     "germanSentence": "Sag mir, wem diese Bücher gehören.",
     "ipa": "gəhøɾən",
-    "englishSentence": "Tell me whom these books belong to."
+    "englishSentence": "Tell me who these books belong to."
   },
   {
     "rank": 677,
     "german": "schwören",
     "english": "swear",
     "pos": "vb",
-    "germanSentence": "Ich musste schwören nichts zu sagen.",
+    "germanSentence": "Ich musste schwören, nichts zu sagen.",
     "ipa": "ʃvøɾən",
     "englishSentence": "I had to swear not to say anything."
   },
@@ -6190,7 +6190,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb2",
     "germanSentence": "John konnte sich nicht vorstellen, jemanden zu erschießen.",
     "ipa": "ɛʁʃissən",
-    "englishSentence": "John couldn't imagine himself shooting anyone."
+    "englishSentence": "John couldn't imagine himself shooting anyone dead."
   },
   {
     "rank": 689,
@@ -6217,7 +6217,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M",
     "germanSentence": "Ein solcher Schuh kann bei nassem Untergrund rutschig sein.",
     "ipa": "ʃu",
-    "englishSentence": "This kind of shoe is apt to slip on wet ground."
+    "englishSentence": "This kind of shoe can be slippery on wet ground."
   },
   {
     "rank": 692,
@@ -6289,7 +6289,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Ich war vom Auftritt der Gruppe begeistert.",
     "ipa": "gɾʊpə",
-    "englishSentence": "I was enchanted by the performance of the group."
+    "englishSentence": "I was delighted by the group's performance."
   },
   {
     "rank": 700,
@@ -6465,7 +6465,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 719,
     "german": "worauf",
-    "english": "at what",
+    "english": "what ... for; for what",
     "pos": "cntr; adv",
     "germanSentence": "Das ist genau, worauf er wartet.",
     "ipa": "voɾɑof",
@@ -6649,7 +6649,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M",
     "germanSentence": "Ich halte Kontakt zwischen John und den Kunden.",
     "ipa": "kɔntakt",
-    "englishSentence": "I keep contact between John and the customers."
+    "englishSentence": "I act as a liaison between John and the customers."
   },
   {
     "rank": 740,
@@ -6802,7 +6802,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Sie werden das Recht zu wählen erhalten.",
     "ipa": "ɛʁhaltən",
-    "englishSentence": "You will get the right to choose."
+    "englishSentence": "You will get the right to vote."
   },
   {
     "rank": 757,
@@ -7013,8 +7013,8 @@ const FREQUENCY_DICTIONARY = [
   },
   {
     "rank": 780,
-    "german": "(da)rauf",
-    "english": "on it; up (coll)",
+    "german": "rauf",
+    "english": "up (colloquial)",
     "pos": "cntr; adv",
     "germanSentence": "Danke, ich fahre jetzt rauf.",
     "ipa": "(da)ɾɑof",
@@ -7045,7 +7045,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Glaube nichts von dem, was du hörst, und nur die Hälfte von dem, was du siehst.",
     "ipa": "hɛlftə",
-    "englishSentence": "Believe none of what you hear and a half of what you see."
+    "englishSentence": "Believe nothing you hear and only half of what you see."
   },
   {
     "rank": 784,
@@ -7144,7 +7144,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M",
     "germanSentence": "Ich bin bereit einen Schritt vorwärts zu machen.",
     "ipa": "ʃɾɪt",
-    "englishSentence": "I'm ready to take a step to the future."
+    "englishSentence": "I'm ready to take a step forward."
   },
   {
     "rank": 795,
@@ -7351,7 +7351,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "cntr",
     "germanSentence": "Ich kann nicht verstehen, worüber sie sich beschweren sollte.",
     "ipa": "voɾybəʁ",
-    "englishSentence": "I can't understand what she has to complain about."
+    "englishSentence": "I can't understand what she could complain about."
   },
   {
     "rank": 818,
@@ -7378,7 +7378,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb; vbr",
     "germanSentence": "Wir können uns Misstrauen nicht leisten.",
     "ipa": "laestən",
-    "englishSentence": "We can't afford not to trust each other."
+    "englishSentence": "We can't afford mistrust."
   },
   {
     "rank": 821,
@@ -7486,7 +7486,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adj; N",
     "germanSentence": "Deutsche Sprache – schwere Sprache, sagen die Deutschen gerne, aber eigentlich ist Deutsch gar nicht so schwer.",
     "ipa": "dɔøtʃ",
-    "englishSentence": "German language – difficult language, the Germans like to say, but actually German isn't that hard."
+    "englishSentence": "“German is a difficult language,” Germans like to say, but in fact German is not that hard."
   },
   {
     "rank": 833,
@@ -7720,7 +7720,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adj",
     "germanSentence": "Sie ist sogar einverstanden, dass du es schreibst.",
     "ipa": "aenfɛʁʃtandən",
-    "englishSentence": "She even agreed that you would write it."
+    "englishSentence": "She is even okay with you writing it."
   },
   {
     "rank": 859,
@@ -7752,7 +7752,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 862,
     "german": "übernehmen",
-    "english": "take; overdo",
+    "english": "take on; assume; accept",
     "pos": "vb; vbr",
     "germanSentence": "Mütter müssen jedoch keine Verantwortung dafür übernehmen.",
     "ipa": "ybəʁnemən",
@@ -7810,7 +7810,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "adv",
     "germanSentence": "Und wir müssen bald dorthin zurück.",
     "ipa": "dɔɾthɪn",
-    "englishSentence": "And we need to get back in there soon."
+    "englishSentence": "And we need to get back there soon."
   },
   {
     "rank": 869,
@@ -7835,7 +7835,7 @@ const FREQUENCY_DICTIONARY = [
     "german": "beruhigen",
     "english": "calm",
     "pos": "vb2",
-    "germanSentence": "Sie müssen sich entspannen und einfach beruhigen.",
+    "germanSentence": "Sie müssen sich entspannen und sich einfach beruhigen.",
     "ipa": "bəɾuɪgən",
     "englishSentence": "You need to relax and just calm down."
   },
@@ -8026,7 +8026,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Ich kann bereits das Schweinekotelett schmecken.",
     "ipa": "ʃmɛkən",
-    "englishSentence": "I can already taste those pork chops."
+    "englishSentence": "I can already taste the pork chop."
   },
   {
     "rank": 893,
@@ -8048,8 +8048,8 @@ const FREQUENCY_DICTIONARY = [
   },
   {
     "rank": 895,
-    "german": "d(a)rüber",
-    "english": "about it",
+    "german": "drüber",
+    "english": "about it (colloquial)",
     "pos": "cntr",
     "germanSentence": "Die Kinder haben drüber geredet.",
     "ipa": "t(a)ɾybəʁ",
@@ -8107,7 +8107,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "M",
     "germanSentence": "Der Untertitel des ursprünglichen Angebots wurde entfernt.",
     "ipa": "ʊntəʁtitəl",
-    "englishSentence": "Your subtitle from the original listing has been removed."
+    "englishSentence": "The subtitle of the original offer has been removed."
   },
   {
     "rank": 902,
@@ -8211,7 +8211,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 913,
     "german": "Thema",
-    "english": "theme",
+    "english": "topic; subject; theme",
     "pos": "N",
     "germanSentence": "In der Unterhaltung kam ein neues Thema auf.",
     "ipa": "",
@@ -8296,7 +8296,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Diese Woche war eine wunderbare Erfahrung.",
     "ipa": "ɛʁfaɾʊŋ",
-    "englishSentence": "This week has been an amazing experience."
+    "englishSentence": "This week was an amazing experience."
   },
   {
     "rank": 923,
@@ -8634,7 +8634,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 960,
     "german": "Plan",
-    "english": "plan; plain",
+    "english": "plan",
     "pos": "M; adj",
     "germanSentence": "Ich bin absolut gegen den Plan.",
     "ipa": "",
@@ -8706,7 +8706,7 @@ const FREQUENCY_DICTIONARY = [
   {
     "rank": 968,
     "german": "Verhalten",
-    "english": "behavior; behave; cautious",
+    "english": "behavior; conduct",
     "pos": "N; vbr; adj",
     "germanSentence": "Jedes auffällige Verhalten wird gemeldet und untersucht.",
     "ipa": "fɛʁhaltən",
@@ -8737,7 +8737,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Man kann dadurch Energie sparen, dass man beim Verlassen eines Zimmers das Licht ausschaltet.",
     "ipa": "enɛɾgi",
-    "englishSentence": "You can save energy by turning off the lights when you leave a room."
+    "englishSentence": "You can save energy by turning off the light when you leave a room."
   },
   {
     "rank": 972,
@@ -8755,7 +8755,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "F",
     "germanSentence": "Der Hausherr beschäftigte sich schon früh mit Kunst.",
     "ipa": "kʊnst",
-    "englishSentence": "The landlord already got involved with art quite early on."
+    "englishSentence": "The head of the household took an interest in art early on."
   },
   {
     "rank": 974,
@@ -8782,7 +8782,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Ich will nur den Blutfluss stoppen.",
     "ipa": "ʃtɔppən",
-    "englishSentence": "I only want to stop the loss of blood."
+    "englishSentence": "I only want to stop the bleeding."
   },
   {
     "rank": 977,
@@ -8969,7 +8969,7 @@ const FREQUENCY_DICTIONARY = [
     "german": "Kurs",
     "english": "course",
     "pos": "M",
-    "germanSentence": "Der Kapitän des Schiffes entschied sich den Kurs zu ändern.",
+    "germanSentence": "Der Kapitän des Schiffes entschied sich, den Kurs zu ändern.",
     "ipa": "kʊɾs",
     "englishSentence": "The captain of the ship decided to change course."
   },
@@ -8980,7 +8980,7 @@ const FREQUENCY_DICTIONARY = [
     "pos": "vb",
     "germanSentence": "Wenn wir anhalten, steig aus.",
     "ipa": "anhaltən",
-    "englishSentence": "When we stop, I want you to get out of the car."
+    "englishSentence": "When we stop, get out."
   },
   {
     "rank": 999,
