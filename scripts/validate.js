@@ -71,26 +71,20 @@ const source = [
   read('src/content.js'),
   read('src/learning.js'),
   read('src/frequency-dictionary-data.js'),
-  'globalThis.__dd = { TOPICS, PAT_CATS, PATTERNS, PATTERN_BY_ID, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY };'
+  'globalThis.__dd = { TOPICS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY };'
 ].join('\n');
 
 const sandbox = { console };
 vm.createContext(sandbox);
 vm.runInContext(source, sandbox, { filename: 'validate-content.vm.js' });
 
-const { TOPICS, PAT_CATS, PATTERNS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY } = sandbox.__dd;
+const { TOPICS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY } = sandbox.__dd;
 const topicIds = new Set(TOPICS.map(t => t.id));
-const catIds = new Set(PAT_CATS.map(c => c.id));
-const allPatternIds = new Set(PATTERNS.map(p => p.id));
-const activePatterns = PATTERNS.filter(p => p.status !== 'hidden');
-const activePatternIds = new Set(activePatterns.map(p => p.id));
-const hiddenPatternIds = new Set(PATTERNS.filter(p => p.status === 'hidden').map(p => p.id));
 const sentenceIds = new Set();
 const germanSentences = new Map();
 
 record(SENTENCES.length === 216, `expected 216 sentences, found ${SENTENCES.length}`);
 record(SENTENCE_SEEDS.length === 216, `expected 216 sentence seeds, found ${SENTENCE_SEEDS.length}`);
-record(activePatterns.length === 50, `expected 50 active patterns, found ${activePatterns.length}`);
 
 for (const [topicId, expected] of Object.entries(topicTargets)) {
   const actual = SENTENCES.filter(s => s.t === topicId).length;
@@ -116,15 +110,6 @@ for (const sentence of SENTENCES) {
   record(['A1', 'A2'].includes(sentence.lv), `${sentence.id} invalid level ${sentence.lv}`);
   record(!trivialGreeting.test(sentence.de) && !trivialGreeting.test(sentence.en), `${sentence.id} is trivial greeting/well-being filler`);
 
-  if (!sentence.fixed && (!Array.isArray(sentence.patternIds) || sentence.patternIds.length === 0)) {
-    errors.push(`${sentence.id} must have patternIds or fixed:true`);
-  }
-
-  for (const patternId of sentence.patternIds || []) {
-    record(allPatternIds.has(patternId), `${sentence.id} invalid patternId ${patternId}`);
-    record(!hiddenPatternIds.has(patternId), `${sentence.id} references hidden pattern ${patternId}`);
-  }
-
   const learn = sentence.learn;
   if (!learn) {
     errors.push(`${sentence.id} missing learn object`);
@@ -146,21 +131,6 @@ for (const sentence of SENTENCES) {
 
 for (const topic of TOPICS) {
   record(Object.prototype.hasOwnProperty.call(topicTargets, topic.id), `unexpected topic ${topic.id}`);
-}
-
-for (const pattern of PATTERNS) {
-  record(catIds.has(pattern.cat), `${pattern.id} invalid category ${pattern.cat}`);
-  record(Boolean(pattern.template && pattern.meaning && pattern.grammar && pattern.watchOut), `${pattern.id} missing required pattern text`);
-  record(Array.isArray(pattern.examples) && pattern.examples.length >= 2, `${pattern.id} needs at least two examples`);
-  record(['A1', 'A2'].includes(pattern.level), `${pattern.id} invalid pattern level ${pattern.level}`);
-  record(Number.isFinite(pattern.priority), `${pattern.id} missing numeric priority`);
-  record(['active', 'hidden'].includes(pattern.status), `${pattern.id} invalid status ${pattern.status}`);
-  record(Boolean(pattern.groupId), `${pattern.id} missing groupId`);
-}
-
-for (const pattern of activePatterns) {
-  const referenced = SENTENCES.some(sentence => (sentence.patternIds || []).includes(pattern.id));
-  record(referenced, `active pattern ${pattern.id} is not referenced`);
 }
 
 // ─── Frequency Dictionary ─────────────────────
@@ -189,42 +159,6 @@ for (const entry of FREQUENCY_DICTIONARY) {
 const sortedRanks = [...freqRanks].sort((a, b) => a - b);
 for (let i = 1; i <= 2525; i++) {
   if (!freqRanks.has(i)) errors.push(`frequency dictionary missing rank ${i}`);
-}
-
-const sentencePatternContracts = [
-  ['ask_availability', s => /\bfreie(?:n|r|s)? Termin\b/.test(s.de), 'should only tag available-appointment sentences'],
-  ['symptom_since', s => /\bseit\b/i.test(s.de), 'should include seit duration wording'],
-  ['call_about', s => /\brufe\b.*\bwegen\b.*\ban\b/i.test(s.de), 'should match calling-about wording'],
-  ['permission', s => /^Darf ich\b/.test(s.de), 'should use Darf ich permission wording'],
-  ['deadline_until', s => /^Bis wann\b/.test(s.de) && /\bmuss ich\b/.test(s.de), 'should ask by when I must do something'],
-  ['problem_with', s => /\bProblem mit\b/.test(s.de), 'should use Problem mit wording'],
-  ['submit_send', s => /\bhabe\b.*\b(eingereicht|geschickt|hochgeladen)\b/i.test(s.de), 'should describe submitting or sending'],
-  ['want_appointment', s => /^Ich möchte\b.*\bTermin\b/.test(s.de), 'should request making or booking an appointment'],
-  ['unable_work', s => /^Ich bin(?: leider)? krank und\b/.test(s.de), 'should use sick-and-unable wording'],
-  ['want_polite_action', s => /^Ich möchte\b/.test(s.de), 'should use Ich möchte polite request wording'],
-  ['not_working', s => /\bfunktioniert\b.*\bnicht\b/.test(s.de), 'should use funktioniert nicht wording'],
-  ['work_clarify', s => /^Können wir kurz klären,/.test(s.de), 'should use kurz klären wording'],
-  ['let_know', s => /\bBescheid\b/.test(s.de), 'should use Bescheid wording'],
-  ['looking_for', s => /^Ich suche\b/.test(s.de), 'should use Ich suche wording'],
-  ['exchange_return', s => /^Ich möchte\b.*\b(umtauschen|zurückgeben)\b/.test(s.de), 'should use Ich möchte exchange/return wording'],
-  ['urgent_help', s => /^Ich brauche dringend\b/.test(s.de), 'should use dringend urgent-help wording'],
-  ['give_name', s => /\b(heiße|Name)\b/.test(s.de), 'should give a name'],
-  ['give_address', s => /\bAdresse\b/.test(s.de) || /\bwohne\b/.test(s.de), 'should give an address'],
-  ['give_phone', s => /\bTelefonnummer\b/.test(s.de) || /\bNummer\b/.test(s.de), 'should give a phone number'],
-  ['need_moment', s => /\bMoment\b/.test(s.de), 'should ask for a moment'],
-  ['spell_detail', s => /\bbuchstabieren\b|\bBuchstabiere\b/i.test(s.de), 'should ask to spell'],
-  ['ask_urgent', s => /\bdringend\b/.test(s.de), 'should ask whether it is urgent'],
-  ['ask_location', s => /^Wo\b/.test(s.de), 'should ask where something is'],
-  ['received_item', s => /\bbekommen\b|\berhalten\b/.test(s.de), 'should say an item was received'],
-  ['lost_or_forgot', s => /\bverloren\b|\bvergessen\b/.test(s.de), 'should describe something lost or forgotten'],
-];
-
-for (const [patternId, predicate, message] of sentencePatternContracts) {
-  for (const sentence of SENTENCES) {
-    if ((sentence.patternIds || []).includes(patternId) && !predicate(sentence)) {
-      errors.push(`${sentence.id} misleading patternId ${patternId}: ${message}`);
-    }
-  }
 }
 
 const requiredVocabCards = {
@@ -274,20 +208,14 @@ const levelCounts = SENTENCES.reduce((acc, s) => {
   acc[s.lv] = (acc[s.lv] || 0) + 1;
   return acc;
 }, {});
-const activePatternReferences = Object.fromEntries(activePatterns.map(pattern => [
-  pattern.id,
-  SENTENCES.filter(sentence => (sentence.patternIds || []).includes(pattern.id)).length,
-]));
 
 const report = {
   sentences: SENTENCES.length,
   seeds: SENTENCE_SEEDS.length,
   topics: TOPICS.length,
-  activePatterns: activePatterns.length,
   formalInformal: formalInformal.length,
   topicCounts,
   levelCounts,
-  activePatternReferences,
   errors,
 };
 

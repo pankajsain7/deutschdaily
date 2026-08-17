@@ -9,16 +9,16 @@ const source = [
   read('src/content.js'),
   read('src/learning.js'),
   read('src/frequency-dictionary-data.js'),
-  'globalThis.__data = { SENTENCES, PATTERNS, TOPICS, FREQUENCY_DICTIONARY };'
+  'globalThis.__data = { SENTENCES, TOPICS, FREQUENCY_DICTIONARY };'
 ].join('\n');
 
 const sandbox = { console };
 vm.createContext(sandbox);
 vm.runInContext(source, sandbox);
 
-const { SENTENCES, PATTERNS, TOPICS, FREQUENCY_DICTIONARY } = sandbox.__data;
+const { SENTENCES, TOPICS, FREQUENCY_DICTIONARY } = sandbox.__data;
 
-console.log(`Loaded ${SENTENCES.length} sentences, ${PATTERNS.length} patterns, ${TOPICS.length} topics, ${FREQUENCY_DICTIONARY.length} freq words.`);
+console.log(`Loaded ${SENTENCES.length} sentences, ${TOPICS.length} topics, ${FREQUENCY_DICTIONARY.length} freq words.`);
 
 const issues = [];
 
@@ -49,18 +49,7 @@ SENTENCES.forEach((s) => {
   }
 });
 
-// 2. Audit PATTERNS
-PATTERNS.forEach(p => {
-  if (p.examples) {
-    p.examples.forEach((ex, exIdx) => {
-      if (!ex.de || !ex.en) issues.push({ type: 'pattern_example_empty', id: p.id, exIdx, ex });
-      if (!/[.?!]$/.test(ex.de.trim())) issues.push({ type: 'pattern_ex_de_no_punct', id: p.id, text: ex.de });
-      if (!/[.?!]$/.test(ex.en.trim())) issues.push({ type: 'pattern_ex_en_no_punct', id: p.id, text: ex.en });
-    });
-  }
-});
-
-// 3. Audit FREQUENCY_DICTIONARY
+// 2. Audit FREQUENCY_DICTIONARY
 FREQUENCY_DICTIONARY.forEach(f => {
   // Check empty fields
   if (!f.german || !f.english || !f.germanSentence || !f.englishSentence) {

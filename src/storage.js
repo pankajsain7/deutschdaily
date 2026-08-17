@@ -19,7 +19,6 @@ let DB = {
   todayTab: 'vocab',
   learned: new Set(),
   favorites: new Set(),
-  understood: new Set(),
   streak: 0,
   lastStudy: null,
   dailyGoal: 10,
@@ -29,7 +28,6 @@ let DB = {
   history: {},
   historyWords: {},
   srs: {},
-  patternSrs: {},
   freqLearned: new Set(),
   freqFavorites: new Set(),
   freqSrs: {},
@@ -41,12 +39,10 @@ let DB = {
   freqDailyQueueDone: new Set(),
   reviewPromptDate: null,
   attempts: [],
-  patternAttempts: [],
   settings: { ...DEFAULT_SETTINGS },
 };
 
 function validSentenceIdSet() { return new Set(SENTENCES.map(s => s.id)); }
-function validPatternIdSet() { return new Set(PATTERNS.map(p => p.id)); }
 function validFrequencyRankSet() { return new Set(Array.from({ length: FREQUENCY_DICTIONARY_SIZE }, (_, index) => String(index + 1))); }
 
 function dateKey(date = new Date()) {
@@ -147,9 +143,6 @@ function normalizeSrs(value, validIds) {
   });
   return out;
 }
-function normalizePatternSrs(value, validIds) {
-  return normalizeSrs(value, validIds);
-}
 function normalizeAttemptDirection(direction) {
   return ['de2en', 'en2de', 'type'].includes(direction) ? direction : 'de2en';
 }
@@ -165,21 +158,6 @@ function normalizeAttempts(value, validIds) {
       direction,
       result: ['got', 'again', 'skip', 'manual'].includes(raw.result) ? raw.result : 'again',
       topic: typeof raw.topic === 'string' ? raw.topic : '',
-      patternIds: Array.isArray(raw.patternIds) ? raw.patternIds.map(String).filter(Boolean).slice(0, 6) : [],
-      wasDue: Boolean(raw.wasDue),
-      intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
-      intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
-    };
-  }).filter(Boolean).slice(-1000);
-}
-function normalizePatternAttempts(value, validIds) {
-  if (!Array.isArray(value)) return [];
-  return value.map(raw => {
-    if (!raw || typeof raw !== 'object' || !validIds.has(String(raw.id))) return null;
-    return {
-      id: String(raw.id),
-      date: normalizeDateKey(raw.date) || today(),
-      result: raw.result === 'got' || raw.result === 'again' || raw.result === 'skip' ? raw.result : 'again',
       wasDue: Boolean(raw.wasDue),
       intervalBefore: clampNumber(raw.intervalBefore, 0, 3650, 0),
       intervalAfter: clampNumber(raw.intervalAfter, 0, 3650, 0),
@@ -232,7 +210,6 @@ function normalizeSettings(value) {
 }
 function normalizeDb(raw = {}) {
   const validSentenceIds = validSentenceIdSet();
-  const validPatternIds = validPatternIdSet();
   const validFreqIds = validFrequencyRankSet();
   const safe = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
   const learned = uniqueValidIds(safe.learned, validSentenceIds);
@@ -262,7 +239,6 @@ function normalizeDb(raw = {}) {
     todayTab: safe.todayTab === 'sentences' ? 'sentences' : 'vocab',
     learned: new Set(learned),
     favorites: new Set(uniqueValidIds(safe.favorites, validSentenceIds)),
-    understood: new Set(uniqueValidIds(safe.understood, validPatternIds)),
     streak: clampNumber(safe.streak, 0, 9999, 0),
     lastStudy: normalizeDateKey(safe.lastStudy),
     dailyGoal: clampNumber(safe.dailyGoal, 1, 50, 10),
@@ -272,7 +248,6 @@ function normalizeDb(raw = {}) {
     history,
     historyWords,
     srs: normalizeSrs(safe.srs, validSentenceIds),
-    patternSrs: normalizePatternSrs(safe.patternSrs, validPatternIds),
     freqLearned: new Set(uniqueValidIds(safe.freqLearned, validFreqIds)),
     freqFavorites: new Set(uniqueValidIds(safe.freqFavorites, validFreqIds)),
     freqSrs: normalizeSrs(safe.freqSrs, validFreqIds),
@@ -289,7 +264,6 @@ function normalizeDb(raw = {}) {
       : []),
     reviewPromptDate: normalizeDateKey(safe.reviewPromptDate),
     attempts: normalizeAttempts(safe.attempts, validSentenceIds),
-    patternAttempts: normalizePatternAttempts(safe.patternAttempts, validPatternIds),
     settings: normalizeSettings(safe.settings),
   };
 
@@ -298,9 +272,6 @@ function normalizeDb(raw = {}) {
   });
   normalized.learned.forEach(id => {
     if (!normalized.srs[id]) normalized.srs[id] = initialSrsState();
-  });
-  normalized.understood.forEach(id => {
-    if (!normalized.patternSrs[id]) normalized.patternSrs[id] = initialSrsState();
   });
   Object.keys(normalized.freqSrs).forEach(id => {
     if (!normalized.freqLearned.has(id)) delete normalized.freqSrs[id];
@@ -317,7 +288,6 @@ function dbToObj() {
     todayTab: DB.todayTab || 'vocab',
     learned: [...DB.learned],
     favorites: [...DB.favorites],
-    understood: [...DB.understood],
     streak: DB.streak,
     lastStudy: DB.lastStudy,
     dailyGoal: DB.dailyGoal,
@@ -327,7 +297,6 @@ function dbToObj() {
     history: DB.history,
     historyWords: DB.historyWords,
     srs: DB.srs,
-    patternSrs: DB.patternSrs,
     freqLearned: [...DB.freqLearned],
     freqFavorites: [...DB.freqFavorites],
     freqSrs: DB.freqSrs,
@@ -339,7 +308,6 @@ function dbToObj() {
     freqDailyQueueDone: [...DB.freqDailyQueueDone],
     reviewPromptDate: DB.reviewPromptDate,
     attempts: DB.attempts,
-    patternAttempts: DB.patternAttempts,
     settings: DB.settings,
   };
 }
@@ -529,36 +497,10 @@ function srsSchedule(id, gotIt) {
   save();
   return { intervalBefore: before, intervalAfter: card.interval, wasDue };
 }
-function schedulePattern(id, gotIt) {
-  const isNew = !DB.patternSrs[id];
-  if (isNew) DB.patternSrs[id] = { interval: 0, ease: 2.5, level: 0, nextReview: null, lastReview: null };
-  const card = DB.patternSrs[id];
-  const before = card.interval || 0;
-  const wasDue = Boolean(card.nextReview && card.nextReview <= today());
-  card.lastReview = today();
-  card.ease = clampNumber(card.ease, 1.3, 5, 2.5);
-  if (gotIt) {
-    if (before <= 0) card.interval = FIRST_REVIEW_DAYS;
-    else if (before < 7) card.interval = 7;
-    else card.interval = Math.min(3650, Math.round(before * card.ease));
-  } else {
-    card.interval = 1;
-    card.ease = Math.max(1.3, card.ease - 0.2);
-  }
-  card.level = srsLevelFromInterval(card.interval);
-  card.nextReview = addDaysKey(card.interval);
-  return { intervalBefore: before, intervalAfter: card.interval, wasDue };
-}
 function getSrsReviewIds() {
   const td = today();
   return Object.entries(DB.srs)
     .filter(([id, data]) => DB.learned.has(id) && data.nextReview && data.nextReview <= td)
-    .map(([id]) => id);
-}
-function getPatternReviewIds() {
-  const td = today();
-  return Object.entries(DB.patternSrs)
-    .filter(([id, data]) => validPatternIdSet().has(id) && data.nextReview && data.nextReview <= td)
     .map(([id]) => id);
 }
 function getSrsLevel(id) { return (DB.srs[id] || {}).level || 0; }
@@ -600,17 +542,11 @@ function recordAttempt({ id, result, mode, direction, sentence, intervalBefore =
     direction: normalizeAttemptDirection(direction),
     result,
     topic: sentence ? sentence.t : '',
-    patternIds: sentence && Array.isArray(sentence.patternIds) ? sentence.patternIds : [],
     wasDue,
     intervalBefore,
     intervalAfter,
   });
   if (DB.attempts.length > 1000) DB.attempts = DB.attempts.slice(-1000);
-}
-function recordPatternAttempt({ id, result, intervalBefore = 0, intervalAfter = 0, wasDue = false }) {
-  if (!validPatternIdSet().has(id)) return;
-  DB.patternAttempts.push({ id, date: today(), result, wasDue, intervalBefore, intervalAfter });
-  if (DB.patternAttempts.length > 1000) DB.patternAttempts = DB.patternAttempts.slice(-1000);
 }
 function blankSrsState() {
   return { interval: 0, ease: 2.5, level: 0, lapses: 0, nextReview: null, lastReview: null };

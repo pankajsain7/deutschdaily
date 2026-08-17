@@ -27,16 +27,11 @@ const source = [
     ensureDailyQueue,
     markSentenceLearned,
     srsSchedule,
-    schedulePattern,
     getSrsReviewIds,
-    getPatternReviewIds,
     practiceAnswer,
     practiceNext,
     startPractice,
     setPracticeDir,
-    startPatternPractice,
-    patternPracticeAnswer,
-    patternPracticeNext,
     renderKursplan,
     setPracticeState: value => { P = value; },
     getPracticeState: () => P,
@@ -44,8 +39,6 @@ const source = [
     stateFromUrl,
     urlFromState,
     applyUrlState,
-    normalizePatternFilter,
-    patternsForFilter,
     renderRevealDetails,
     applyImport,
     mergeAttempts,
@@ -82,8 +75,6 @@ const source = [
     frequencyPracticeReveal,
     practiceReveal,
     practicePrev,
-    patternPracticeReveal,
-    patternPracticePrev,
     getFreqLeechIds,
     getNewFreqPool,
     shouldPromptReview,
@@ -91,7 +82,6 @@ const source = [
     renderPracticeHub,
     mergeFreqRatingStates,
     getFrequencyPracticeState: () => FP,
-    getPatternPracticeState: () => PP,
   };`
 ].join('\n');
 
@@ -253,10 +243,7 @@ assert.strictEqual(practiceState.got, 1, 'requeued miss can be answered and scor
 assert.strictEqual(practiceState.answered['1'], 'got', 'requeued queue position is tracked independently');
 assert(t.DB().learned.has('un1'), 'correct retry marks the sentence learned');
 
-reset({});
-const firstPattern = t.schedulePattern('would_possible', true);
-assert.strictEqual(firstPattern.intervalBefore, 0, 'new pattern SRS starts from interval zero');
-assert.strictEqual(t.DB().patternSrs.would_possible.interval, 3, 'first understood pattern uses the first-review interval');
+
 
 reset({
   freqDailyGoal: 5,
@@ -350,11 +337,7 @@ const sameDayLongSrs = { interval: 8, ease: 2.5, level: 2, nextReview: t.addDays
 assert.strictEqual(t.mergeSrsMaps({ un1: sameDayShortSrs }, { un1: sameDayLongSrs }).un1.interval, 8, 'same-day SRS merge keeps the more advanced state');
 assert.strictEqual(t.mergeSrsMaps({ un1: sameDayLongSrs }, { un1: sameDayShortSrs }).un1.interval, 8, 'same-day SRS merge is independent of import direction');
 
-reset({
-  patternSrs: { would_possible: { interval: 1, ease: 2.5, level: 0, nextReview: t.today(), lastReview: t.today() } },
-  understood: [],
-});
-assert.strictEqual(JSON.stringify(t.getPatternReviewIds()), JSON.stringify(['would_possible']), 'failed patterns with SRS stay eligible for review');
+
 
 clearStore();
 store.dd_v4 = '{bad json';
@@ -413,23 +396,12 @@ assert.strictEqual(browseState.view, 'browse', 'browse URL state should parse vi
 assert.strictEqual(browseState.topicId, 'health', 'browse URL state should parse topic');
 assert.strictEqual(browseState.filter, 'unlearned', 'browse URL state should parse filter');
 
-const patternUrl = t.urlFromState({ view: 'patterns', patFilter: 'understood' });
-assert.strictEqual(patternUrl, '/DEDaily.html?view=patterns&filter=understood', 'pattern URL should serialize filter when non-default');
+const legacyPatternUrl = t.urlFromState({ view: 'patterns' });
+assert.strictEqual(legacyPatternUrl, '/DEDaily.html?view=browse', 'patterns view normalizes to browse URL');
 const practiceUrl = t.urlFromState({ view: 'practice' });
 assert.strictEqual(practiceUrl, '/DEDaily.html?view=practice', 'practice URL should serialize the view');
-assert.strictEqual(t.normalizePatternFilter('all'), 'all', 'known pattern filters are preserved');
-assert.strictEqual(t.normalizePatternFilter('new'), 'new', 'new pattern filter is supported');
-assert.strictEqual(t.normalizePatternFilter('learning'), 'new', 'legacy learning filter normalizes to new');
-assert.strictEqual(t.normalizePatternFilter('understood'), 'understood', 'understood filter is supported');
-
-reset({ understood: ['would_possible'] });
-assert(!t.patternsForFilter('new').some(pattern => pattern.id === 'would_possible'), 'New excludes understood patterns');
-assert(t.patternsForFilter('understood').some(pattern => pattern.id === 'would_possible'), 'Understood lists understood patterns');
-assert(t.patternsForFilter('all').some(pattern => pattern.id === 'would_possible'), 'All includes understood patterns');
-
 t.applyUrlState('http://localhost/DEDaily.html?view=patterns');
-assert.strictEqual(t.getViewState().view, 'patterns', 'patterns URL opens Patterns tab');
-assert.strictEqual(t.getViewState().patFilter, 'new', 'Patterns tab defaults to New');
+assert.strictEqual(t.getViewState().view, 'browse', 'legacy patterns URL falls back to browse view');
 
 t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=learned');
 assert.strictEqual(t.getViewState().view, 'saved', 'library URL opens Library tab');
@@ -739,20 +711,7 @@ assert.strictEqual(t.getPracticeState().idx, 0, 'sentence goes back on prev');
 t.practiceNext();
 assert.strictEqual(t.getPracticeState().idx, 1, 'sentence advances on next since sentence 0 was already rated');
 
-t.startPatternPractice({ ids: ['polite_request_modal', 'ask_meaning'] });
-assert.strictEqual(t.getPatternPracticeState().idx, 0, 'starts at pattern 0');
-t.patternPracticeNext();
-assert.strictEqual(t.getPatternPracticeState().idx, 0, 'pattern does not advance on next without rating');
-t.patternPracticeReveal();
-assert.strictEqual(t.getPatternPracticeState().revealed, true, 'patternPracticeReveal unhides pattern card');
-t.patternPracticeReveal();
-assert.strictEqual(t.getPatternPracticeState().revealed, false, 'patternPracticeReveal hides pattern card on second call');
-t.patternPracticeAnswer(true);
-assert.strictEqual(t.getPatternPracticeState().idx, 1, 'advances to pattern 1 after rating');
-t.patternPracticePrev();
-assert.strictEqual(t.getPatternPracticeState().idx, 0, 'pattern goes back on prev');
-t.patternPracticeNext();
-assert.strictEqual(t.getPatternPracticeState().idx, 1, 'pattern advances on next since pattern 0 was already rated');
+
 
 // --- Previous Backups & Cross-Device Sync Tests ---
 const previousBackups = t.getPreviousBackups();
@@ -768,7 +727,6 @@ t.objToDB(latest.data);
 const restoredDb = t.DB();
 assert.strictEqual(restoredDb.freqLearned.size, 450, 'restored DB has 450 vocab items');
 assert.strictEqual(restoredDb.learned.size, 12, 'restored DB has 12 sentences');
-assert.strictEqual(restoredDb.understood.size, 6, 'restored DB has 6 patterns');
 assert.strictEqual(restoredDb.streak, 3, 'restored DB has streak 3');
 assert.strictEqual(restoredDb.lastStudy, '2026-08-16', 'restored DB lastStudy is 2026-08-16');
 assert.strictEqual(restoredDb.freqAttempts.length, 373, 'restored DB has 373 review attempts');

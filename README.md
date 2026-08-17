@@ -9,9 +9,8 @@ DeutschDaily is an offline-first daily German practice app focused on useful res
 - **Vocabulary**: a single 2,525-word German frequency dictionary with example sentences, searchable and filterable browsing
 - **Practice**: dedicated tab with Anki-style flashcards for vocabulary — Again / Hard / Good / Easy ratings with next-interval previews, DE→EN and EN→DE directions, and decks for due reviews, today's new words, hard words, saved words, and everything learned
 - **Daily review reminder**: shown once per day when reviews are due, and stays dismissed for the rest of the day
-- **Sentences**: Browse and practice daily-life resident scenarios by topic with pattern learning and English-to-German translation exercises
+- **Sentences**: Browse and practice daily-life resident scenarios by topic with English-to-German translation exercises
 - **Kursplan (Curriculum Syllabus)**: Comprehensive A1 → B1 study plan covering 48 units and 600 Unterrichtseinheiten structured according to BAMF Integrationskurs and telc/Goethe specifications
-- Pattern learning and pattern practice
 - German to English and English to German practice
 - Text-to-speech support with browser speech synthesis plus optional desktop fallback voices when network audio is available
 - Learn more panels with grammar, variants, reuse ideas, likely replies, and active practice tasks
@@ -48,7 +47,7 @@ No install step is required.
 DEDaily.html              App shell and script/style includes
 resources/
   deutsch-a1-b1-kursplan.html  Interactive A1 → B1 Kursplan (48 units / 600 UE syllabus)
-src/content.js            Topics, patterns, and sentence seed data
+src/content.js            Topics and sentence seed data
 src/learning.js           Learn more generation and teaching metadata
 src/frequency-dictionary-data.js  2,525-word frequency dictionary data
 src/frequency-dictionary.json     Parsed frequency dictionary (JSON, generated)
@@ -95,13 +94,12 @@ The validation checks:
 
 - HTML includes the expected CSS and JS files
 - sentence IDs are unique
-- topics, levels, and pattern references are valid
+- topics and levels are valid
 - every sentence has learning metadata
 - vocabulary cards have valid topics, source refs, noun gender/article data, and examples
 - frequency dictionary has 2,525 unique, sequential entries with all required fields
 - expected replies and practice prompts are not generic
 - formal/informal coverage stays above the configured threshold
-- misleading sentence-to-pattern links are blocked by contract checks
 - A1 survival and emergency coverage stay above launch thresholds
 - known reviewer fixes remain intact
 
@@ -124,8 +122,6 @@ When adding or editing sentences:
 - Use `Sie` for offices, doctors, landlords, banks, service staff, transport staff, and unknown adults.
 - Add `du` variants where a learner may realistically speak to friends, close colleagues, neighbors, or peers.
 - Keep translations faithful and natural.
-- Every sentence should either have at least one `patternId` or be marked `fixed: true`.
-- Add sentence-specific learning notes when a pattern would be misleading.
 
 ## GitHub
 

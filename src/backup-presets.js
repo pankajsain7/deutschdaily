@@ -13,7 +13,6 @@ const PREVIOUS_BACKUPS = [
       "streak": 3,
       "vocabLearned": 450,
       "sentencesLearned": 12,
-      "patternsLearned": 6,
       "totalReviews": 373,
       "lastStudy": "2026-08-16"
     },
@@ -36,14 +35,6 @@ const PREVIOUS_BACKUPS = [
         "ph16"
       ],
       "favorites": [],
-      "understood": [
-        "urgent_help",
-        "polite_request_modal",
-        "ask_meaning",
-        "ask_write_down",
-        "not_understood",
-        "ask_explain_again"
-      ],
       "streak": 3,
       "lastStudy": "2026-08-16",
       "dailyGoal": 30,
@@ -196,56 +187,6 @@ const PREVIOUS_BACKUPS = [
           "lastReview": "2026-08-04"
         },
         "ph16": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
-          "lapses": 0,
-          "nextReview": "2026-08-07",
-          "lastReview": "2026-08-04"
-        }
-      },
-      "patternSrs": {
-        "urgent_help": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
-          "lapses": 0,
-          "nextReview": "2026-08-07",
-          "lastReview": "2026-08-04"
-        },
-        "polite_request_modal": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
-          "lapses": 0,
-          "nextReview": "2026-08-07",
-          "lastReview": "2026-08-04"
-        },
-        "ask_meaning": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
-          "lapses": 0,
-          "nextReview": "2026-08-07",
-          "lastReview": "2026-08-04"
-        },
-        "ask_write_down": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
-          "lapses": 0,
-          "nextReview": "2026-08-07",
-          "lastReview": "2026-08-04"
-        },
-        "not_understood": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
-          "lapses": 0,
-          "nextReview": "2026-08-07",
-          "lastReview": "2026-08-04"
-        },
-        "ask_explain_again": {
           "interval": 3,
           "ease": 2.5,
           "level": 1,

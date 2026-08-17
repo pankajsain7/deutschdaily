@@ -182,40 +182,35 @@ function fixedGrammarFor(seed) {
   return 'Learn this as a fixed daily-life sentence first, then reuse it in similar situations.';
 }
 
-function practiceFor(seed, pattern) {
+function practiceFor(seed) {
   if (seed.practice) return seed.practice;
   if (seed.mode === 'recognition') {
     return `Recognize this phrase when you hear or read it, then answer with: ${seed.learnerReply || seed.expectedReply || 'the key detail they asked for'}.`;
-  }
-  if (pattern && pattern.practice) return pattern.practice;
-  if (pattern) {
-    return 'Change one useful word or detail from the sentence itself and say it again. Keep the same grammar pattern.';
   }
   return PRACTICE_BY_TOPIC[seed.t] || 'Say the sentence aloud, then change one detail and say it again.';
 }
 
 function buildLearn(seed) {
-  const pattern = (seed.patternIds || []).map(id => PATTERN_BY_ID[id]).find(Boolean);
   const baseScenario = SCENARIO_BY_TOPIC[seed.t] || null;
   const scenario = seed.scenario || (seed.mode === 'recognition' && baseScenario
     ? { ...baseScenario, speaker: baseScenario.listener, listener: 'you' }
     : baseScenario);
   const variants = defaultVariantsFor(seed);
-  const grammar = seed.learnGrammar || (pattern ? pattern.grammar : fixedGrammarFor(seed));
+  const grammar = seed.learnGrammar || fixedGrammarFor(seed);
   return {
     mode: seed.mode || 'production',
     scenario,
     meaning: seed.learnMeaning || seed.en,
     use: seed.use,
     grammar: {
-      title: seed.learnTitle || (pattern ? pattern.template : 'Fixed daily-life phrase'),
+      title: seed.learnTitle || 'Daily-life phrase',
       simple: grammar,
-      watchOut: seed.watchOut || (pattern ? pattern.watchOut : 'Use this in the situation shown; fixed phrases are useful, but do not overgeneralize them.')
+      watchOut: seed.watchOut || 'Use this in the situation shown; fixed phrases are useful, but do not overgeneralize them.'
     },
     variants,
-    expectedReply: seed.expectedReply || (pattern && pattern.expectedReply) || EXPECTED_REPLY_BY_TOPIC[seed.t] || 'Listen for the key detail: time, place, document, price, or next step.',
-    learnerReply: seed.learnerReply || (pattern && pattern.learnerReply) || LEARNER_REPLY_BY_TOPIC[seed.t] || 'Answer with the key detail, then ask for the next step.',
-    practice: practiceFor(seed, pattern)
+    expectedReply: seed.expectedReply || EXPECTED_REPLY_BY_TOPIC[seed.t] || 'Listen for the key detail: time, place, document, price, or next step.',
+    learnerReply: seed.learnerReply || LEARNER_REPLY_BY_TOPIC[seed.t] || 'Answer with the key detail, then ask for the next step.',
+    practice: practiceFor(seed)
   };
 }
 
