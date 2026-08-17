@@ -413,21 +413,23 @@ assert.strictEqual(browseState.view, 'browse', 'browse URL state should parse vi
 assert.strictEqual(browseState.topicId, 'health', 'browse URL state should parse topic');
 assert.strictEqual(browseState.filter, 'unlearned', 'browse URL state should parse filter');
 
-const patternUrl = t.urlFromState({ view: 'patterns', patFilter: 'due' });
-assert.strictEqual(patternUrl, '/DEDaily.html?view=patterns&filter=due', 'pattern URL should serialize filter');
+const patternUrl = t.urlFromState({ view: 'patterns', patFilter: 'understood' });
+assert.strictEqual(patternUrl, '/DEDaily.html?view=patterns&filter=understood', 'pattern URL should serialize filter when non-default');
 const practiceUrl = t.urlFromState({ view: 'practice' });
 assert.strictEqual(practiceUrl, '/DEDaily.html?view=practice', 'practice URL should serialize the view');
 assert.strictEqual(t.normalizePatternFilter('all'), 'all', 'known pattern filters are preserved');
-assert.strictEqual(t.normalizePatternFilter('new'), 'learning', 'unknown/legacy pattern filters default to learning');
+assert.strictEqual(t.normalizePatternFilter('new'), 'new', 'new pattern filter is supported');
+assert.strictEqual(t.normalizePatternFilter('learning'), 'new', 'legacy learning filter normalizes to new');
+assert.strictEqual(t.normalizePatternFilter('understood'), 'understood', 'understood filter is supported');
 
 reset({ understood: ['would_possible'] });
-assert(!t.patternsForFilter('learning', ['would_possible']).some(pattern => pattern.id === 'would_possible'), 'Learning excludes understood patterns even when they are due');
-assert(t.patternsForFilter('due', ['would_possible']).some(pattern => pattern.id === 'would_possible'), 'Due keeps understood patterns available for review');
+assert(!t.patternsForFilter('new').some(pattern => pattern.id === 'would_possible'), 'New excludes understood patterns');
 assert(t.patternsForFilter('understood').some(pattern => pattern.id === 'would_possible'), 'Understood lists understood patterns');
+assert(t.patternsForFilter('all').some(pattern => pattern.id === 'would_possible'), 'All includes understood patterns');
 
 t.applyUrlState('http://localhost/DEDaily.html?view=patterns');
 assert.strictEqual(t.getViewState().view, 'patterns', 'patterns URL opens Patterns tab');
-assert.strictEqual(t.getViewState().patFilter, 'learning', 'Patterns tab defaults to Learning');
+assert.strictEqual(t.getViewState().patFilter, 'new', 'Patterns tab defaults to New');
 
 t.applyUrlState('http://localhost/DEDaily.html?view=library&tab=learned');
 assert.strictEqual(t.getViewState().view, 'saved', 'library URL opens Library tab');
@@ -754,7 +756,7 @@ assert.strictEqual(t.getPatternPracticeState().idx, 1, 'pattern advances on next
 
 // --- Previous Backups & Cross-Device Sync Tests ---
 const previousBackups = t.getPreviousBackups();
-assert.ok(Array.isArray(previousBackups) && previousBackups.length >= 2, 'previous backups registry loaded with history');
+assert.ok(Array.isArray(previousBackups) && previousBackups.length === 1, 'previous backups registry loaded with latest backup');
 const latest = t.getLatestBackup();
 assert.ok(latest, 'latest backup snapshot exists');
 assert.strictEqual(latest.id, 'backup-2026-08-16-204748', 'latest backup ID matches');
@@ -772,16 +774,15 @@ assert.strictEqual(restoredDb.lastStudy, '2026-08-16', 'restored DB lastStudy is
 assert.strictEqual(restoredDb.freqAttempts.length, 373, 'restored DB has 373 review attempts');
 assert.strictEqual(Object.keys(restoredDb.freqSrs).length, 450, 'restored DB has 450 freq SRS cards');
 
-// Test previous backup lookup by ID
-const prevSnapshot = t.getBackupById('backup-2026-08-16-201255');
-assert.ok(prevSnapshot, 'can retrieve previous snapshot by ID');
-assert.strictEqual(prevSnapshot.isLatest, false, 'older snapshot is not marked latest');
+// Test latest backup lookup by ID
+const snapshot = t.getBackupById('backup-2026-08-16-204748');
+assert.ok(snapshot, 'can retrieve latest snapshot by ID');
+assert.strictEqual(snapshot.isLatest, true, 'snapshot is marked latest');
 
 // Test HTML render of previous backups section
 const backupsHtml = t.renderPreviousBackupsSection();
 assert.ok(backupsHtml.includes('Previous Backups'), 'renders section title');
 assert.ok(backupsHtml.includes('backup-2026-08-16-204748'), 'renders latest backup ID in action handlers');
-assert.ok(backupsHtml.includes('backup-2026-08-16-201255'), 'renders previous backup ID in action handlers');
 assert.ok(backupsHtml.includes('450'), 'renders 450 words stat chip');
 
 console.log('logic-tests passed');

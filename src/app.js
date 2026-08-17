@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'learned', libType: 'vocab', patFilter: 'new', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
@@ -18,7 +18,7 @@ const VALID_PROGRESS_TABS = new Set(['overview', 'activity']);
 const VALID_FILTERS = new Set(['all', 'unlearned', 'learned', 'favorites']);
 const VALID_FREQ_FILTERS = new Set(['all', 'new', 'due', 'learned', 'saved']);
 const VALID_FREQ_RANGES = new Set(['all', '1-500', '501-1000', '1001-1500', '1501-2000', '2001-2525']);
-const VALID_PATTERN_FILTERS = new Set(['learning', 'due', 'understood', 'all']);
+const VALID_PATTERN_FILTERS = new Set(['all', 'new', 'understood']);
 const VALID_LIBRARY_TABS = new Set(['saved', 'learned']);
 const VALID_LIBRARY_TYPES = new Set(['sentences', 'vocab']);
 const TOPIC_IDS = new Set(TOPICS.map(t => t.id));
@@ -35,13 +35,14 @@ function normalizeProgressTab(value) {
   return VALID_PROGRESS_TABS.has(raw) ? raw : 'overview';
 }
 function normalizePatternFilter(value) {
-  const raw = String(value || 'learning');
-  if (raw === 'new') return 'learning';
-  return VALID_PATTERN_FILTERS.has(raw) ? raw : 'learning';
+  const raw = String(value || 'new');
+  if (raw === 'learning') return 'new';
+  if (raw === 'due') return 'new';
+  return VALID_PATTERN_FILTERS.has(raw) ? raw : 'new';
 }
 
 function stateFromUrl(href) {
-  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'learned', libType: 'vocab', patFilter: 'learning', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'learned', libType: 'vocab', patFilter: 'new', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -105,7 +106,7 @@ function urlFromState(state = V) {
     if (state.freqFilter && state.freqFilter !== 'all') params.set('filter', state.freqFilter);
     if (state.freqRange && state.freqRange !== 'all') params.set('range', state.freqRange);
   } else if (view === 'patterns') {
-    params.set('filter', normalizePatternFilter(state.patFilter));
+    if (state.patFilter && state.patFilter !== 'new') params.set('filter', normalizePatternFilter(state.patFilter));
   } else if (view === 'saved') {
     if (state.libTab && state.libTab !== 'learned') params.set('tab', state.libTab);
     if (state.libType === 'sentences') params.set('type', 'sentences');
@@ -159,7 +160,7 @@ function nav(view, extra) {
   V.freqPage = 1;
   V.query = '';
   V.historyDay = null;
-  if (nextView === 'patterns') V.patFilter = 'learning';
+  if (nextView === 'patterns') V.patFilter = 'new';
   commitState({ scroll: true });
 }
 function setTodayTab(tab) {
@@ -1279,19 +1280,22 @@ function activePatterns() {
     .sort((a, b) => (a.priority || 999) - (b.priority || 999) || a.template.localeCompare(b.template));
 }
 function patternsForFilter(filter, duePatternIds = getPatternReviewIds()) {
-  const due = new Set(duePatternIds);
   const all = activePatterns();
   if (filter === 'understood') return all.filter(p => DB.understood.has(p.id));
-  if (filter === 'due') return all.filter(p => due.has(p.id));
-  if (filter === 'all') return all;
-  return all.filter(p => !DB.understood.has(p.id));
+  if (filter === 'new' || filter === 'learning') return all.filter(p => !DB.understood.has(p.id));
+  if (filter === 'due') {
+    const due = new Set(duePatternIds);
+    return all.filter(p => due.has(p.id));
+  }
+  return all;
 }
 function renderPatterns() {
   const duePatternIds = getPatternReviewIds();
-  const pats = patternsForFilter(normalizePatternFilter(V.patFilter), duePatternIds);
+  const currentFilter = normalizePatternFilter(V.patFilter);
+  const pats = patternsForFilter(currentFilter, duePatternIds);
   const active = activePatterns();
   const undCount = active.filter(p => DB.understood.has(p.id)).length;
-  const learningCount = active.filter(p => !DB.understood.has(p.id)).length;
+  const newCount = active.filter(p => !DB.understood.has(p.id)).length;
   const understoodCount = active.filter(p => DB.understood.has(p.id)).length;
   const duePatternSection = duePatternIds.length ? `<div class="review-section pattern-review-section">
     <div class="review-section-hdr">
@@ -1302,7 +1306,7 @@ function renderPatterns() {
   </div>` : '';
   const cards = pats.length ? pats.map((p, i) => renderPatternCard(p, i)).join('') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No patterns match.</div>`;
   const visibleIds = JSON.stringify(pats.map(p => p.id)).replace(/"/g, "'");
-  const learningIds = JSON.stringify(active.filter(p => !DB.understood.has(p.id)).map(p => p.id)).replace(/"/g, "'");
+  const newIds = JSON.stringify(active.filter(p => !DB.understood.has(p.id)).map(p => p.id)).replace(/"/g, "'");
   const understoodIds = JSON.stringify(active.filter(p => DB.understood.has(p.id)).map(p => p.id)).replace(/"/g, "'");
   return `<div style="padding-top:14px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
@@ -1314,15 +1318,14 @@ ${duePatternSection}
 
 <div class="btn-row">
   ${pats.length > 0 ? `<button class="btn btn-primary" onclick="startPatternPractice({ids:${visibleIds}})" type="button">Practice visible (${pats.length})</button>` : ''}
-  ${learningCount > 0 ? `<button class="btn btn-secondary" onclick="startPatternPractice({ids:${learningIds}})" type="button">Learning (${learningCount})</button>` : ''}
+  ${newCount > 0 ? `<button class="btn btn-secondary" onclick="startPatternPractice({ids:${newIds}})" type="button">New (${newCount})</button>` : ''}
   ${understoodCount > 0 ? `<button class="btn btn-secondary" onclick="startPatternPractice({ids:${understoodIds}})" type="button">Understood (${understoodCount})</button>` : ''}
 </div>
 
 <div class="filter-row">
-  <button class="filter-chip${V.patFilter === 'learning' ? ' on' : ''}" onclick="setPatFilter('learning')" aria-pressed="${V.patFilter === 'learning'}" type="button">Learning</button>
-  <button class="filter-chip${V.patFilter === 'due' ? ' on' : ''}" onclick="setPatFilter('due')" aria-pressed="${V.patFilter === 'due'}" type="button">Due</button>
-  <button class="filter-chip${V.patFilter === 'understood' ? ' on' : ''}" onclick="setPatFilter('understood')" aria-pressed="${V.patFilter === 'understood'}" type="button">Understood</button>
-  <button class="filter-chip${V.patFilter === 'all' ? ' on' : ''}" onclick="setPatFilter('all')" aria-pressed="${V.patFilter === 'all'}" type="button">All</button>
+  <button class="filter-chip${currentFilter === 'all' ? ' on' : ''}" onclick="setPatFilter('all')" aria-pressed="${currentFilter === 'all'}" type="button">All</button>
+  <button class="filter-chip${currentFilter === 'new' ? ' on' : ''}" onclick="setPatFilter('new')" aria-pressed="${currentFilter === 'new'}" type="button">New</button>
+  <button class="filter-chip${currentFilter === 'understood' ? ' on' : ''}" onclick="setPatFilter('understood')" aria-pressed="${currentFilter === 'understood'}" type="button">Understood</button>
 </div>
 
 ${cards}
