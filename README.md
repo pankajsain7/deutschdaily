@@ -46,7 +46,8 @@ No install step is required.
 
 ```text
 DEDaily.html              App shell and script/style includes
-deutsch-a1-b1-kursplan.html  Interactive A1 → B1 Kursplan (48 units / 600 UE syllabus)
+resources/
+  deutsch-a1-b1-kursplan.html  Interactive A1 → B1 Kursplan (48 units / 600 UE syllabus)
 src/content.js            Topics, patterns, and sentence seed data
 src/learning.js           Learn more generation and teaching metadata
 src/frequency-dictionary-data.js  2,525-word frequency dictionary data

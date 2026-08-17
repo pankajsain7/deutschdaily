@@ -52,7 +52,7 @@ record(/href="src\/styles\.css(?:\?[^"]*)?"/.test(html), 'DEDaily.html missing s
 record(/rel="icon" href="src\/assets\/logo\.svg" type="image\/svg\+xml"/.test(html), 'DEDaily.html missing SVG favicon');
 record(fs.existsSync(path.join(root, 'src/assets/logo.svg')), 'src/assets/logo.svg missing');
 record(fs.existsSync(path.join(root, 'api/tts.js')), 'api/tts.js missing');
-record(fs.existsSync(path.join(root, 'deutsch-a1-b1-kursplan.html')), 'deutsch-a1-b1-kursplan.html missing');
+record(fs.existsSync(path.join(root, 'resources', 'deutsch-a1-b1-kursplan.html')), 'resources/deutsch-a1-b1-kursplan.html missing');
 
 try {
   const vercelConfig = JSON.parse(read('vercel.json'));

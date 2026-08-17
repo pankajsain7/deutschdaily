@@ -45,6 +45,7 @@ const source = [
     urlFromState,
     applyUrlState,
     normalizePatternFilter,
+    patternsForFilter,
     renderRevealDetails,
     applyImport,
     mergeAttempts,
@@ -419,6 +420,11 @@ assert.strictEqual(practiceUrl, '/DEDaily.html?view=practice', 'practice URL sho
 assert.strictEqual(t.normalizePatternFilter('all'), 'all', 'known pattern filters are preserved');
 assert.strictEqual(t.normalizePatternFilter('new'), 'learning', 'unknown/legacy pattern filters default to learning');
 
+reset({ understood: ['would_possible'] });
+assert(!t.patternsForFilter('learning', ['would_possible']).some(pattern => pattern.id === 'would_possible'), 'Learning excludes understood patterns even when they are due');
+assert(t.patternsForFilter('due', ['would_possible']).some(pattern => pattern.id === 'would_possible'), 'Due keeps understood patterns available for review');
+assert(t.patternsForFilter('understood').some(pattern => pattern.id === 'would_possible'), 'Understood lists understood patterns');
+
 t.applyUrlState('http://localhost/DEDaily.html?view=patterns');
 assert.strictEqual(t.getViewState().view, 'patterns', 'patterns URL opens Patterns tab');
 assert.strictEqual(t.getViewState().patFilter, 'learning', 'Patterns tab defaults to Learning');
@@ -438,7 +444,7 @@ assert.strictEqual(t.getViewState().view, 'frequency', 'legacy vocab URL redirec
 
 t.applyUrlState('http://localhost/DEDaily.html?view=kursplan');
 assert.strictEqual(t.getViewState().view, 'kursplan', 'kursplan URL opens Kursplan tab');
-assert(t.renderKursplan().includes('deutsch-a1-b1-kursplan.html'), 'kursplan view embeds deutsch-a1-b1-kursplan.html iframe');
+assert(t.renderKursplan().includes('resources/deutsch-a1-b1-kursplan.html'), 'kursplan view embeds the resources kursplan iframe');
 
 t.applyUrlState('http://localhost/DEDaily.html?view=history&day=2026-05-02');
 assert.strictEqual(t.getViewState().view, 'history-day', 'dated history URL opens History day view');
@@ -697,8 +703,23 @@ t.frequencyPracticeNext();
 assert.strictEqual(t.getFrequencyPracticeState().idx, 1, 'advances to card 1 on next since card 0 was already rated');
 t.frequencyPracticePrev();
 assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'goes backward to card 0 on prev');
+t.frequencyPracticeAnswer('again');
+assert.strictEqual(t.getFrequencyPracticeState().idx, 1, 're-rating a previous card advances back to the next card');
+assert.strictEqual(t.getFrequencyPracticeState().good, 0, 're-rating removes the previous rating from session totals');
+assert.strictEqual(t.getFrequencyPracticeState().again, 1, 're-rating updates the session total');
+const reratedId = String(t.getFrequencyPracticeState().queue[0].rank);
+assert.strictEqual(t.DB().freqRatingState[reratedId].rating, 'again', 're-rating a previous card persists its new rating');
 t.frequencyPracticePrev();
 assert.strictEqual(t.getFrequencyPracticeState().idx, 0, 'does not go below card 0 on prev');
+
+reset({ freqLearned: ['1'], freqSrs: { '1': { interval: 3, ease: 2.5, level: 1, nextReview: t.today(), lastReview: t.addDaysISO(-3), lapses: 0 } } });
+t.startFrequencyPractice({ ids: ['1'], mode: 'scheduled' });
+t.frequencyPracticeAnswer('hard');
+assert.strictEqual(t.DB().freqSrs['1'].interval, 4, 'scheduled hard rating updates the review interval');
+t.frequencyPracticePrev();
+t.frequencyPracticeAnswer('again');
+assert.strictEqual(t.DB().freqSrs['1'].interval, 1, 're-rating restores the original schedule before applying the new rating');
+assert.strictEqual(t.DB().freqSrs['1'].lapses, 1, 're-rating does not apply the replaced scheduled rating twice');
 
 t.startPractice({ ids: ['un1', 'un2'], skipSessionFilter: true });
 t.setPracticeDir('de2en');
@@ -764,5 +785,3 @@ assert.ok(backupsHtml.includes('backup-2026-08-16-201255'), 'renders previous ba
 assert.ok(backupsHtml.includes('450'), 'renders 450 words stat chip');
 
 console.log('logic-tests passed');
-
-

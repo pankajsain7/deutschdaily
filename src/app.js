@@ -333,12 +333,12 @@ function renderKursplan() {
         <h2 class="page-title" style="margin:0">A1 → B1 Kursplan</h2>
         <p class="page-sub" style="margin:4px 0 0 0">48 Units · 600 Unterrichtseinheiten · BAMF Integrationskurs & telc/Goethe Standard</p>
       </div>
-      <a href="deutsch-a1-b1-kursplan.html" target="_blank" rel="noopener" class="btn-sec" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600;">
+      <a href="resources/deutsch-a1-b1-kursplan.html" target="_blank" rel="noopener" class="btn-sec" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600;">
         Open Standalone ↗
       </a>
     </div>
     <div class="kursplan-frame-wrapper" style="flex:1 1 0; min-height:0; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); border:1px solid var(--border, #E5E7EB); background:#fff;">
-      <iframe src="deutsch-a1-b1-kursplan.html" title="Deutsch A1 bis B1 Kursplan" style="width:100%; height:100%; border:none; display:block;" loading="lazy"></iframe>
+      <iframe src="resources/deutsch-a1-b1-kursplan.html" title="Deutsch A1 bis B1 Kursplan" style="width:100%; height:100%; border:none; display:block;" loading="lazy"></iframe>
     </div>
   </div>`;
 }
@@ -1284,14 +1284,14 @@ function patternsForFilter(filter, duePatternIds = getPatternReviewIds()) {
   if (filter === 'understood') return all.filter(p => DB.understood.has(p.id));
   if (filter === 'due') return all.filter(p => due.has(p.id));
   if (filter === 'all') return all;
-  return all.filter(p => !DB.understood.has(p.id) || due.has(p.id));
+  return all.filter(p => !DB.understood.has(p.id));
 }
 function renderPatterns() {
   const duePatternIds = getPatternReviewIds();
   const pats = patternsForFilter(normalizePatternFilter(V.patFilter), duePatternIds);
   const active = activePatterns();
   const undCount = active.filter(p => DB.understood.has(p.id)).length;
-  const learningCount = active.filter(p => !DB.understood.has(p.id) || duePatternIds.includes(p.id)).length;
+  const learningCount = active.filter(p => !DB.understood.has(p.id)).length;
   const understoodCount = active.filter(p => DB.understood.has(p.id)).length;
   const duePatternSection = duePatternIds.length ? `<div class="review-section pattern-review-section">
     <div class="review-section-hdr">
@@ -1302,7 +1302,7 @@ function renderPatterns() {
   </div>` : '';
   const cards = pats.length ? pats.map((p, i) => renderPatternCard(p, i)).join('') : `<div class="empty-state"><div class="empty-icon">${ICO.search}</div>No patterns match.</div>`;
   const visibleIds = JSON.stringify(pats.map(p => p.id)).replace(/"/g, "'");
-  const learningIds = JSON.stringify(active.filter(p => !DB.understood.has(p.id) || duePatternIds.includes(p.id)).map(p => p.id)).replace(/"/g, "'");
+  const learningIds = JSON.stringify(active.filter(p => !DB.understood.has(p.id)).map(p => p.id)).replace(/"/g, "'");
   const understoodIds = JSON.stringify(active.filter(p => DB.understood.has(p.id)).map(p => p.id)).replace(/"/g, "'");
   return `<div style="padding-top:14px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
@@ -2069,7 +2069,7 @@ function setGoal(n) {
 // ==============================
 let P = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, isSRS: false, dir: 'de2en', dirChoice: true, answered: {}, missedIds: [], typedFeedback: null, lastSpokenId: null };
 let PP = { active: false, queue: [], idx: 0, revealed: false, got: 0, again: 0, skipped: 0, answered: {} };
-let FP = { active: false, queue: [], idx: 0, revealed: false, wordMeaningRevealed: false, lastSpokenId: null, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode: 'replay', answered: {}, missedIds: [], ratingById: {} };
+let FP = { active: false, queue: [], idx: 0, revealed: false, wordMeaningRevealed: false, lastSpokenId: null, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode: 'replay', answered: {}, missedIds: [], ratingById: {}, answerMeta: {} };
 
 function startPractice(opts) {
   const ids = Array.isArray(opts) ? opts : opts.ids;
@@ -2479,7 +2479,7 @@ function startFrequencyPractice(opts) {
   if (!entries.length) return;
   P.active = false;
   PP.active = false;
-  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, wordMeaningRevealed: false, lastSpokenId: null, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, answered: {}, missedIds: [], ratingById: {}, startTime: Date.now() };
+  FP = { active: true, queue: shuffle([...entries]), idx: 0, revealed: false, wordMeaningRevealed: false, lastSpokenId: null, again: 0, hard: 0, good: 0, easy: 0, skipped: 0, mode, answered: {}, missedIds: [], ratingById: {}, answerMeta: {}, startTime: Date.now() };
   renderFrequencyPractice();
 }
 function renderFrequencyPractice() {
@@ -2604,17 +2604,33 @@ function frequencyPracticeRevealWordMeaning() {
   FP.wordMeaningRevealed = !FP.wordMeaningRevealed;
   renderFrequencyPractice();
 }
+function updateFrequencyRatingCount(rating, delta) {
+  if (['again', 'hard', 'good', 'easy'].includes(rating)) FP[rating] = Math.max(0, FP[rating] + delta);
+}
+function snapshotFrequencyCardState(id) {
+  return {
+    learned: DB.freqLearned.has(id),
+    srs: DB.freqSrs[id] ? { ...DB.freqSrs[id] } : null,
+    queueDone: DB.freqDailyQueueDone.has(id),
+  };
+}
+function restoreFrequencyCardState(id, snapshot) {
+  if (snapshot.learned) DB.freqLearned.add(id);
+  else DB.freqLearned.delete(id);
+  if (snapshot.srs) DB.freqSrs[id] = { ...snapshot.srs };
+  else delete DB.freqSrs[id];
+  if (snapshot.queueDone) DB.freqDailyQueueDone.add(id);
+  else DB.freqDailyQueueDone.delete(id);
+}
 function frequencyPracticeAnswer(rating) {
   const current = FP.queue[FP.idx];
   if (!current) return;
   const attemptKey = String(FP.idx);
-  if (FP.answered[attemptKey]) {
-    FP.idx++;
-    FP.revealed = false;
-    renderFrequencyPractice();
-    return;
-  }
   const id = String(current.rank);
+  const previousRating = FP.answered[attemptKey];
+  const previousMeta = FP.answerMeta[attemptKey];
+  const snapshot = previousMeta ? previousMeta.snapshot : snapshotFrequencyCardState(id);
+  if (previousMeta) restoreFrequencyCardState(id, snapshot);
   const isNew = !DB.freqLearned.has(id);
   const intervalBefore = DB.freqSrs[id] ? DB.freqSrs[id].interval || 0 : 0;
   const scheduledMode = isScheduledFrequencyPractice(FP.mode);
@@ -2622,17 +2638,20 @@ function frequencyPracticeAnswer(rating) {
     ? scheduleFreq(id, rating)
     : { intervalBefore, intervalAfter: intervalBefore, wasDue: false, learned: DB.freqLearned.has(id) };
   recordFreqRating(id, rating);
+  if (previousRating) updateFrequencyRatingCount(previousRating, -1);
   FP.answered[attemptKey] = rating;
   FP.ratingById[id] = rating;
-  if (rating === 'again') FP.again++;
-  else if (rating === 'hard') FP.hard++;
-  else if (rating === 'easy') FP.easy++;
-  else FP.good++;
+  updateFrequencyRatingCount(rating, 1);
 
-  if (rating === 'again') {
-    FP.missedIds.push(id);
+  FP.missedIds = FP.missedIds.filter(missedId => missedId !== id);
+  if (rating === 'again') FP.missedIds.push(id);
+  if (previousMeta && previousMeta.attempt) {
+    Object.assign(previousMeta.attempt, { result: rating, intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue, isNew: isNew && scheduled.learned });
+  } else {
+    const attempt = { id, date: today(), result: rating, wasDue: scheduled.wasDue, isNew: isNew && scheduled.learned, intervalBefore, intervalAfter: scheduled.intervalAfter };
+    recordFreqAttempt(attempt);
+    FP.answerMeta[attemptKey] = { snapshot, attempt: DB.freqAttempts[DB.freqAttempts.length - 1] };
   }
-  recordFreqAttempt({ id, result: rating, intervalBefore, intervalAfter: scheduled.intervalAfter, wasDue: scheduled.wasDue, isNew: isNew && scheduled.learned });
   save();
   FP.idx++;
   FP.revealed = false;
