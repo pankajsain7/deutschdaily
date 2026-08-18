@@ -3,11 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#4F46E5">
+  <meta name="description" content="Your daily German practice — learn sentences, vocabulary, and grammar">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="DeutschDaily">
   <title>DeutschDaily</title>
   <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="src/assets/icon-512.png">
+  <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
@@ -86,6 +92,13 @@
   <script src="src/backup-presets.js?v=20260816"></script>
   <script src="src/storage.js?v=practice-20260901"></script>
   <script src="src/app.js?v=practice-20260901"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 
 </html>

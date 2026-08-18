@@ -1,4 +1,10 @@
 /* ─── Responsive adjustments ─── */
+
+/* ══════════════════════════════════════════════
+   MOBILE (≤ 768px)
+   Everything below only applies on small screens.
+   Desktop layout is completely untouched.
+   ══════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .sidebar {
     display: none;
@@ -9,18 +15,32 @@
   }
 
   .app-content {
-    padding: 16px 16px 100px;
+    padding: 12px 14px 100px;
   }
 
   .hdr {
-    padding: 12px 16px;
+    padding: 10px 14px;
   }
 
+  .hdr-in {
+    gap: 12px;
+  }
+
+  /* Hide the text label, keep the progress bar compact */
+  .pbar-lbl {
+    font-size: 11px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ─── Topic grid ─── */
   .topic-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
+  /* ─── Stats grids ─── */
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
@@ -30,6 +50,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* ─── Forecast ─── */
   .forecast-row {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -49,7 +70,451 @@
     flex-direction: column;
   }
 
+  /* ─── Mobile Bottom Nav ─── */
   .mobile-nav {
     display: flex;
+  }
+
+  /* ─── Cards: tighter on mobile ─── */
+  .sc,
+  .vc {
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .sentence-de {
+    font-size: 18px;
+  }
+
+  .vocab-term {
+    font-size: 20px;
+  }
+
+  .sentence-en {
+    font-size: 14px;
+  }
+
+  /* Remove hover transform on touch screens */
+  .sc:hover,
+  .vc:hover {
+    transform: none;
+  }
+
+  /* ─── Card actions: better tap targets ─── */
+  .act-btn {
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .card-actions {
+    gap: 6px;
+  }
+
+  /* ─── Topic header compact ─── */
+  .topic-hdr {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .topic-hdr-em {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+  }
+
+  .topic-hdr-name {
+    font-size: 18px;
+  }
+
+  /* ─── Page titles ─── */
+  .page-title {
+    font-size: 22px;
+    margin: 16px 0 3px;
+  }
+
+  /* ─── Goal card compact ─── */
+  .goal-card {
+    padding: 16px;
+  }
+
+  .goal-top {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .goal-nums {
+    gap: 12px 10px;
+  }
+
+  .gnum-v {
+    font-size: 20px;
+  }
+
+  /* ─── Buttons: touch-friendly ─── */
+  .btn {
+    min-height: 42px;
+    padding: 10px 16px;
+  }
+
+  .btn-row > .btn {
+    min-width: 0;
+  }
+
+  /* ─── Modal adjustments ─── */
+  .modal-box {
+    width: 92%;
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  .goal-opts-grid {
+    gap: 6px;
+  }
+
+  .goal-opt {
+    padding: 10px 4px;
+    font-size: 16px;
+  }
+
+  /* ─── Data modal ─── */
+  .data-modal {
+    margin: 0 12px;
+    max-height: 90vh;
+    padding: 18px;
+  }
+
+  /* ─── Practice overlay safe area ─── */
+  .practice-body {
+    padding: 16px 14px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .practice-card {
+    padding: 22px 18px;
+  }
+
+  .practice-de {
+    font-size: 21px;
+  }
+
+  .practice-en {
+    font-size: 18px;
+  }
+
+  .practice-btns {
+    gap: 8px;
+  }
+
+  .prac-again-btn,
+  .prac-got-btn {
+    padding: 14px;
+    font-size: 14px;
+    min-height: 48px;
+  }
+
+  .practice-hdr {
+    padding: 10px 14px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+
+  /* ─── Practice summary compact ─── */
+  .prac-summary {
+    padding: 24px 18px;
+  }
+
+  .prac-sum-stats {
+    flex-wrap: wrap;
+  }
+
+  .prac-sum-stat {
+    padding: 12px 18px;
+  }
+
+  /* ─── Search: full width and touch-friendly ─── */
+  .search-input {
+    font-size: 16px; /* prevents iOS zoom on focus */
+    padding: 12px 12px 12px 38px;
+  }
+
+  /* ─── Filter chips: scrollable ─── */
+  .filter-row {
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-chip {
+    padding: 8px 14px;
+  }
+
+  /* ─── Library tabs ─── */
+  .lib-tabs {
+    gap: 0;
+  }
+
+  .lib-tab {
+    padding: 8px 8px;
+    font-size: 12px;
+  }
+
+  /* ─── Activity hero: stack on very small ─── */
+  .activity-hero {
+    flex-direction: column;
+  }
+
+  .activity-hero-divider {
+    width: 100%;
+    height: 1px;
+    margin: 0 12px;
+  }
+
+  .activity-hero-stat {
+    padding: 14px 16px;
+  }
+
+  .activity-hero-num {
+    font-size: 26px;
+  }
+
+  /* ─── Progress hero ─── */
+  .progress-hero {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /* ─── Direction choice ─── */
+  .dir-choice-wrap {
+    padding: 20px 12px;
+  }
+
+  .dir-btn {
+    max-width: 100%;
+    padding: 16px 18px;
+  }
+
+  /* ─── SRS grid ─── */
+  .srs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ─── Streak pill compact ─── */
+  .streak-pill {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  /* ─── Review section ─── */
+  .review-section {
+    padding: 14px;
+  }
+
+  /* ─── Section header ─── */
+  .section-hdr {
+    margin: 18px 0 10px;
+  }
+
+  /* ─── Frequency dictionary mobile ─── */
+  .freq-card .vocab-term {
+    font-size: 24px;
+  }
+
+  .freq-sentence {
+    font-size: 15px;
+    padding: 10px 12px;
+  }
+
+  /* ─── History rows compact ─── */
+  .hist-row {
+    padding: 8px 12px;
+  }
+
+  .hist-day {
+    min-width: 66px;
+    font-size: 11px;
+  }
+
+  /* ─── Grammar adjustments ─── */
+  .grammar-lesson-detail h2 {
+    font-size: 20px;
+  }
+
+  .grammar-explanation {
+    font-size: 13px;
+  }
+
+  /* ─── Callout compact ─── */
+  .callout {
+    padding: 14px 16px;
+  }
+
+  /* ─── Learned CTA ─── */
+  .learned-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .learned-practice-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   VERY SMALL SCREENS (≤ 380px)
+   Extra compact tweaks for tiny phones
+   ══════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .app-content {
+    padding: 10px 10px 100px;
+  }
+
+  .hdr {
+    padding: 8px 10px;
+  }
+
+  .pbar-lbl {
+    display: none;
+  }
+
+  .topic-grid {
+    gap: 8px;
+  }
+
+  .topic-card {
+    padding: 14px;
+  }
+
+  .tc-emoji {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .tc-name {
+    font-size: 13px;
+  }
+
+  .sc,
+  .vc {
+    padding: 12px 14px;
+  }
+
+  .sentence-de {
+    font-size: 17px;
+  }
+
+  .forecast-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stats-grid {
+    gap: 8px;
+  }
+
+  .stat-num {
+    font-size: 22px;
+  }
+
+  .mnb {
+    flex: 1 0 48px;
+    font-size: 9px;
+    padding: 5px 4px;
+  }
+
+  .mnb-icon {
+    font-size: 20px;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PWA STANDALONE MODE
+   Adjustments for when the app runs as an
+   installed PWA (no browser chrome)
+   ══════════════════════════════════════════════ */
+@media (display-mode: standalone) {
+  /* Safe area for notched phones (iPhone etc.) */
+  .hdr {
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+
+  .mobile-nav {
+    padding-bottom: calc(4px + env(safe-area-inset-bottom));
+  }
+
+  .app-content {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  }
+
+  /* Practice overlay safe areas in standalone mode */
+  .practice-overlay .practice-hdr {
+    padding-top: calc(12px + env(safe-area-inset-top));
+  }
+
+  .practice-overlay .practice-body {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ══════════════════════════════════════════════
+   TOUCH DEVICE OPTIMIZATIONS
+   Remove hover effects that don't make sense on touch
+   ══════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  .sc:hover,
+  .vc:hover,
+  .pc:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border);
+  }
+
+  .topic-card:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border);
+  }
+
+  .topic-card:hover .tc-emoji {
+    background: var(--surface-2);
+    border-color: var(--border);
+    color: var(--text-2);
+  }
+
+  /* Active state for touch feedback instead of hover */
+  .sc:active,
+  .vc:active {
+    background: var(--surface-2);
+    transition: background 0.05s;
+  }
+
+  .topic-card:active {
+    background: var(--surface-2);
+    transition: background 0.05s;
+  }
+
+  .act-btn:active {
+    background: var(--surface-2);
+    transform: scale(0.97);
+    transition: transform 0.05s;
+  }
+
+  .nb:active:not(.on) {
+    background: var(--surface-2);
+  }
+
+  .mnb:active:not(.on) {
+    background: rgba(79, 70, 229, 0.06);
+    border-radius: 12px;
+  }
+
+  .filter-chip:active:not(.on) {
+    background: var(--surface-2);
+  }
+
+  /* Hide keyboard hints on touch devices */
+  .kbd-hint {
+    display: none;
   }
 }
