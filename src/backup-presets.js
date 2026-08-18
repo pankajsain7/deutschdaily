@@ -4,20 +4,20 @@
 
 const PREVIOUS_BACKUPS = [
   {
-    "id": "backup-2026-08-16-204748",
-    "title": "Latest Backup (Aug 16, 2026 · 20:47)",
-    "timestamp": "2026-08-16T20:47:48.567Z",
-    "dateLabel": "Aug 16, 2026 · 20:47:48 UTC",
+    "id": "backup-2026-08-18-195530",
+    "title": "Latest Backup (Aug 18, 2026 · 19:55)",
+    "timestamp": "2026-08-18T19:55:30.348Z",
+    "dateLabel": "Aug 18, 2026 · 19:55:30 UTC",
     "isLatest": true,
     "stats": {
-      "streak": 3,
-      "vocabLearned": 450,
+      "streak": 5,
+      "vocabLearned": 470,
       "sentencesLearned": 12,
-      "totalReviews": 373,
-      "lastStudy": "2026-08-16"
+      "totalReviews": 1000,
+      "lastStudy": "2026-08-18"
     },
     "data": {
-      "exportedAt": "2026-08-16T20:47:48.567Z",
+      "exportedAt": "2026-08-18T19:55:30.348Z",
       "version": 10,
       "todayTab": "vocab",
       "learned": [
@@ -35,8 +35,8 @@ const PREVIOUS_BACKUPS = [
         "ph16"
       ],
       "favorites": [],
-      "streak": 3,
-      "lastStudy": "2026-08-16",
+      "streak": 5,
+      "lastStudy": "2026-08-18",
       "dailyGoal": 30,
       "dailyQueue": [
         "ap1",
@@ -645,7 +645,27 @@ const PREVIOUS_BACKUPS = [
         "447",
         "448",
         "449",
-        "450"
+        "450",
+        "468",
+        "454",
+        "458",
+        "470",
+        "467",
+        "465",
+        "459",
+        "466",
+        "462",
+        "453",
+        "452",
+        "464",
+        "463",
+        "469",
+        "456",
+        "461",
+        "455",
+        "460",
+        "451",
+        "457"
       ],
       "freqFavorites": [
         "28",
@@ -1575,12 +1595,12 @@ const PREVIOUS_BACKUPS = [
           "lastReview": "2026-08-08"
         },
         "115": {
-          "interval": 10,
-          "ease": 2.65,
-          "level": 2,
+          "interval": 35,
+          "ease": 2.8,
+          "level": 4,
           "lapses": 0,
-          "nextReview": "2026-08-18",
-          "lastReview": "2026-08-08"
+          "nextReview": "2026-09-22",
+          "lastReview": "2026-08-18"
         },
         "116": {
           "interval": 10,
@@ -2279,12 +2299,12 @@ const PREVIOUS_BACKUPS = [
           "lastReview": "2026-08-16"
         },
         "203": {
-          "interval": 10,
-          "ease": 2.65,
-          "level": 2,
+          "interval": 35,
+          "ease": 2.8,
+          "level": 4,
           "lapses": 0,
-          "nextReview": "2026-08-18",
-          "lastReview": "2026-08-08"
+          "nextReview": "2026-09-22",
+          "lastReview": "2026-08-18"
         },
         "204": {
           "interval": 10,
@@ -2495,12 +2515,12 @@ const PREVIOUS_BACKUPS = [
           "lastReview": "2026-08-14"
         },
         "230": {
-          "interval": 4,
-          "ease": 2.5,
+          "interval": 5,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-18",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-23",
+          "lastReview": "2026-08-18"
         },
         "231": {
           "interval": 10,
@@ -3543,244 +3563,244 @@ const PREVIOUS_BACKUPS = [
           "lastReview": "2026-08-15"
         },
         "361": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "362": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "363": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "364": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "365": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "366": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "367": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "368": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "369": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "370": {
-          "interval": 3,
+          "interval": 8,
           "ease": 2.5,
-          "level": 1,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-25",
+          "lastReview": "2026-08-17"
         },
         "371": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "372": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "373": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "374": {
-          "interval": 3,
+          "interval": 8,
           "ease": 2.5,
-          "level": 1,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-25",
+          "lastReview": "2026-08-17"
         },
         "375": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "376": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "377": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "378": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "379": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "380": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "381": {
-          "interval": 3,
+          "interval": 8,
           "ease": 2.5,
-          "level": 1,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-25",
+          "lastReview": "2026-08-17"
         },
         "382": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "383": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "384": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "385": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "386": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "387": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "388": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "389": {
-          "interval": 3,
-          "ease": 2.5,
+          "interval": 4,
+          "ease": 2.45,
           "level": 1,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-21",
+          "lastReview": "2026-08-17"
         },
         "390": {
-          "interval": 3,
-          "ease": 2.5,
-          "level": 1,
+          "interval": 10,
+          "ease": 2.65,
+          "level": 2,
           "lapses": 0,
-          "nextReview": "2026-08-17",
-          "lastReview": "2026-08-14"
+          "nextReview": "2026-08-27",
+          "lastReview": "2026-08-17"
         },
         "391": {
           "interval": 3,
@@ -4261,6 +4281,166 @@ const PREVIOUS_BACKUPS = [
           "lapses": 0,
           "nextReview": "2026-08-19",
           "lastReview": "2026-08-16"
+        },
+        "451": {
+          "interval": 3,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-20",
+          "lastReview": "2026-08-17"
+        },
+        "452": {
+          "interval": 3,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-20",
+          "lastReview": "2026-08-17"
+        },
+        "453": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
+        },
+        "454": {
+          "interval": 1,
+          "ease": 2.5,
+          "level": 0,
+          "lapses": 0,
+          "nextReview": "2026-08-18",
+          "lastReview": "2026-08-17"
+        },
+        "455": {
+          "interval": 1,
+          "ease": 2.5,
+          "level": 0,
+          "lapses": 0,
+          "nextReview": "2026-08-18",
+          "lastReview": "2026-08-17"
+        },
+        "456": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
+        },
+        "457": {
+          "interval": 3,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-20",
+          "lastReview": "2026-08-17"
+        },
+        "458": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
+        },
+        "459": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
+        },
+        "460": {
+          "interval": 2,
+          "ease": 2.45,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-20",
+          "lastReview": "2026-08-18"
+        },
+        "461": {
+          "interval": 1,
+          "ease": 2.5,
+          "level": 0,
+          "lapses": 0,
+          "nextReview": "2026-08-18",
+          "lastReview": "2026-08-17"
+        },
+        "462": {
+          "interval": 3,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-20",
+          "lastReview": "2026-08-17"
+        },
+        "463": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
+        },
+        "464": {
+          "interval": 3,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-20",
+          "lastReview": "2026-08-17"
+        },
+        "465": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
+        },
+        "466": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
+        },
+        "467": {
+          "interval": 3,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-20",
+          "lastReview": "2026-08-17"
+        },
+        "468": {
+          "interval": 1,
+          "ease": 2.5,
+          "level": 0,
+          "lapses": 0,
+          "nextReview": "2026-08-18",
+          "lastReview": "2026-08-17"
+        },
+        "469": {
+          "interval": 1,
+          "ease": 2.5,
+          "level": 0,
+          "lapses": 0,
+          "nextReview": "2026-08-18",
+          "lastReview": "2026-08-17"
+        },
+        "470": {
+          "interval": 5,
+          "ease": 2.5,
+          "level": 1,
+          "lapses": 0,
+          "nextReview": "2026-08-22",
+          "lastReview": "2026-08-17"
         }
       },
       "freqRatingState": {
@@ -4722,7 +4902,7 @@ const PREVIOUS_BACKUPS = [
         },
         "115": {
           "rating": "easy",
-          "updatedAt": "2026-08-08T09:48:05.262Z"
+          "updatedAt": "2026-08-18T19:54:55.799Z"
         },
         "116": {
           "rating": "easy",
@@ -5074,7 +5254,7 @@ const PREVIOUS_BACKUPS = [
         },
         "203": {
           "rating": "easy",
-          "updatedAt": "2026-08-08T11:53:12.757Z"
+          "updatedAt": "2026-08-18T19:55:16.898Z"
         },
         "204": {
           "rating": "easy",
@@ -5182,7 +5362,7 @@ const PREVIOUS_BACKUPS = [
         },
         "230": {
           "rating": "hard",
-          "updatedAt": "2026-08-14T20:00:34.757Z"
+          "updatedAt": "2026-08-18T19:55:15.382Z"
         },
         "231": {
           "rating": "easy",
@@ -5705,124 +5885,124 @@ const PREVIOUS_BACKUPS = [
           "updatedAt": "2026-08-15T10:09:53.375Z"
         },
         "361": {
-          "rating": "good",
-          "updatedAt": "2026-08-16T20:18:39.738Z"
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:25:07.131Z"
         },
         "362": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:20:34.822Z"
+          "updatedAt": "2026-08-17T13:27:17.647Z"
         },
         "363": {
           "rating": "hard",
-          "updatedAt": "2026-08-16T20:20:47.104Z"
+          "updatedAt": "2026-08-17T13:29:18.164Z"
         },
         "364": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:17:27.455Z"
+          "updatedAt": "2026-08-17T13:29:19.781Z"
         },
         "365": {
-          "rating": "good",
-          "updatedAt": "2026-08-16T20:18:53.038Z"
+          "rating": "easy",
+          "updatedAt": "2026-08-17T10:02:32.387Z"
         },
         "366": {
-          "rating": "good",
-          "updatedAt": "2026-08-15T10:16:28.169Z"
+          "rating": "easy",
+          "updatedAt": "2026-08-17T10:02:28.773Z"
         },
         "367": {
           "rating": "hard",
-          "updatedAt": "2026-08-16T20:20:33.188Z"
+          "updatedAt": "2026-08-17T13:29:42.746Z"
         },
         "368": {
           "rating": "easy",
-          "updatedAt": "2026-08-15T10:16:22.319Z"
+          "updatedAt": "2026-08-17T10:02:18.506Z"
         },
         "369": {
           "rating": "hard",
-          "updatedAt": "2026-08-16T20:18:56.755Z"
+          "updatedAt": "2026-08-17T13:27:36.964Z"
         },
         "370": {
-          "rating": "hard",
-          "updatedAt": "2026-08-16T20:19:24.188Z"
+          "rating": "good",
+          "updatedAt": "2026-08-17T10:03:01.237Z"
         },
         "371": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:20:35.755Z"
+          "updatedAt": "2026-08-17T13:27:39.963Z"
         },
         "372": {
           "rating": "hard",
-          "updatedAt": "2026-08-16T20:18:02.838Z"
+          "updatedAt": "2026-08-17T13:25:51.764Z"
         },
         "373": {
-          "rating": "easy",
-          "updatedAt": "2026-08-15T10:16:17.119Z"
+          "rating": "hard",
+          "updatedAt": "2026-08-17T13:26:57.897Z"
         },
         "374": {
-          "rating": "easy",
-          "updatedAt": "2026-08-15T10:16:24.853Z"
+          "rating": "good",
+          "updatedAt": "2026-08-17T13:29:36.265Z"
         },
         "375": {
           "rating": "easy",
-          "updatedAt": "2026-08-15T10:16:11.735Z"
+          "updatedAt": "2026-08-17T10:03:25.954Z"
         },
         "376": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:22:07.754Z"
+          "updatedAt": "2026-08-17T10:03:17.772Z"
         },
         "377": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:17:47.638Z"
+          "updatedAt": "2026-08-17T13:26:02.947Z"
         },
         "378": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:21:13.854Z"
+          "updatedAt": "2026-08-17T10:02:50.621Z"
         },
         "379": {
           "rating": "easy",
-          "updatedAt": "2026-08-15T10:16:20.870Z"
+          "updatedAt": "2026-08-17T13:29:32.330Z"
         },
         "380": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:16:59.088Z"
+          "updatedAt": "2026-08-17T10:03:07.021Z"
         },
         "381": {
           "rating": "good",
-          "updatedAt": "2026-08-16T20:22:13.720Z"
+          "updatedAt": "2026-08-17T13:29:49.363Z"
         },
         "382": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:17:57.155Z"
+          "updatedAt": "2026-08-17T13:30:01.330Z"
         },
         "383": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:21:28.072Z"
+          "updatedAt": "2026-08-17T13:25:13.980Z"
         },
         "384": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:21:26.037Z"
+          "updatedAt": "2026-08-17T10:03:17.404Z"
         },
         "385": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:20:36.504Z"
+          "updatedAt": "2026-08-17T10:03:30.503Z"
         },
         "386": {
-          "rating": "easy",
-          "updatedAt": "2026-08-16T20:21:43.420Z"
+          "rating": "hard",
+          "updatedAt": "2026-08-17T13:25:27.247Z"
         },
         "387": {
           "rating": "hard",
-          "updatedAt": "2026-08-16T20:24:45.504Z"
+          "updatedAt": "2026-08-17T13:27:47.297Z"
         },
         "388": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:24:11.838Z"
+          "updatedAt": "2026-08-17T13:26:23.914Z"
         },
         "389": {
-          "rating": "easy",
-          "updatedAt": "2026-08-16T20:23:07.504Z"
+          "rating": "hard",
+          "updatedAt": "2026-08-17T10:03:43.522Z"
         },
         "390": {
           "rating": "easy",
-          "updatedAt": "2026-08-16T20:23:14.453Z"
+          "updatedAt": "2026-08-17T13:26:15.198Z"
         },
         "391": {
           "rating": "easy",
@@ -6063,513 +6243,89 @@ const PREVIOUS_BACKUPS = [
         "450": {
           "rating": "easy",
           "updatedAt": "2026-08-16T20:34:29.402Z"
+        },
+        "451": {
+          "rating": "again",
+          "updatedAt": "2026-08-17T13:28:41.013Z"
+        },
+        "452": {
+          "rating": "good",
+          "updatedAt": "2026-08-17T13:28:46.663Z"
+        },
+        "453": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:28:42.831Z"
+        },
+        "454": {
+          "rating": "hard",
+          "updatedAt": "2026-08-17T13:26:01.364Z"
+        },
+        "455": {
+          "rating": "hard",
+          "updatedAt": "2026-08-17T13:30:18.914Z"
+        },
+        "456": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:29:50.730Z"
+        },
+        "457": {
+          "rating": "again",
+          "updatedAt": "2026-08-17T13:29:06.498Z"
+        },
+        "458": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:26:06.198Z"
+        },
+        "459": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:27:23.963Z"
+        },
+        "460": {
+          "rating": "hard",
+          "updatedAt": "2026-08-18T19:55:03.518Z"
+        },
+        "461": {
+          "rating": "hard",
+          "updatedAt": "2026-08-17T13:29:57.946Z"
+        },
+        "462": {
+          "rating": "good",
+          "updatedAt": "2026-08-17T13:28:33.364Z"
+        },
+        "463": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:29:08.029Z"
+        },
+        "464": {
+          "rating": "good",
+          "updatedAt": "2026-08-17T13:28:54.497Z"
+        },
+        "465": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:27:12.499Z"
+        },
+        "466": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:28:29.214Z"
+        },
+        "467": {
+          "rating": "good",
+          "updatedAt": "2026-08-17T13:26:22.464Z"
+        },
+        "468": {
+          "rating": "hard",
+          "updatedAt": "2026-08-17T13:25:40.697Z"
+        },
+        "469": {
+          "rating": "hard",
+          "updatedAt": "2026-08-17T13:29:30.780Z"
+        },
+        "470": {
+          "rating": "easy",
+          "updatedAt": "2026-08-17T13:26:10.282Z"
         }
       },
       "freqAttempts": [
-        {
-          "id": "80",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "81",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "82",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "67",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 8,
-          "intervalAfter": 26
-        },
-        {
-          "id": "68",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "69",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "70",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "71",
-          "date": "2026-08-04",
-          "result": "good",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 8,
-          "intervalAfter": 20
-        },
-        {
-          "id": "72",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "73",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "74",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "75",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 5,
-          "intervalAfter": 17
-        },
-        {
-          "id": "76",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "77",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "78",
-          "date": "2026-08-04",
-          "result": "hard",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 12
-        },
-        {
-          "id": "79",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "80",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "81",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "82",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 10,
-          "intervalAfter": 35
-        },
-        {
-          "id": "83",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "84",
-          "date": "2026-08-04",
-          "result": "again",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 1
-        },
-        {
-          "id": "85",
-          "date": "2026-08-04",
-          "result": "hard",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 1
-        },
-        {
-          "id": "86",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "87",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "88",
-          "date": "2026-08-04",
-          "result": "good",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 8
-        },
-        {
-          "id": "89",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "90",
-          "date": "2026-08-04",
-          "result": "hard",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 4
-        },
-        {
-          "id": "91",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "92",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "93",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "94",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 5
-        },
-        {
-          "id": "95",
-          "date": "2026-08-04",
-          "result": "hard",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 4
-        },
-        {
-          "id": "96",
-          "date": "2026-08-04",
-          "result": "easy",
-          "wasDue": false,
-          "isNew": false,
-          "intervalBefore": 3,
-          "intervalAfter": 10
-        },
-        {
-          "id": "97",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "98",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "99",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "100",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "101",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "102",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "103",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "104",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "105",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "105",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "106",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "107",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "108",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "109",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "110",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "111",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "112",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "113",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "114",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "115",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "116",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "117",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
-        {
-          "id": "118",
-          "date": "2026-08-05",
-          "result": "manual",
-          "wasDue": false,
-          "isNew": true,
-          "intervalBefore": 0,
-          "intervalAfter": 3
-        },
         {
           "id": "119",
           "date": "2026-08-05",
@@ -9422,8 +9178,6318 @@ const PREVIOUS_BACKUPS = [
           "isNew": true,
           "intervalBefore": 0,
           "intervalAfter": 3
+        },
+        {
+          "id": "172",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "159",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "168",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "174",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "167",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "165",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "160",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "138",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 10
+        },
+        {
+          "id": "85",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 14
+        },
+        {
+          "id": "176",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "173",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "153",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "140",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 13
+        },
+        {
+          "id": "169",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "177",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "179",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "154",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "157",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "84",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 13
+        },
+        {
+          "id": "152",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "175",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "158",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "163",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "151",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "161",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "180",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "162",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "164",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "178",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "213",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "222",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "224",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "218",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "227",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "214",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "230",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "215",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "226",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "228",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "223",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "216",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "219",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "217",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "229",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "212",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "220",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "221",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "211",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "225",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "231",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "232",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "248",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "247",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "233",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "234",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "242",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "246",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "240",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "235",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "244",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "250",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "236",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "245",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "241",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "237",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "249",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "238",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "243",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "239",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "239",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "231",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "240",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "241",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "245",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "247",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "232",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "249",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "235",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "244",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "246",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "238",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "250",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "233",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "242",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "248",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "234",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "243",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "236",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "237",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "256",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "254",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "261",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "269",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "253",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "267",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "265",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "262",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "257",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "263",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "258",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "266",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "270",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "264",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "259",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "268",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "252",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "255",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "251",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "260",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "281",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "274",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "282",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "286",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "278",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "280",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "287",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "288",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "273",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "279",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "275",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "272",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "277",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "284",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "289",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "276",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "271",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "283",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "285",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "290",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "298",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "294",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "300",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "295",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "291",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "293",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "292",
+          "date": "2026-08-10",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "297",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "296",
+          "date": "2026-08-10",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "299",
+          "date": "2026-08-10",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "47",
+          "date": "2026-08-11",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "125",
+          "date": "2026-08-11",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 10
+        },
+        {
+          "id": "301",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "302",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "303",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "304",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "305",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "306",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "307",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "308",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "309",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "310",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "311",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "312",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "313",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "314",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "315",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "316",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "317",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "319",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "320",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "321",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "322",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "323",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "324",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "325",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "326",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "327",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "328",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "329",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "330",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "318",
+          "date": "2026-08-11",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "331",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "332",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "333",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "334",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "335",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "336",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "337",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "338",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "339",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "340",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "341",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "342",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "343",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "344",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "345",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "346",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "347",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "348",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "349",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "350",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "351",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "352",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "353",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "354",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "355",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "356",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "357",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "358",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "359",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "360",
+          "date": "2026-08-12",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "53",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "307",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "315",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "316",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "184",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "321",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "293",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "313",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "213",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "330",
+          "date": "2026-08-14",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "251",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "238",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "220",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "253",
+          "date": "2026-08-14",
+          "result": "again",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 1
+        },
+        {
+          "id": "294",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "298",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "253",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 1,
+          "intervalAfter": 1
+        },
+        {
+          "id": "264",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "295",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "273",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "309",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "218",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "226",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "175",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "208",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "217",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "255",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "291",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "207",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "224",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "249",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "284",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "289",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "302",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "272",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "327",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "235",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "242",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "214",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "288",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "268",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "266",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "239",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "37",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "113",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 13
+        },
+        {
+          "id": "261",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "244",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "325",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "270",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "212",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "162",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 13
+        },
+        {
+          "id": "301",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "329",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "88",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "290",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "240",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "260",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "230",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "361",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "362",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "363",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "364",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "365",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "366",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "367",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "368",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "369",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "369",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "370",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "371",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "372",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "373",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "374",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "375",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "376",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "377",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "378",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "379",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "380",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "381",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "382",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "383",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "384",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "385",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "386",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "387",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "388",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "389",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "390",
+          "date": "2026-08-14",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "44",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 12
+        },
+        {
+          "id": "256",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "247",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "314",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "87",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "300",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "305",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "317",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "318",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "234",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "282",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "33",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "296",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "197",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 13
+        },
+        {
+          "id": "286",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "271",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "280",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "58",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "324",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "219",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "278",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "241",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "51",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "157",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 13
+        },
+        {
+          "id": "55",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "60",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "276",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "259",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "91",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "254",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "310",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "89",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "328",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "52",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "236",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "312",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "211",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "225",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "246",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "107",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 13
+        },
+        {
+          "id": "35",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "43",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "322",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "299",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "281",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "93",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "40",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "306",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "229",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "92",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "139",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "39",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "231",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "86",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "64",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 10
+        },
+        {
+          "id": "32",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "232",
+          "date": "2026-08-14",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "274",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "283",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "98",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "105",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "303",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "275",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "215",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "221",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "36",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "222",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "292",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "277",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "49",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "216",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "252",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "54",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "287",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "323",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "233",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "223",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "31",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "30",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "227",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "258",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "228",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "45",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "237",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "57",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "50",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "59",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "320",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "245",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "41",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "265",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "42",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "83",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "38",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "65",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "319",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "262",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "96",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "285",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "263",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "297",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "269",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "250",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "243",
+          "date": "2026-08-14",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "311",
+          "date": "2026-08-14",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "304",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "279",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "248",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "257",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "326",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "308",
+          "date": "2026-08-14",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "267",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "209",
+          "date": "2026-08-14",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "360",
+          "date": "2026-08-15",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "334",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "333",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "335",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "343",
+          "date": "2026-08-15",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "351",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "347",
+          "date": "2026-08-15",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "332",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "331",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "358",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "346",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "344",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "336",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "356",
+          "date": "2026-08-15",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "338",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "359",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "253",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 1,
+          "intervalAfter": 4
+        },
+        {
+          "id": "348",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "354",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "357",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "353",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "355",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "345",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "350",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "349",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "340",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "342",
+          "date": "2026-08-15",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "341",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "339",
+          "date": "2026-08-15",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "337",
+          "date": "2026-08-15",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "352",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "391",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "392",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "393",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "394",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "395",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "396",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "397",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "398",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "399",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "375",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "373",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "379",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "368",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "374",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "366",
+          "date": "2026-08-15",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "400",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "401",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "402",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "403",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "404",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "406",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "407",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "408",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "409",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "410",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "411",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "413",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "412",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "414",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "415",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "416",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "405",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "417",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "418",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "420",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "419",
+          "date": "2026-08-15",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "398",
+          "date": "2026-08-15",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "394",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "409",
+          "date": "2026-08-15",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "402",
+          "date": "2026-08-15",
+          "result": "skip",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 0,
+          "intervalAfter": 0
+        },
+        {
+          "id": "421",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "421",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "422",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "423",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "424",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "425",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "426",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "427",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "428",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "429",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "430",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "431",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "432",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "433",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "434",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "435",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "436",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "437",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "438",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "439",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "440",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "441",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "442",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "443",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "444",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "445",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "446",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "447",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "448",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "449",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "450",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "448",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "449",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "450",
+          "date": "2026-08-16",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "380",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "364",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "372",
+          "date": "2026-08-16",
+          "result": "again",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "377",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "382",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "372",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "369",
+          "date": "2026-08-16",
+          "result": "again",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "361",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "365",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "369",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "370",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "367",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "362",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "371",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "385",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "363",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "378",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "384",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "383",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "386",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "376",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "381",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "400",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "402",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "399",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "401",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "406",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "389",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "395",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "408",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "390",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "405",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "388",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "404",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "397",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "396",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "403",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "407",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "387",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "393",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "392",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "391",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "410",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "418",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "426",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "427",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "419",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "412",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "415",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "421",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "424",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "425",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "417",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "411",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "416",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "413",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "428",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "420",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "414",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "423",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "422",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "429",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "436",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "437",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "449",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "438",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "444",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "443",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "442",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "446",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "447",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "441",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "430",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "431",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "445",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "435",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "440",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "432",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "439",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "433",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "434",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "448",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "450",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 3
+        },
+        {
+          "id": "148",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "150",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "193",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "142",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "146",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "61",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "202",
+          "date": "2026-08-16",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 10
+        },
+        {
+          "id": "128",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "129",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "66",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "143",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "133",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "48",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "195",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 20
+        },
+        {
+          "id": "46",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "144",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "137",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "147",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "63",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "127",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 27
+        },
+        {
+          "id": "186",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "149",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "145",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "131",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "123",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "103",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 26
+        },
+        {
+          "id": "134",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "62",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "136",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "132",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 27
+        },
+        {
+          "id": "126",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "78",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 12,
+          "intervalAfter": 32
+        },
+        {
+          "id": "190",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 8,
+          "intervalAfter": 20
+        },
+        {
+          "id": "141",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "130",
+          "date": "2026-08-16",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "135",
+          "date": "2026-08-16",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 27
+        },
+        {
+          "id": "368",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "366",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "365",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "378",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "370",
+          "date": "2026-08-17",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "380",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "384",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "376",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "375",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "385",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "389",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "361",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "383",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "386",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "468",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 1
+        },
+        {
+          "id": "372",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "454",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 1
+        },
+        {
+          "id": "377",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "458",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "470",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "390",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "467",
+          "date": "2026-08-17",
+          "result": "good",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "388",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "373",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "465",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "362",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "459",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "369",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "371",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "387",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "466",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "462",
+          "date": "2026-08-17",
+          "result": "good",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "451",
+          "date": "2026-08-17",
+          "result": "again",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 0,
+          "intervalAfter": 0
+        },
+        {
+          "id": "453",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "452",
+          "date": "2026-08-17",
+          "result": "good",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "464",
+          "date": "2026-08-17",
+          "result": "good",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "457",
+          "date": "2026-08-17",
+          "result": "again",
+          "wasDue": false,
+          "isNew": false,
+          "intervalBefore": 0,
+          "intervalAfter": 0
+        },
+        {
+          "id": "463",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "363",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "364",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "469",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 1
+        },
+        {
+          "id": "379",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "374",
+          "date": "2026-08-17",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "367",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 4
+        },
+        {
+          "id": "381",
+          "date": "2026-08-17",
+          "result": "good",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 8
+        },
+        {
+          "id": "456",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 5
+        },
+        {
+          "id": "461",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 1
+        },
+        {
+          "id": "382",
+          "date": "2026-08-17",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 3,
+          "intervalAfter": 10
+        },
+        {
+          "id": "455",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 1
+        },
+        {
+          "id": "460",
+          "date": "2026-08-17",
+          "result": "hard",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 1
+        },
+        {
+          "id": "451",
+          "date": "2026-08-17",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "457",
+          "date": "2026-08-17",
+          "result": "manual",
+          "wasDue": false,
+          "isNew": true,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "115",
+          "date": "2026-08-18",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
+        },
+        {
+          "id": "460",
+          "date": "2026-08-18",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 1,
+          "intervalAfter": 2
+        },
+        {
+          "id": "230",
+          "date": "2026-08-18",
+          "result": "hard",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 4,
+          "intervalAfter": 5
+        },
+        {
+          "id": "203",
+          "date": "2026-08-18",
+          "result": "easy",
+          "wasDue": true,
+          "isNew": false,
+          "intervalBefore": 10,
+          "intervalAfter": 35
         }
-      ]
+      ],
+      "freqDailyGoal": 20,
+      "freqDailyQueue": [
+        "471",
+        "472",
+        "473",
+        "474",
+        "475",
+        "476",
+        "477",
+        "478",
+        "479",
+        "480",
+        "481",
+        "482",
+        "483",
+        "484",
+        "485",
+        "486",
+        "487",
+        "488",
+        "489",
+        "490"
+      ],
+      "freqDailyQueueDate": "2026-08-18",
+      "freqDailyQueueDone": [],
+      "reviewPromptDate": "2026-08-18",
+      "attempts": [
+        {
+          "id": "un10",
+          "date": "2026-05-23",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "understand",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "un19",
+          "date": "2026-05-23",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "understand",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "un21",
+          "date": "2026-05-23",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "understand",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "un22",
+          "date": "2026-05-23",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "understand",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "em11",
+          "date": "2026-05-23",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "emergency",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "em1",
+          "date": "2026-05-23",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "emergency",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "hl23",
+          "date": "2026-08-02",
+          "mode": "practice",
+          "direction": "de2en",
+          "result": "got",
+          "topic": "health",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "ap1",
+          "date": "2026-08-04",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "appointments",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "wk15",
+          "date": "2026-08-04",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "work",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "so5",
+          "date": "2026-08-04",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "social",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "wk3",
+          "date": "2026-08-04",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "work",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        },
+        {
+          "id": "ph16",
+          "date": "2026-08-04",
+          "mode": "manual",
+          "direction": "de2en",
+          "result": "manual",
+          "topic": "phone",
+          "wasDue": false,
+          "intervalBefore": 0,
+          "intervalAfter": 3
+        }
+      ],
+      "settings": {
+        "externalTts": true
+      }
     }
   }
 ];
