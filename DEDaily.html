@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#4F46E5">
-  <meta name="description" content="Your daily German practice — learn sentences, vocabulary, and grammar">
+  <meta name="theme-color" content="#f2f3ef">
+  <meta name="description" content="Leben in Deutschland üben. 310 BAMF-Fragen für Baden-Württemberg und ein Probetest mit 33 Fragen.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="DeutschDaily">
-  <title>DeutschDaily</title>
+  <title>Leben in Deutschland – DeutschDaily</title>
   <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="src/assets/icon-512.png">
   <link rel="manifest" href="manifest.json">
@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="src/styles.css?v=progress-20260902">
+  <link rel="stylesheet" href="src/styles.css?v=lid-home-20261120">
 </head>
 
 <body>
@@ -26,22 +26,24 @@
   <div class="dashboard-layout">
     <aside class="sidebar">
       <div class="sidebar-logo-wrap">
-        <button class="sidebar-logo" onclick="nav('today')" type="button" aria-label="DeutschDaily home">
+        <button class="sidebar-logo" onclick="nav('leben-in-deutschland')" type="button" aria-label="DeutschDaily – Startseite" data-aria-en="DeutschDaily home" data-aria-de="DeutschDaily – Startseite">
           <img class="sidebar-logo-mark" src="src/assets/logo.svg" width="32" height="32" alt="">
           <span class="sidebar-logo-text">Deutsch<em>Daily</em></span>
         </button>
-        <div class="sidebar-tagline">Your daily German practice</div>
+        <div class="sidebar-tagline" data-text-en="Your daily German practice" data-text-de="Täglich Deutsch üben">Your daily German practice</div>
       </div>
       <div class="sidebar-divider"></div>
-      <nav class="nav-desktop" style="flex:1">
-        <div class="sidebar-section-label">Learn</div>
-        <button class="nb on" id="nb-today" onclick="nav('today')"><span class="nb-icon-wrap" data-icon="today"></span> Today</button>
-        <button class="nb" id="nb-practice" onclick="nav('practice')"><span class="nb-icon-wrap" data-icon="layers"></span> Practice<span class="nav-due-badge" hidden></span></button>
-        <button class="nb" id="nb-words" onclick="nav('frequency')"><span class="nb-icon-wrap" data-icon="vocab"></span> Vocabulary</button>
-        <button class="nb" id="nb-browse" onclick="nav('browse')"><span class="nb-icon-wrap" data-icon="sentences"></span> Sentences</button>
-        <div class="sidebar-section-label">Track</div>
-        <button class="nb" id="nb-library" onclick="nav('saved')"><span class="nb-icon-wrap" data-icon="library"></span> Library</button>
-        <button class="nb" id="nb-progress" onclick="nav('progress')"><span class="nb-icon-wrap" data-icon="progress"></span> Progress</button>
+      <nav class="nav-desktop">
+        <button class="nb" id="nb-leben-in-deutschland" onclick="nav('leben-in-deutschland')" type="button" lang="de"><span class="nb-icon-wrap" data-icon="landmark"></span>Leben in Deutschland</button>
+        <button class="nb" id="nb-archiv" onclick="nav('archiv')" type="button" lang="de"><span class="nb-icon-wrap" data-icon="library"></span>Archiv</button>
+        <div class="sidebar-section-label" data-text-en="Learn" data-text-de="Lernen">Learn</div>
+        <button class="nb" id="nb-today" onclick="nav('today')"><span class="nb-icon-wrap" data-icon="today"></span><span data-text-en="Today" data-text-de="Heute">Today</span></button>
+        <button class="nb" id="nb-practice" onclick="nav('practice')"><span class="nb-icon-wrap" data-icon="layers"></span><span data-text-en="Practice" data-text-de="Üben">Practice</span><span class="nav-due-badge" hidden></span></button>
+        <button class="nb" id="nb-words" onclick="nav('frequency')"><span class="nb-icon-wrap" data-icon="vocab"></span><span data-text-en="Vocabulary" data-text-de="Wortschatz">Vocabulary</span></button>
+        <button class="nb" id="nb-browse" onclick="nav('browse')"><span class="nb-icon-wrap" data-icon="sentences"></span><span data-text-en="Sentences" data-text-de="Sätze">Sentences</span></button>
+        <div class="sidebar-section-label" data-text-en="Track" data-text-de="Lernstand">Track</div>
+        <button class="nb" id="nb-library" onclick="nav('saved')"><span class="nb-icon-wrap" data-icon="library"></span><span data-text-en="Library" data-text-de="Bibliothek">Library</span></button>
+        <button class="nb" id="nb-progress" onclick="nav('progress')"><span class="nb-icon-wrap" data-icon="progress"></span><span data-text-en="Progress" data-text-de="Fortschritt">Progress</span></button>
       </nav>
       <div class="sidebar-footer">
         <div class="sidebar-footer-stat">
@@ -69,11 +71,8 @@
     </main>
 
     <nav class="mobile-nav">
-      <button class="mnb on" id="mnb-today" onclick="nav('today')"><span class="mnb-icon" data-icon="today"></span>Today</button>
-      <button class="mnb" id="mnb-practice" onclick="nav('practice')"><span class="mnb-icon" data-icon="layers"></span>Practice<span class="nav-due-badge" hidden></span></button>
-      <button class="mnb" id="mnb-words" onclick="nav('frequency')"><span class="mnb-icon" data-icon="vocab"></span>Vocab</button>
-      <button class="mnb" id="mnb-library" onclick="nav('saved')"><span class="mnb-icon" data-icon="library"></span>Library</button>
-      <button class="mnb" id="mnb-progress" onclick="nav('progress')"><span class="mnb-icon" data-icon="progress"></span>Progress</button>
+      <button class="mnb" id="mnb-leben-in-deutschland" onclick="nav('leben-in-deutschland')" type="button" lang="de" aria-label="Leben in Deutschland"><span class="mnb-icon" data-icon="landmark"></span>LiD</button>
+      <button class="mnb" id="mnb-archiv" onclick="nav('archiv')" type="button" lang="de"><span class="mnb-icon" data-icon="library"></span>Archiv</button>
     </nav>
   </div>
 
@@ -90,8 +89,11 @@
   <script src="src/learning.js?v=history-20260523"></script>
   <script src="src/frequency-dictionary-data.js?v=freq-20260623"></script>
   <script src="src/backup-presets.js?v=20260816"></script>
-  <script src="src/storage.js?v=practice-20260901"></script>
-  <script src="src/app.js?v=practice-20260901"></script>
+  <script src="src/storage.js?v=lid-20261120"></script>
+  <script src="src/lid-catalog.js?v=20261120"></script>
+  <script src="src/lid-learning.js?v=20261120"></script>
+  <script src="src/lid-view.js?v=home-20261120"></script>
+  <script src="src/app.js?v=lid-home-20261120"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

@@ -1,12 +1,13 @@
 {
   "name": "DeutschDaily",
   "short_name": "DeutschDaily",
-  "description": "Your daily German practice — learn sentences, vocabulary, and grammar",
+  "description": "Übungen zum Test Leben in Deutschland für Baden-Württemberg",
+  "lang": "de",
   "start_url": "/DEDaily.html",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#4F46E5",
-  "background_color": "#F7F8FA",
+  "theme_color": "#f2f3ef",
+  "background_color": "#f2f3ef",
   "categories": ["education"],
   "icons": [
     {

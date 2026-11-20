@@ -1,11 +1,11 @@
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let V = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'learned', libType: 'vocab', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
+let V = { view: LID_VIEW, todayTab: 'vocab', topicId: null, filter: 'all', query: '', speaking: null, libTab: 'learned', libType: 'vocab', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all', freqPage: 1, freqRevealed: {} };
 
 const PAGE_SIZE = 50;
 
-const VALID_VIEWS = new Set(['today', 'browse', 'practice', 'kursplan', 'frequency', 'saved', 'progress', 'history-day']);
+const VALID_VIEWS = new Set([LID_VIEW, 'archiv', 'today', 'browse', 'practice', 'kursplan', 'frequency', 'saved', 'progress', 'history-day']);
 const VALID_PROGRESS_TABS = new Set(['overview', 'activity']);
 const VALID_FILTERS = new Set(['all', 'unlearned', 'learned', 'favorites']);
 const VALID_FREQ_FILTERS = new Set(['all', 'new', 'due', 'learned', 'saved']);
@@ -15,12 +15,12 @@ const VALID_LIBRARY_TYPES = new Set(['sentences', 'vocab']);
 const TOPIC_IDS = new Set(TOPICS.map(t => t.id));
 
 function normalizeViewName(view) {
-  const raw = String(view || 'today');
+  const raw = String(view || LID_VIEW);
   if (raw === 'library') return 'saved';
   if (raw === 'stats' || raw === 'history') return 'progress';
   if (raw === 'vocab') return 'frequency';
   if (raw === 'patterns') return 'browse';
-  return VALID_VIEWS.has(raw) ? raw : 'today';
+  return VALID_VIEWS.has(raw) ? raw : LID_VIEW;
 }
 function normalizeProgressTab(value) {
   const raw = String(value || 'overview');
@@ -28,7 +28,7 @@ function normalizeProgressTab(value) {
 }
 
 function stateFromUrl(href) {
-  const fallback = { view: 'today', todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'learned', libType: 'vocab', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all' };
+  const fallback = { view: LID_VIEW, todayTab: 'vocab', topicId: null, filter: 'all', query: '', libTab: 'learned', libType: 'vocab', historyDay: null, progressTab: 'overview', progressType: 'vocab', freqFilter: 'all', freqRange: 'all' };
   let params;
   try {
     const base = window.location && window.location.href ? window.location.href : 'http://localhost/';
@@ -37,12 +37,12 @@ function stateFromUrl(href) {
     params = new URLSearchParams(window.location ? window.location.search : '');
   }
   const viewParam = params.get('view');
-  const view = normalizeViewName(viewParam || 'today');
+  const mode = params.get('mode');
+  const view = normalizeViewName(viewParam || (['sentences', 'vocab'].includes(mode) ? 'today' : LID_VIEW));
   const topic = params.get('topic');
   const filter = params.get('filter');
   const range = params.get('range');
   const tab = params.get('tab');
-  const mode = params.get('mode');
   const type = params.get('type');
   const day = normalizeDateKey(params.get('day'));
 
@@ -79,7 +79,7 @@ function urlFromState(state = V) {
   const params = new URLSearchParams();
   const view = normalizeViewName(state.view);
   const publicView = view === 'saved' ? 'library' : (view === 'history-day' || view === 'progress') ? 'progress' : view;
-  if (publicView !== 'today') params.set('view', publicView);
+  if (publicView !== LID_VIEW) params.set('view', publicView);
   if (view === 'today') {
     if (state.todayTab === 'sentences') params.set('mode', 'sentences');
   } else if (view === 'browse') {
@@ -132,6 +132,7 @@ function commitState({ replace = false, scroll = false } = {}) {
 }
 function nav(view, extra) {
   const nextView = normalizeViewName(view);
+  if (V.view === LID_VIEW && nextView === LID_VIEW) LiDView.goHome();
   V.view = nextView;
   if (nextView === 'today' && (extra === 'sentences' || extra === 'vocab')) V.todayTab = extra;
   V.topicId = nextView === 'browse' && extra && TOPIC_IDS.has(extra) ? extra : null;
@@ -142,6 +143,7 @@ function nav(view, extra) {
   V.query = '';
   V.historyDay = null;
   commitState({ scroll: true });
+  if (nextView === 'archiv') document.getElementById('archive-heading')?.focus();
 }
 function setTodayTab(tab) {
   const mode = tab === 'vocab' ? 'vocab' : 'sentences';
@@ -250,7 +252,17 @@ function render() {
   const root = document.getElementById('root');
   // Kursplan needs full-width layout without the default max-width constraint
   root.classList.toggle('kursplan-active', V.view === 'kursplan');
-  if (V.view === 'today') root.innerHTML = renderToday();
+  if (V.view === LID_VIEW) {
+    LiDView.mount(root);
+    return;
+  }
+  LiDView.unmount();
+  document.documentElement.lang = 'en';
+  document.title = 'DeutschDaily';
+  const theme = document.querySelector('meta[name="theme-color"]');
+  if (theme) theme.content = '#4F46E5';
+  if (V.view === 'archiv') root.innerHTML = renderArchive();
+  else if (V.view === 'today') root.innerHTML = renderToday();
   else if (V.view === 'browse' && V.topicId) root.innerHTML = renderTopic();
   else if (V.view === 'browse') root.innerHTML = renderBrowse();
   else if (V.view === 'practice') root.innerHTML = renderPracticeHub();
@@ -272,26 +284,28 @@ function updateHeader() {
   document.getElementById('stk-n').textContent = DB.streak;
 }
 function updateNavBtns() {
-  ['today', 'practice', 'browse', 'kursplan'].forEach(v => {
+  ['archiv', 'today', 'practice', 'browse', 'kursplan', LID_VIEW].forEach(v => {
     const el = document.getElementById('nb-' + v);
     if (el) el.className = 'nb' + (V.view === v ? ' on' : '');
     const mel = document.getElementById('mnb-' + v);
     if (mel) mel.className = 'mnb' + (V.view === v ? ' on' : '');
   });
+  ['nb-', 'mnb-'].forEach(prefix => {
+    [LID_VIEW, 'archiv'].forEach(view => {
+      const entry = document.getElementById(prefix + view);
+      if (!entry) return;
+      if (V.view === view) entry.setAttribute('aria-current', 'page');
+      else entry.removeAttribute('aria-current');
+    });
+  });
   const wordsActive = V.view === 'frequency';
   const wordsBtn = document.getElementById('nb-words');
   if (wordsBtn) wordsBtn.className = 'nb' + (wordsActive ? ' on' : '');
-  const mWordsBtn = document.getElementById('mnb-words');
-  if (mWordsBtn) mWordsBtn.className = 'mnb' + (wordsActive ? ' on' : '');
   const libBtn = document.getElementById('nb-library');
   if (libBtn) libBtn.className = 'nb' + (V.view === 'saved' ? ' on' : '');
-  const mLibBtn = document.getElementById('mnb-library');
-  if (mLibBtn) mLibBtn.className = 'mnb' + (V.view === 'saved' ? ' on' : '');
   const progressActive = V.view === 'progress' || V.view === 'history-day';
   const progBtn = document.getElementById('nb-progress');
   if (progBtn) progBtn.className = 'nb' + (progressActive ? ' on' : '');
-  const mProgBtn = document.getElementById('mnb-progress');
-  if (mProgBtn) mProgBtn.className = 'mnb' + (progressActive ? ' on' : '');
   const dueCount = getFreqReviewIds().length;
   document.querySelectorAll('.nav-due-badge').forEach(el => {
     el.textContent = dueCount > 99 ? '99+' : String(dueCount);
@@ -302,6 +316,25 @@ function updateNavBtns() {
   const showVocabStat = (V.view === 'today' && V.todayTab === 'vocab') || ['frequency', 'practice', 'progress', 'history-day'].includes(V.view);
   if (sc) sc.textContent = showVocabStat ? DB.freqLearned.size : DB.learned.size;
   if (scLbl) scLbl.textContent = showVocabStat ? 'vocab learned' : 'sentences learned';
+}
+
+function renderArchive() {
+  const entries = [
+    ['today', 'Tagesübungen'],
+    ['practice', 'Vokabeltraining'],
+    ['frequency', 'Wortschatz'],
+    ['browse', 'Sätze'],
+    ['kursplan', 'A1–B1-Kursplan'],
+    ['saved', 'Bibliothek'],
+    ['progress', 'Fortschritt und Verlauf'],
+  ];
+  return `<section class="archive-page" aria-labelledby="archive-heading" lang="de">
+    <h1 id="archive-heading" class="page-title" tabindex="-1">DeutschDaily-Archiv</h1>
+    <p class="page-sub">Frühere Übungen und dein gespeicherter Lernstand.</p>
+    <ul class="archive-links">
+      ${entries.map(([view, label]) => `<li><a href="${escapeHtml(urlFromState({ view }))}">${label}</a></li>`).join('')}
+    </ul>
+  </section>`;
 }
 
 // ─── KURSPLAN ─────────────────────────────────
@@ -2518,6 +2551,7 @@ function frequencyPracticePrev() {
 
 // ─── KEYBOARD SHORTCUTS ───────────────────────
 document.addEventListener('keydown', e => {
+  if (V.view === LID_VIEW) return;
   const tag = document.activeElement ? document.activeElement.tagName : '';
   const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable);
   if (isTyping) return;
@@ -2608,10 +2642,17 @@ function showAppToast(message, ok = true) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-function exportData() {
-  const data = backupExportObj();
-  const json = JSON.stringify(data, null, 2);
+function downloadBackupFile(json = backupExportJson()) {
+  const blob = new Blob([json], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `deutschdaily-backup-${today()}.json`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
 
+function exportData() {
+  const json = backupExportJson();
   const existing = document.getElementById('dd-modal');
   if (existing) existing.remove();
   const modal = document.createElement('div');
@@ -2629,14 +2670,7 @@ function exportData() {
   <div class="data-modal-sub">Download as a file <strong>or</strong> copy the JSON text to paste anywhere.</div>
   <textarea id="export-ta" class="data-modal-ta" readonly></textarea>
   <div class="btn-row">
-    <button class="btn btn-primary" style="flex:1" onclick="
-      const json = document.getElementById('export-ta').value;
-      const blob = new Blob([json],{type:'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'deutschdaily-backup-${new Date().toISOString().slice(0, 10)}.json';
-      a.click(); URL.revokeObjectURL(a.href);
-    ">Download file</button>
+    <button class="btn btn-primary" style="flex:1" onclick="downloadBackupFile(document.getElementById('export-ta').value)">Download file</button>
     <button id="copy-export-btn" class="btn btn-secondary" style="flex:1" onclick="
       const btn = document.getElementById('copy-export-btn');
       navigator.clipboard.writeText(document.getElementById('export-ta').value)
@@ -2767,13 +2801,40 @@ function mergeAttempts(currentAttempts = [], importedAttempts = []) {
     .map(([, attempt]) => attempt);
 }
 
-function applyImport(text) {
+async function applyImport(text) {
+  const german = V.view === LID_VIEW;
   const errEl = document.getElementById('import-err');
-  const show = msg => { if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; } };
-  if (!text.trim()) { show('Nothing to import — paste or load a file first.'); return; }
+  const show = (en, de) => {
+    if (errEl) {
+      errEl.textContent = german ? de : en;
+      errEl.style.display = 'block';
+    }
+  };
+  if (!text.trim()) {
+    show('Nothing to import — paste or load a file first.', 'Die Sicherungsdatei ist leer.');
+    return;
+  }
   let parsed;
-  try { parsed = JSON.parse(text); } catch (e) { show('Invalid JSON. Make sure you copied the full text without changes.'); return; }
-  if (!parsed || typeof parsed !== 'object' || (!Array.isArray(parsed.learned) && !Array.isArray(parsed.freqLearned) && !parsed.streak && !parsed.srs && !parsed.freqSrs && !parsed.freqRatingState && !parsed.attempts && !parsed.freqAttempts)) { show('This doesn\'t look like a DeutschDaily backup file.'); return; }
+  try { parsed = JSON.parse(text); } catch (error) {
+    show('Invalid JSON. Make sure you copied the full text without changes.', 'Die Datei enthält ungültige JSON-Daten.');
+    return;
+  }
+  const legacyData = parsed && (Array.isArray(parsed.learned) || Array.isArray(parsed.freqLearned) || parsed.streak || parsed.srs || parsed.freqSrs || parsed.freqRatingState || parsed.attempts || parsed.freqAttempts);
+  if (!legacyData && !parsed?.lid) {
+    show('This doesn\'t look like a DeutschDaily backup file.', 'Wähle eine Sicherungsdatei aus DeutschDaily.');
+    return;
+  }
+  if (parsed.lid !== undefined) {
+    try {
+      if (!await LiDStore.importBackup(parsed.lid)) {
+        show('The Leben in Deutschland backup data is invalid.', 'Die Sicherung enthält ungültige Daten für „Leben in Deutschland“.');
+        return;
+      }
+    } catch (error) {
+      show('The backup could not be imported.', 'Die Sicherung konnte nicht importiert werden.');
+      return;
+    }
+  }
   const imported = normalizeDb(parsed);
   const current = dbToObj();
   const mergeHistoryWords = (a, b) => {
@@ -2811,12 +2872,9 @@ function applyImport(text) {
   render();
   const ddModal = document.getElementById('dd-modal');
   if (ddModal) ddModal.remove();
-  // Show success toast
-  const toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#16A34A;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
-  toast.textContent = `Imported ${merged.freqLearned.length} vocab words · ${merged.learned.length} sentences`;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+  showAppToast(V.view === LID_VIEW
+    ? 'Sicherung importiert.'
+    : `Imported ${merged.freqLearned.length} vocab words · ${merged.learned.length} sentences`);
 }
 
 function escapeHtml(str) {
@@ -3362,6 +3420,7 @@ function startReviewFromReminder() {
 }
 
 function maybeShowReviewReminder() {
+  if (V.view === LID_VIEW || V.view === 'archiv') return;
   if (!shouldPromptReview()) return;
   const dueCount = getFreqReviewIds().length;
   const ov = document.createElement('div');

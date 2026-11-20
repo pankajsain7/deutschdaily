@@ -315,12 +315,14 @@ function objToDB(p) {
   DB = normalizeDb(p);
 }
 
-function backupExportObj() {
-  return { exportedAt: new Date().toISOString(), ...dbToObj() };
+function backupExportObj({ includeLiD = true } = {}) {
+  const backup = { exportedAt: new Date().toISOString(), ...dbToObj() };
+  if (includeLiD) backup.lid = LiDStore.backup();
+  return backup;
 }
 
-function backupExportJson(pretty = true) {
-  return JSON.stringify(backupExportObj(), null, pretty ? 2 : 0);
+function backupExportJson(pretty = true, options) {
+  return JSON.stringify(backupExportObj(options), null, pretty ? 2 : 0);
 }
 
 function parseStoredDb(key, raw) {
@@ -418,7 +420,7 @@ function save() {
     primarySaved = false;
     DB.storageError = 'Progress could not be saved locally. Export a backup before closing the browser.';
   }
-  try { localStorage.setItem(SKEY_BACKUP, backupExportJson(false)); }
+  try { localStorage.setItem(SKEY_BACKUP, backupExportJson(false, { includeLiD: false })); }
   catch (e) {
     backupSaved = false;
     if (primarySaved) DB.storageError = 'Browser storage is nearly full, so the backup copy could not be updated. Export a backup file.';

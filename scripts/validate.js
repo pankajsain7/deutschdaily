@@ -11,6 +11,9 @@ const expectedScripts = [
   'src/learning.js',
   'src/frequency-dictionary-data.js',
   'src/storage.js',
+  'src/lid-catalog.js',
+  'src/lid-learning.js',
+  'src/lid-view.js',
   'src/app.js'
 ];
 
@@ -71,20 +74,39 @@ const source = [
   read('src/content.js'),
   read('src/learning.js'),
   read('src/frequency-dictionary-data.js'),
-  'globalThis.__dd = { TOPICS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY };'
+  read('src/lid-catalog.js'),
+  'globalThis.__dd = { TOPICS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY, LID_QUESTIONS };'
 ].join('\n');
 
 const sandbox = { console };
 vm.createContext(sandbox);
 vm.runInContext(source, sandbox, { filename: 'validate-content.vm.js' });
 
-const { TOPICS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY } = sandbox.__dd;
+const { TOPICS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY, LID_QUESTIONS } = sandbox.__dd;
 const topicIds = new Set(TOPICS.map(t => t.id));
 const sentenceIds = new Set();
 const germanSentences = new Map();
 
 record(SENTENCES.length === 216, `expected 216 sentences, found ${SENTENCES.length}`);
 record(SENTENCE_SEEDS.length === 216, `expected 216 sentence seeds, found ${SENTENCE_SEEDS.length}`);
+
+const expectedLiDIds = [
+  ...Array.from({ length: 300 }, (_, i) => `de-${String(i + 1).padStart(3, '0')}`),
+  ...Array.from({ length: 10 }, (_, i) => `bw-${String(i + 1).padStart(2, '0')}`),
+];
+record(LID_QUESTIONS.length === expectedLiDIds.length, 'expected 310 LiD questions');
+record(LID_QUESTIONS.filter(question => question.figures?.length).length === 13, 'expected 13 LiD questions with figures');
+for (const [index, question] of LID_QUESTIONS.entries()) {
+  record(question.id === expectedLiDIds[index], `invalid LiD catalog order for ${question.id}`);
+  record(Boolean(question.prompt.trim()) && question.options.length === 4 && question.options.every(option => option.trim())
+    && new Set(question.options).size === 4, `invalid question or choices for ${question.id}`);
+  record(Number.isInteger(question.answer) && question.answer >= 0 && question.answer < 4, `invalid solution for ${question.id}`);
+  record(/^[0-9a-f]{16}$/.test(question.revision), `missing content revision for ${question.id}`);
+  for (const figure of question.figures || []) {
+    record(Boolean(figure.alt.trim()) && fs.existsSync(path.join(root, 'src/assets/lid', figure.file)),
+      `missing figure or description for ${question.id}`);
+  }
+}
 
 for (const [topicId, expected] of Object.entries(topicTargets)) {
   const actual = SENTENCES.filter(s => s.t === topicId).length;
@@ -214,6 +236,7 @@ const report = {
   seeds: SENTENCE_SEEDS.length,
   topics: TOPICS.length,
   formalInformal: formalInformal.length,
+  lidQuestions: LID_QUESTIONS.length,
   topicCounts,
   levelCounts,
   errors,

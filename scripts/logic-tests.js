@@ -12,6 +12,9 @@ const source = [
   read('src/frequency-dictionary-data.js'),
   read('src/backup-presets.js'),
   read('src/storage.js'),
+  read('src/lid-catalog.js'),
+  read('src/lid-learning.js'),
+  read('src/lid-view.js'),
   read('src/app.js'),
   'renderPractice = () => {}; updateHeader = () => {}; render = () => {};',
   `globalThis.__test = {
@@ -33,6 +36,7 @@ const source = [
     startPractice,
     setPracticeDir,
     renderKursplan,
+    renderArchive,
     setPracticeState: value => { P = value; },
     getPracticeState: () => P,
     DB: () => DB,
@@ -41,6 +45,9 @@ const source = [
     applyUrlState,
     renderRevealDetails,
     applyImport,
+    backupExportObj,
+    LiDLearning,
+    LiDStore,
     mergeAttempts,
     mergeSrsMaps,
     validFrequencyRankSet,
@@ -744,3 +751,139 @@ assert.ok(backupsHtml.includes('backup-2026-08-18-195530'), 'renders latest back
 assert.ok(backupsHtml.includes('470'), 'renders 470 words stat chip');
 
 console.log('logic-tests passed');
+
+async function testLiD() {
+  const lid = t.LiDLearning;
+  const start = new Date(2026, 10, 20, 12).getTime();
+  const timestamp = offset => new Date(2026, 10, 20 + offset, 12).getTime();
+  const days = offset => {
+    const date = new Date(timestamp(offset));
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  };
+  const roundId = index => String(index).padStart(32, '0');
+  assert.equal(t.stateFromUrl('http://localhost/DEDaily.html?view=leben-in-deutschland').view, 'leben-in-deutschland');
+  assert.equal(t.stateFromUrl('http://localhost/DEDaily.html').view, 'leben-in-deutschland');
+  assert.equal(t.stateFromUrl('http://localhost/').view, 'leben-in-deutschland');
+  assert.equal(t.stateFromUrl('http://localhost/DEDaily.html?view=unknown').view, 'leben-in-deutschland');
+  assert.equal(t.urlFromState({ view: 'leben-in-deutschland' }), '/DEDaily.html');
+  assert.equal(t.stateFromUrl('http://localhost/DEDaily.html?view=archiv').view, 'archiv');
+  assert.equal(t.urlFromState({ view: 'archiv' }), '/DEDaily.html?view=archiv');
+  const legacyHome = t.stateFromUrl('http://localhost/DEDaily.html?mode=sentences');
+  assert.equal(legacyHome.view, 'today');
+  assert.equal(legacyHome.todayTab, 'sentences');
+  assert.equal(t.urlFromState(legacyHome), '/DEDaily.html?view=today&mode=sentences');
+  for (const view of ['today', 'practice', 'frequency', 'browse', 'kursplan', 'library', 'progress']) {
+    assert(t.renderArchive().includes(`href="/DEDaily.html?view=${view}"`), `Archive links to ${view}`);
+  }
+  assert(t.LiDLearning.ready);
+
+  let data = lid.startPractice(lid.blank(), 'state', roundId(1), start);
+  const firstId = data.practice.items[0].questionId;
+  const correct = lid.byId.get(firstId).answer;
+  const wrong = (correct + 1) % 4;
+  assert.equal(firstId, 'bw-01');
+  assert.equal(data.practice.items.length, 10);
+  assert.strictEqual(lid.nextPractice(data, roundId(1), 0), data, 'continue requires a checked answer');
+  data = lid.checkPractice(data, roundId(1), 0, wrong, start);
+  assert.strictEqual(lid.checkPractice(data, roundId(1), 0, wrong, start), data, 'double checks are idempotent');
+  assert.equal(data.practice.items[4].questionId, firstId, 'a missed answer returns after three intervening questions');
+  assert(lid.readData(JSON.parse(JSON.stringify(data))).practice, 'a checked question resumes after reload');
+  assert.equal(lid.progress(data, days(0)).openErrors[0].due, days(1));
+
+  for (let index = 1; index <= 4; index++) {
+    data = lid.nextPractice(data, roundId(1), index - 1, start);
+    const question = lid.byId.get(data.practice.items[index].questionId);
+    data = lid.checkPractice(data, roundId(1), index, index === 4 ? wrong : question.answer, start);
+  }
+  let stats = lid.progress(data, days(0));
+  assert.equal(stats.firstPass, 4);
+  assert.equal(stats.firstPassCorrect, 3);
+  assert.equal(stats.openErrors[0].wrong, 2);
+  assert.equal(stats.perQuestion.size, 4);
+  assert.equal(stats.attempts, 5);
+  data = lid.stopPractice(data, roundId(1));
+
+  const answerError = (roundIndex, offset) => {
+    const id = roundId(roundIndex);
+    data = lid.startPractice(data, 'errors', id, timestamp(offset));
+    assert.equal(data.practice.items[0].questionId, firstId);
+    data = lid.checkPractice(data, id, 0, correct, timestamp(offset));
+    assert.equal(data.practice.items.length, 1, 'a single-question session does not append an immediate retry');
+    data = lid.nextPractice(data, id, 0, timestamp(offset));
+  };
+  answerError(2, 0);
+  assert.equal(lid.progress(data, days(0)).openErrors[0].due, days(1), 'same-day practice does not advance a review');
+  answerError(3, 1);
+  assert.equal(lid.progress(data, days(1)).openErrors[0].due, days(4));
+  answerError(4, 4);
+  stats = lid.progress(data, days(4));
+  assert.equal(stats.openErrors.length, 0, 'two due successes on different days resolve the error');
+  assert.equal(stats.errors[0].due, days(11));
+
+  const daily = lid.startPractice(data, 'daily', roundId(5), timestamp(11), () => 0.5);
+  const dueIds = lid.progress(data, days(11)).due.map(item => item.question.id);
+  assert.deepEqual(daily.practice.items.slice(0, dueIds.length).map(item => item.questionId), dueIds, 'due tasks precede unseen questions');
+  assert.equal(new Set(daily.practice.items.map(item => item.questionId)).size, 10);
+
+  const old = JSON.parse(JSON.stringify(data));
+  old.rounds.forEach(round => round.attempts.forEach(item => {
+    if (item.questionId === firstId) item.revision = '0000000000000000';
+  }));
+  const revision = lid.progress(lid.readData(old), days(5)).perQuestion.get(firstId);
+  assert(revision.revised && revision.due === days(5));
+  assert.equal(revision.wrong, 2, 'revised questions retain prior statistics');
+
+  for (const score of [14, 15, 16, 17]) {
+    const id = roundId(10 + score);
+    let exam = lid.startExam(lid.blank(), id, start, () => 0.5);
+    assert.equal(exam.exam.questionIds.filter(questionId => questionId.startsWith('bw-')).length, 3);
+    assert.equal(new Set(exam.exam.questionIds).size, 33);
+    const deadline = exam.exam.deadline;
+    assert.equal(deadline, start + 3600000);
+    for (let index = 0; index <= score; index++) {
+      exam = lid.moveExam(exam, id, index, start);
+      const answer = lid.byId.get(exam.exam.questionIds[index]).answer;
+      exam = lid.selectExam(exam, id, index, (answer + 1) % 4, start);
+      if (index < score) exam = lid.selectExam(exam, id, index, answer, start);
+    }
+    exam = lid.readData(JSON.parse(JSON.stringify(exam)));
+    assert.equal(exam.exam.deadline, deadline, 'resuming does not restart the timer');
+    exam = lid.selectExam(exam, id, score + 1, 0, deadline + 1);
+    assert.equal(exam.exam, null, 'changes after the deadline finalize without grading the late answer');
+    assert.strictEqual(lid.finishExam(exam, id, deadline), exam, 'double submission is idempotent');
+    const [result] = exam.rounds;
+    assert.equal(result.completion.reason, 'expired');
+    const report = lid.examResult(result);
+    assert.equal(report.correct, score);
+    assert.equal(report.wrong, 1);
+    assert.equal(report.unanswered, 32 - score);
+    assert.equal(report.orientation, score >= 15);
+    assert.equal(report.citizenship, score >= 17);
+    assert.equal(lid.progress(exam, days(0)).openErrors.length, 1);
+    assert.equal(lid.progress(exam, days(0)).firstPass, 0);
+  }
+
+  store[t.LiDStore.key] = 'corrupt local data';
+  t.LiDStore.read();
+  assert.match(t.LiDStore.warning(), /geladen/);
+  await t.LiDStore.update(() => data);
+  assert.equal(store[`${t.LiDStore.key}_recovery`], 'corrupt local data');
+  const backup = t.backupExportObj();
+  assert.equal(backup.lid.rounds.length, data.rounds.length);
+  assert(!Object.hasOwn(backup.lid, 'practice'), 'transferred backups contain practice history');
+  const copy = JSON.stringify(backup);
+  delete store[t.LiDStore.key];
+  await t.applyImport(copy);
+  await t.applyImport(copy);
+  assert.equal(lid.progress(t.LiDStore.read()).attempts, stats.attempts, 'import restores attempts without duplicating them');
+  await t.applyImport(JSON.stringify({ learned: ['un1'] }));
+  assert(t.DB().learned.has('un1'), 'legacy backup remains compatible');
+  assert.equal(lid.progress(t.LiDStore.read()).attempts, stats.attempts, 'legacy backup preserves LiD progress');
+  assert.equal(await t.LiDStore.importBackup({ version: 1, rounds: [{ mode: 'exam', attempts: [] }] }), false);
+  console.log('Leben in Deutschland logic-tests passed');
+}
+
+testLiD().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

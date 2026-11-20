@@ -3,10 +3,15 @@
 // Cache-first strategy for app shell assets
 // ══════════════════════════════════════════════
 
-const CACHE_VERSION = 'dd-v1';
+importScripts('/src/lid-catalog.js?v=20261120');
+
+const CACHE_VERSION = 'dd-v4-lid-home';
+const LID_IMAGES = [...new Set(LID_QUESTIONS.flatMap(
+  question => (question.figures || []).map(figure => `/src/assets/lid/${figure.file}`),
+))];
 const APP_SHELL = [
   '/DEDaily.html',
-  '/src/styles.css',
+  '/src/styles.css?v=lid-home-20261120',
   '/src/styles/base.css',
   '/src/styles/layout.css',
   '/src/styles/cards.css',
@@ -17,15 +22,22 @@ const APP_SHELL = [
   '/src/styles/library.css',
   '/src/styles/responsive.css',
   '/src/styles/enhancements.css',
-  '/src/content.js',
-  '/src/learning.js',
-  '/src/frequency-dictionary-data.js',
-  '/src/backup-presets.js',
-  '/src/storage.js',
-  '/src/app.js',
+  '/src/styles/lid.css?v=home-20261120',
+  '/src/content.js?v=history-20260523',
+  '/src/learning.js?v=history-20260523',
+  '/src/frequency-dictionary-data.js?v=freq-20260623',
+  '/src/backup-presets.js?v=20260816',
+  '/src/storage.js?v=lid-20261120',
+  '/src/lid-catalog.js?v=20261120',
+  '/src/lid-learning.js?v=20261120',
+  '/src/lid-view.js?v=home-20261120',
+  '/src/app.js?v=lid-home-20261120',
+  '/resources/deutsch-a1-b1-kursplan.html',
   '/src/assets/logo.svg',
+  '/src/assets/fonts/source-sans-3.woff2',
   '/src/assets/icon-512.png',
-  '/manifest.json'
+  '/manifest.json',
+  ...LID_IMAGES,
 ];
 
 // Install — pre-cache app shell
@@ -43,7 +55,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys
-          .filter((key) => key !== CACHE_VERSION)
+          .filter((key) => key.startsWith('dd-') && key !== CACHE_VERSION)
           .map((key) => caches.delete(key))
       );
     }).then(() => self.clients.claim())
@@ -68,7 +80,10 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone));
           return response;
         })
-        .catch(() => caches.match('/DEDaily.html'))
+        .catch(async () => {
+          const path = url.pathname === '/' ? '/DEDaily.html' : url.pathname;
+          return (await caches.match(path)) || Response.error();
+        })
     );
     return;
   }

@@ -1,6 +1,6 @@
 # DeutschDaily
 
-DeutschDaily is an offline-first daily German practice app focused on useful resident-life sentences for Germany. It is built as a small static web app, so it can run directly from `DEDaily.html` without a build step or server.
+DeutschDaily opens to **Leben in Deutschland**, with BAMF practice for Baden-Württemberg and a timed mock test. The earlier vocabulary, sentence, and course tools are available under **Archiv**, along with their saved progress. The app runs directly from `DEDaily.html` without a build step or server.
 
 ## Features
 
@@ -16,6 +16,7 @@ DeutschDaily is an offline-first daily German practice app focused on useful res
 - Learn more panels with grammar, variants, reuse ideas, likely replies, and active practice tasks
 - Formal and informal variants where `Sie` / `du` matters
 - Vocabulary-focused progress tab with review forecast, retention, and a "needs attention" list of repeatedly forgotten words
+- **Leben in Deutschland**: 310 official BAMF questions for Baden-Württemberg, adaptive practice, and a 60-minute mock test
 - Offline local progress storage with export/import backups
 - Responsive sidebar navigation with section grouping (Learn, Track)
 - Minimal SVG app logo for browser tabs and bookmarks
@@ -75,6 +76,29 @@ An older key may also exist:
 ```text
 dd_clean_v1
 ```
+
+The Leben-in-Deutschland section saves progress in `dd_lid_v1`. The DeutschDaily JSON export includes its practice and test history. Active rounds resume in the same browser.
+
+## Leben in Deutschland
+
+**Heute üben** beginnt mit fälligen Aufgaben und füllt die Runde mit neuen Aufgaben auf. Die Landesfragen und offene Fehler kannst du gezielt üben. Der Probetest enthält 30 allgemeine Aufgaben und drei Landesfragen in 60 Minuten.
+
+### Quellen und Katalogpflege
+
+- Die Fragen und Antwortoptionen folgen dem [BAMF-Gesamtfragenkatalog](https://www.bamf.de/SharedDocs/Anlagen/DE/Integration/Einbuergerung/gesamtfragenkatalog-lebenindeutschland.pdf?__blob=publicationFile&v=22) vom 07.05.2025. Alle 310 Lösungen wurden am 20.11.2026 in der Antwortanzeige des [BAMF Online-Testcenters](https://oet.bamf.de/ords/oetut/f?p=534:1:0:::::) geprüft.
+- Die farbigen Schaubilder stammen aus dem BAMF-Katalog. Die fünf Fotoaufgaben (55, 70, 181, 216 und 235) verwenden die entsprechenden amtlichen Abbildungen aus [Anlage 1 der Einbürgerungstestverordnung](https://www.gesetze-im-internet.de/einbtestv/anlage_1.html). Die dort veröffentlichten Aufnahmen zeigen die Motive der jeweiligen Aufgaben.
+- Das Prüfungsformat folgt [§ 3 IntTestV](https://www.gesetze-im-internet.de/inttestv/__3.html) und [§ 1 EinbTestV](https://www.gesetze-im-internet.de/einbtestv/__1.html). Die zwei Punkteschwellen stehen in [§ 10 IntTestV](https://www.gesetze-im-internet.de/inttestv/__10.html).
+
+Für eine Aktualisierung den aktuellen BAMF-Katalog herunterladen, Playwright mit Chromium für die Antwortprüfung sowie Poppler und `pdfplumber` für den Import verwenden. `LID_BROWSER_PATH` kann auf einen installierten Chromium-Browser zeigen.
+
+```sh
+node scripts/read-lid-answers.js /tmp/lid-antworten.jsonl
+python3 scripts/import-lid-catalog.py /tmp/lid-katalog.pdf /tmp/lid-antworten.jsonl --verified YYYY-MM-DD
+node scripts/validate.js
+node scripts/logic-tests.js
+```
+
+Die Änderungen am Katalog, alle neu zugeordneten Lösungen und die Abbildungen vor der Veröffentlichung prüfen. Bei einem neuen Katalogstand die URL und Cache-Versionen in der App und im Service Worker aktualisieren. Aufgaben-IDs bleiben bestehen. Ändert sich der Inhalt, wird die Aufgabe erneut fällig.
 
 ## Validate
 
