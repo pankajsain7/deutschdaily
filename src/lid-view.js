@@ -21,9 +21,14 @@ const LiDView = (() => {
     return crypto.randomUUID?.() || Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
   }
 
-  function button(label, action, { primary = false, disabled = false, value = '', variant = '' } = {}) {
+  function button(label, action, { primary = false, disabled = false, value = '', variant = '', note = '' } = {}) {
     const style = primary ? ' lid-button-primary' : variant === 'text' ? ' lid-button-text' : '';
-    return `<button type="button" class="lid-button${style}" data-lid-action="${action}" data-value="${escapeHtml(value)}"${disabled ? ' disabled' : ''}>${escapeHtml(label)}</button>`;
+    const noteId = note && `lid-note-${value || action}`;
+    const description = note ? ` aria-label="${escapeHtml(label)}" aria-describedby="${escapeHtml(noteId)}"` : '';
+    return `<button type="button" class="lid-button${style}" data-lid-action="${action}" data-value="${escapeHtml(value)}"${description}${disabled ? ' disabled' : ''}>
+      ${escapeHtml(label)}
+      ${note ? `<span id="${escapeHtml(noteId)}" class="lid-button-note">${escapeHtml(note)}</span>` : ''}
+    </button>`;
   }
 
   function metric(value, label) {
@@ -46,101 +51,96 @@ const LiDView = (() => {
       </li>`).join('')}</ol>`;
   }
 
-  function studyRow(title, description, control) {
-    return `<li class="lid-study-row">
-      <div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(description)}</p></div>
-      ${control}
-    </li>`;
-  }
-
   function renderHome(data) {
     const stats = LiDLearning.progress(data);
     const attempted = stats.perQuestion.size;
+    const total = LiDLearning.questions.length;
+    const todayCount = Math.min(LiDLearning.batchSize, stats.due.length + total - attempted);
     const lastExam = data.rounds.filter(round => round.mode === 'exam' && round.completion)
       .sort((a, b) => b.completion.at - a.completion.at)[0];
-    const todayCount = Math.min(LiDLearning.batchSize, stats.due.length + LiDLearning.questions.length - attempted);
-    const edition = LID_SOURCE.edition;
     const checked = LID_SOURCE.verified.split('-').reverse().join('.');
     const study = data.rounds.find(round => round.id === data.practice?.id);
-    const hasActivity = stats.attempts > 0 || stats.completed > 0;
-    const dailyDescription = todayCount
-      ? `${todayCount === 1 ? 'Eine Aufgabe' : `${todayCount} Aufgaben`}. Fällige Wiederholungen zuerst.`
-      : 'Alle Aufgaben für heute erledigt.';
-    const errorDescription = stats.openErrors.length
-      ? `${stats.openErrors.length === 1 ? 'Eine offene Aufgabe' : `${stats.openErrors.length} offene Aufgaben`}. Häufige Fehler zuerst.`
-      : 'Keine offenen Fehler.';
+
+    const dailyNote = todayCount
+      ? `${todayCount} ${todayCount === 1 ? 'Frage' : 'Fragen'}${stats.due.length ? ', fällige zuerst' : ''}`
+      : 'Heute sind keine Fragen fällig';
+    const errorCount = stats.openErrors.length;
+    const errorNote = errorCount ? `${errorCount} ${errorCount === 1 ? 'offene Frage' : 'offene Fragen'}` : 'Keine Fehler zur Wiederholung';
+    const practiceButton = study
+      ? button('Übung fortsetzen', 'resume-practice', {
+        primary: true, note: `${titles[study.mode]}, ${study.attempts.length} beantwortet`,
+      })
+      : button('Heute üben', 'start-practice', {
+        primary: true, value: 'daily', disabled: !todayCount, note: dailyNote,
+      });
 
     return `
-      <header class="lid-intro">
-        <p class="lid-region">Baden-Württemberg</p>
-        <h1 id="lid-heading" tabindex="-1">Leben in Deutschland</h1>
-        <p class="lid-intro-description">Die offiziellen BAMF-Fragen für den Orientierungskurs.</p>
-      </header>
-      <div class="lid-overview">
-        <div>
-          <section aria-labelledby="lid-study-heading">
-            <h2 id="lid-study-heading">Üben</h2>
-            <ul class="lid-study-list">
-              ${study ? studyRow('Laufende Übung', `${titles[study.mode]} (${study.attempts.length} beantwortet)`,
-                button('Runde fortsetzen', 'resume-practice', { primary: true })) : ''}
-              ${studyRow('Heute üben', dailyDescription,
-                button('Übung starten', 'start-practice', { primary: true, value: 'daily', disabled: !todayCount || !!study }))}
-              ${studyRow('Landesfragen', `${stats.stateSeen} von 10 bearbeitet`,
-                button('Landesfragen starten', 'start-practice', { value: 'state', disabled: !!study }))}
-              ${studyRow('Fehler wiederholen', errorDescription,
-                button('Fehler üben', 'start-practice', { value: 'errors', disabled: !stats.openErrors.length || !!study }))}
-            </ul>
-          </section>
-          <section aria-labelledby="lid-exam-heading" class="lid-exam-panel lid-section">
-            <div>
-              <h2 id="lid-exam-heading">Probetest</h2>
-              <p>30 allgemeine Aufgaben und 3 Landesfragen in 60 Minuten.</p>
-              ${lastExam ? button(`Letzter Test (${LiDLearning.examResult(lastExam).correct}/33)`, 'show-result', { value: lastExam.id, variant: 'text' }) : ''}
-            </div>
-            ${data.exam ? button('Test fortsetzen', 'resume-exam', { primary: true }) : button('Probetest starten', 'start-exam')}
-          </section>
+      <div class="lid-home">
+        <header class="lid-intro">
+          <h1 id="lid-heading" tabindex="-1">Leben in Deutschland</h1>
+          <p>${total} offizielle BAMF-Fragen für Baden-Württemberg</p>
+        </header>
+        <div class="lid-home-actions">
+          ${practiceButton}
+          ${button(data.exam ? 'Probetest fortsetzen' : 'Probetest starten', data.exam ? 'resume-exam' : 'start-exam', {
+            note: '33 Fragen in 60 Minuten',
+          })}
+          ${button('Landesfragen üben', 'start-practice', {
+            value: 'state', disabled: !!study, note: '10 Fragen zu Baden-Württemberg',
+          })}
+          ${button('Fehler wiederholen', 'start-practice', {
+            value: 'errors', disabled: !!study || !errorCount, note: errorNote,
+          })}
         </div>
-        <section id="lid-fortschritt" aria-labelledby="lid-stats-heading">
-          <h2 id="lid-stats-heading">Dein Fortschritt</h2>
-          <div class="lid-coverage">
-            <p><strong>${attempted} von 310</strong> Aufgaben bearbeitet</p>
-            <progress aria-label="Bearbeitete Aufgaben" value="${attempted}" max="310"></progress>
+        ${study ? '<p class="lid-home-note">Beende deine laufende Übung, um den Übungsmodus zu wechseln.</p>' : ''}
+        <section class="lid-home-progress" aria-labelledby="lid-progress-heading">
+          <div class="lid-progress-heading">
+            <h2 id="lid-progress-heading">Fortschritt</h2>
+            <span>${attempted} von ${total} Fragen</span>
           </div>
-          ${hasActivity ? `<dl class="lid-metrics">
-            ${metric(numbers.format(stats.todayCount), 'Antworten heute')}
-            ${metric(numbers.format(stats.attempts), 'Antworten insgesamt')}
-            ${metric(numbers.format(stats.completed), 'Runden abgeschlossen')}
-            ${metric(numbers.format(stats.days), 'Aktive Lerntage')}
-            ${metric(percent(stats.firstPassCorrect, stats.firstPass), 'Ersttreffer in Übungen')}
-            ${metric(stats.due.length, 'Wiederholungen fällig')}
-          </dl>` : ''}
-          ${stats.errors.length ? `<div class="lid-error-panel">
-            <h3>Fehler pro Aufgabe</h3>
-            <p>${stats.openErrors.filter(error => error.wrong >= 2).length} Aufgaben mit wiederholten, offenen Fehlern</p>
-            ${errorRows(stats.errors.slice(0, 5))}
-            ${stats.errors.length > 5 ? `<details><summary>Weitere Aufgaben anzeigen</summary>${errorRows(stats.errors.slice(5))}</details>` : ''}
-          </div>` : ''}
+          <progress class="lid-coverage" aria-label="Bearbeitete Fragen" value="${attempted}" max="${total}"></progress>
+          <details id="lid-fortschritt" class="lid-home-details">
+            <summary>Statistik und Fehlerverlauf</summary>
+            ${stats.attempts || stats.completed ? `<dl class="lid-metrics">
+              ${metric(numbers.format(stats.todayCount), 'Antworten heute')}
+              ${metric(numbers.format(stats.attempts), 'Antworten insgesamt')}
+              ${metric(numbers.format(stats.completed), 'Runden abgeschlossen')}
+              ${metric(numbers.format(stats.days), 'Aktive Lerntage')}
+              ${metric(percent(stats.firstPassCorrect, stats.firstPass), 'Ersttreffer in Übungen')}
+              ${metric(stats.due.length, 'Wiederholungen fällig')}
+            </dl>` : '<p class="lid-home-note">Deine Statistik erscheint hier, sobald du eine Frage beantwortet hast.</p>'}
+            ${lastExam ? button(`Letzter Test (${LiDLearning.examResult(lastExam).correct}/33)`, 'show-result', { value: lastExam.id, variant: 'text' }) : ''}
+            ${stats.errors.length ? `<div class="lid-error-panel">
+              <h3>Fehler pro Aufgabe</h3>
+              <p>${stats.openErrors.filter(error => error.wrong >= 2).length} Aufgaben mit wiederholten, offenen Fehlern</p>
+              ${errorRows(stats.errors.slice(0, 5))}
+              ${stats.errors.length > 5 ? `<details><summary>Weitere Aufgaben anzeigen</summary>${errorRows(stats.errors.slice(5))}</details>` : ''}
+            </div>` : ''}
+          </details>
         </section>
-      </div>
-      <footer class="lid-footer lid-section">
-        <details>
-          <summary>Lernmethode und Quellen</summary>
-          <p>Überlege dir zuerst selbst eine Antwort und prüfe sie dann. Nach richtigen fälligen Wiederholungen wachsen die Abstände auf 1, 3, 7, 14 und 30 Tage. Nach einem Fehler kommt die Aufgabe morgen wieder dran.</p>
-          <p>BAMF-Katalogstand ${edition}. Lösungen geprüft am ${checked}.</p>
-          <ul>
-            <li><a href="${escapeHtml(LID_SOURCE.pdf)}" target="_blank" rel="noopener">Offizieller BAMF-Fragenkatalog</a></li>
-            <li><a href="${escapeHtml(LID_SOURCE.testCenter)}" target="_blank" rel="noopener">BAMF Online-Testcenter mit Lösungen</a></li>
-            <li><a href="${escapeHtml(LID_SOURCE.regulation)}" target="_blank" rel="noopener">Amtliche Abbildungen in Anlage 1 der Einbürgerungstestverordnung</a></li>
-          </ul>
-        </details>
-        <p>Dein Lernstand bleibt in diesem Browser. Mit einer Sicherung kannst du ihn auf ein anderes Gerät übertragen.</p>
-        <div class="lid-footer-actions">
-          ${button('Sicherung herunterladen', 'export')}
-          ${button('Sicherung importieren', 'import')}
-          <input id="lid-backup-input" type="file" accept=".json,application/json" hidden>
-        </div>
-        <p id="import-err" role="alert" class="lid-import-error" style="display:none"></p>
-      </footer>`;
+        <footer class="lid-footer">
+          <details id="lid-quellen" class="lid-home-details">
+            <summary>Lernmethode und Quellen</summary>
+            <p>Überlege dir zuerst selbst eine Antwort. Bei richtigen Wiederholungen wächst der Abstand auf 1, 3, 7, 14 und 30 Tage. Nach einem Fehler ist die Aufgabe morgen wieder fällig.</p>
+            <p>BAMF-Katalogstand ${LID_SOURCE.edition}. Lösungen geprüft am ${checked}.</p>
+            <ul>
+              <li><a href="${escapeHtml(LID_SOURCE.pdf)}" target="_blank" rel="noopener">Offizieller BAMF-Fragenkatalog</a></li>
+              <li><a href="${escapeHtml(LID_SOURCE.testCenter)}" target="_blank" rel="noopener">BAMF Online-Testcenter mit Lösungen</a></li>
+              <li><a href="${escapeHtml(LID_SOURCE.regulation)}" target="_blank" rel="noopener">Amtliche Abbildungen</a></li>
+            </ul>
+          </details>
+          <details id="lid-sicherung" class="lid-home-details">
+            <summary>Sicherung</summary>
+            <p>Übertrage deinen Lernstand auf ein anderes Gerät.</p>
+            <div class="lid-footer-actions">
+              ${button('Sicherung herunterladen', 'export')}
+              ${button('Sicherung importieren', 'import')}
+              <input id="lid-backup-input" type="file" accept=".json,application/json" hidden>
+            </div>
+            <p id="import-err" role="alert" class="lid-import-error" style="display:none"></p>
+          </details>
+        </footer>
+      </div>`;
   }
 
   function figures(question) {
@@ -310,11 +310,16 @@ const LiDView = (() => {
       const result = screen === 'result' && data.rounds.find(round => round.id === resultId && round.completion);
       content = result ? renderResult(result) : renderHome(data);
     }
+    const openDetails = root.querySelectorAll('.lid-home-details[open]');
     root.innerHTML = `<div class="lid">
       ${warning ? `<p class="lid-warning" role="status">${escapeHtml(warning)}</p>` : ''}
       <p id="lid-action-error" class="lid-warning" role="alert" hidden></p>
       ${content}
     </div>`;
+    for (const { id } of openDetails) {
+      const details = document.getElementById(id);
+      if (details) details.open = true;
+    }
     syncTimer(data.exam);
     if (focus) root.querySelector(focus)?.focus();
   }
