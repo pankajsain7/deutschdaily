@@ -799,6 +799,7 @@ async function testLiD() {
   assert.equal(stats.firstPass, 4);
   assert.equal(stats.firstPassCorrect, 3);
   assert.equal(stats.openErrors[0].wrong, 2);
+  assert.deepEqual([...lid.missedQuestionIds(data.rounds[0])], [firstId], 'a wrong answer and its wrong retry count as one question');
   assert.equal(stats.perQuestion.size, 4);
   assert.equal(stats.attempts, 5);
   data = lid.stopPractice(data, roundId(1));
@@ -832,6 +833,7 @@ async function testLiD() {
   const revision = lid.progress(lid.readData(old), days(5)).perQuestion.get(firstId);
   assert(revision.revised && revision.due === days(5));
   assert.equal(revision.wrong, 2, 'revised questions retain prior statistics');
+  assert.equal(lid.missedQuestionIds(lid.readData(old).rounds[0]).length, 0, 'old revisions stay out of targeted review');
 
   for (const score of [14, 15, 16, 17]) {
     const id = roundId(10 + score);
@@ -861,7 +863,43 @@ async function testLiD() {
     assert.equal(report.citizenship, score >= 17);
     assert.equal(lid.progress(exam, days(0)).openErrors.length, 1);
     assert.equal(lid.progress(exam, days(0)).firstPass, 0);
+    const errors = lid.startMissedPractice(exam, id, roundId(28));
+    assert.deepEqual([...errors.practice.items.map(item => item.questionId)], [result.attempts[score].questionId],
+      'result review repeats only the missed question and skips unanswered and correct ones');
+    assert.strictEqual(lid.startMissedPractice(errors, id, roundId(29)), errors, 'result review preserves an active round');
   }
+
+  const examId = roundId(30);
+  let allWrong = lid.startExam(lid.blank(), examId, start, () => 0.5);
+  for (const [index, questionId] of allWrong.exam.questionIds.entries()) {
+    allWrong = lid.moveExam(allWrong, examId, index, start);
+    allWrong = lid.selectExam(allWrong, examId, index, (lid.byId.get(questionId).answer + 1) % 4, start);
+  }
+  allWrong = lid.finishExam(allWrong, examId, start);
+  const wideReviewId = roundId(31);
+  let wideReview = lid.startMissedPractice(allWrong, examId, wideReviewId);
+  assert.equal(lid.readData(JSON.parse(JSON.stringify(wideReview))).practice.items.length, 33);
+  while (wideReview.practice) {
+    const { index, items } = wideReview.practice;
+    const correctChoice = lid.byId.get(items[index].questionId).answer;
+    wideReview = lid.checkPractice(wideReview, wideReviewId, index, (correctChoice + 1) % 4, start);
+    wideReview = lid.nextPractice(wideReview, wideReviewId, index, start);
+  }
+  assert.equal(lid.readData(JSON.parse(JSON.stringify(wideReview))).rounds[1].attempts.length, 65,
+    'a full result review and its retries survive storage');
+
+  const batchId = roundId(32);
+  let errorBatch = lid.startPractice(allWrong, 'errors', batchId, start + 1);
+  const recentQuestions = new Set(errorBatch.practice.items.map(item => item.questionId));
+  assert.equal(recentQuestions.size, 10);
+  while (errorBatch.practice) {
+    const { index, items } = errorBatch.practice;
+    errorBatch = lid.checkPractice(errorBatch, batchId, index, lid.byId.get(items[index].questionId).answer, start + 1);
+    errorBatch = lid.nextPractice(errorBatch, batchId, index, start + 1);
+  }
+  const nextBatch = lid.startPractice(errorBatch, 'errors', roundId(33), start + 2);
+  assert(nextBatch.practice.items.every(item => !recentQuestions.has(item.questionId)),
+    'the next home review prioritizes open mistakes not reached in the previous batch');
 
   store[t.LiDStore.key] = 'corrupt local data';
   t.LiDStore.read();

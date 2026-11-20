@@ -5,13 +5,13 @@
 
 importScripts('/src/lid-catalog.js?v=20261120');
 
-const CACHE_VERSION = 'dd-v6-lid-modes';
+const CACHE_VERSION = 'dd-v7-lid-mistakes';
 const LID_IMAGES = [...new Set(LID_QUESTIONS.flatMap(
   question => (question.figures || []).map(figure => `/src/assets/lid/${figure.file}`),
 ))];
 const APP_SHELL = [
   '/DEDaily.html',
-  '/src/styles.css?v=lid-modes-20261120',
+  '/src/styles.css?v=lid-mistakes-20261120',
   '/src/styles/base.css',
   '/src/styles/layout.css',
   '/src/styles/cards.css',
@@ -22,15 +22,15 @@ const APP_SHELL = [
   '/src/styles/library.css',
   '/src/styles/responsive.css',
   '/src/styles/enhancements.css',
-  '/src/styles/lid.css?v=modes-20261120',
+  '/src/styles/lid.css?v=mistakes-20261120',
   '/src/content.js?v=history-20260523',
   '/src/learning.js?v=history-20260523',
   '/src/frequency-dictionary-data.js?v=freq-20260623',
   '/src/backup-presets.js?v=20260816',
   '/src/storage.js?v=lid-20261120',
   '/src/lid-catalog.js?v=20261120',
-  '/src/lid-learning.js?v=20261120',
-  '/src/lid-view.js?v=modes-20261120',
+  '/src/lid-learning.js?v=mistakes-20261120',
+  '/src/lid-view.js?v=mistakes-20261120',
   '/src/app.js?v=lid-home-20261120',
   '/resources/deutsch-a1-b1-kursplan.html',
   '/src/assets/logo.svg',

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f2f3ef">
+  <meta name="theme-color" content="#f4f6f2">
   <meta name="description" content="Leben in Deutschland üben. 310 BAMF-Fragen für Baden-Württemberg und ein Probetest mit 33 Fragen.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -18,12 +18,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="src/styles.css?v=lid-modes-20261120">
+  <link rel="stylesheet" href="src/styles.css?v=lid-mistakes-20261120">
 </head>
 
 <body>
 
   <div class="dashboard-layout">
+    <header class="lid-masthead">
+      <div class="lid-masthead-inner">
+        <img src="src/assets/logo.svg" width="26" height="26" alt="">
+        <span>DeutschDaily</span>
+      </div>
+    </header>
     <aside class="sidebar">
       <div class="sidebar-logo-wrap">
         <button class="sidebar-logo" onclick="nav('leben-in-deutschland')" type="button" aria-label="DeutschDaily – Startseite" data-aria-en="DeutschDaily home" data-aria-de="DeutschDaily – Startseite">
@@ -35,7 +41,6 @@
       <div class="sidebar-divider"></div>
       <nav class="nav-desktop">
         <button class="nb" id="nb-leben-in-deutschland" onclick="nav('leben-in-deutschland')" type="button" lang="de"><span class="nb-icon-wrap" data-icon="landmark"></span>Leben in Deutschland</button>
-        <button class="nb" id="nb-archiv" onclick="nav('archiv')" type="button" lang="de"><span class="nb-icon-wrap" data-icon="library"></span>Archiv</button>
         <div class="sidebar-section-label" data-text-en="Learn" data-text-de="Lernen">Learn</div>
         <button class="nb" id="nb-today" onclick="nav('today')"><span class="nb-icon-wrap" data-icon="today"></span><span data-text-en="Today" data-text-de="Heute">Today</span></button>
         <button class="nb" id="nb-practice" onclick="nav('practice')"><span class="nb-icon-wrap" data-icon="layers"></span><span data-text-en="Practice" data-text-de="Üben">Practice</span><span class="nav-due-badge" hidden></span></button>
@@ -72,7 +77,6 @@
 
     <nav class="mobile-nav">
       <button class="mnb" id="mnb-leben-in-deutschland" onclick="nav('leben-in-deutschland')" type="button" lang="de" aria-label="Leben in Deutschland"><span class="mnb-icon" data-icon="landmark"></span>LiD</button>
-      <button class="mnb" id="mnb-archiv" onclick="nav('archiv')" type="button" lang="de"><span class="mnb-icon" data-icon="library"></span>Archiv</button>
     </nav>
   </div>
 
@@ -91,8 +95,8 @@
   <script src="src/backup-presets.js?v=20260816"></script>
   <script src="src/storage.js?v=lid-20261120"></script>
   <script src="src/lid-catalog.js?v=20261120"></script>
-  <script src="src/lid-learning.js?v=20261120"></script>
-  <script src="src/lid-view.js?v=modes-20261120"></script>
+  <script src="src/lid-learning.js?v=mistakes-20261120"></script>
+  <script src="src/lid-view.js?v=mistakes-20261120"></script>
   <script src="src/app.js?v=lid-home-20261120"></script>
   <script>
     if ('serviceWorker' in navigator) {

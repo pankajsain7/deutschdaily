@@ -4,7 +4,7 @@ const LiDView = (() => {
   const titles = {
     daily: 'Heute üben',
     state: 'Landesfragen',
-    errors: 'Fehler wiederholen',
+    errors: 'Fehlertraining',
   };
   const shortDate = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'short' });
   const numbers = new Intl.NumberFormat('de-DE');
@@ -21,14 +21,21 @@ const LiDView = (() => {
     return crypto.randomUUID?.() || Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
   }
 
-  function button(label, action, { primary = false, disabled = false, value = '', variant = '', note = '' } = {}) {
+  function button(label, action, { primary = false, disabled = false, value = '', variant = '' } = {}) {
     const style = primary ? ' lid-button-primary' : variant === 'text' ? ' lid-button-text' : '';
-    const noteId = note && `lid-note-${value || action}`;
-    const description = note ? ` aria-label="${escapeHtml(label)}" aria-describedby="${escapeHtml(noteId)}"` : '';
-    return `<button type="button" class="lid-button${style}" data-lid-action="${action}" data-value="${escapeHtml(value)}"${description}${disabled ? ' disabled' : ''}>
-      ${escapeHtml(label)}
-      ${note ? `<span id="${escapeHtml(noteId)}" class="lid-button-note">${escapeHtml(note)}</span>` : ''}
-    </button>`;
+    return `<button type="button" class="lid-button${style}" data-lid-action="${action}" data-value="${escapeHtml(value)}"${disabled ? ' disabled' : ''}>${escapeHtml(label)}</button>`;
+  }
+
+  /** @param {{ label: string, note: string, icon: string, action?: string, value?: string, primary?: boolean }} mode */
+  function modeTile({ label, note, icon, action, value = '', primary = false }) {
+    const style = primary ? ' lid-mode-primary' : icon === 'repeat' ? ' lid-mode-errors' : '';
+    const noteId = `lid-note-${value || action}`;
+    const content = `
+      <span class="lid-mode-icon">${ICO[icon]}</span>
+      <span><strong>${escapeHtml(label)}</strong><span id="${noteId}" class="lid-mode-note">${escapeHtml(note)}</span></span>`;
+    return action ? `<button type="button" class="lid-mode${style}" data-lid-action="${action}" data-value="${escapeHtml(value)}"
+      aria-label="${escapeHtml(label)}" aria-describedby="${noteId}">${content}</button>`
+      : `<div class="lid-mode${style} lid-mode-unavailable">${content}</div>`;
   }
 
   function metric(value, label) {
@@ -58,21 +65,23 @@ const LiDView = (() => {
     const todayCount = Math.min(LiDLearning.batchSize, stats.due.length + total - attempted);
     const lastExam = data.rounds.filter(round => round.mode === 'exam' && round.completion)
       .sort((a, b) => b.completion.at - a.completion.at)[0];
-    const checked = LID_SOURCE.verified.split('-').reverse().join('.');
     const study = data.rounds.find(round => round.id === data.practice?.id);
-
-    const dailyNote = todayCount
-      ? `${todayCount} ${todayCount === 1 ? 'Frage' : 'Fragen'}${stats.due.length ? ', fällige zuerst' : ''}`
-      : 'Heute sind keine Fragen fällig';
     const errorCount = stats.openErrors.length;
-    const errorNote = errorCount ? `${errorCount} ${errorCount === 1 ? 'offene Frage' : 'offene Fragen'}` : 'Keine Fehler zur Wiederholung';
+    const errorNote = errorCount === 0 ? 'Keine offenen Fehler' : [
+      errorCount === 1 ? '1 offene Frage' : `${errorCount} offene Fragen`,
+      study ? 'Nach der laufenden Übung verfügbar' : errorCount > LiDLearning.batchSize ? `${LiDLearning.batchSize} pro Runde` : '',
+    ].filter(Boolean).join(' · ');
+    const exam = data.exam;
     const practiceButton = study
-      ? button('Übung fortsetzen', 'resume-practice', {
-        primary: true, note: `${titles[study.mode]}, ${study.attempts.length} beantwortet`,
+      ? modeTile({
+        label: study.mode === 'errors' ? 'Fehlertraining fortsetzen' : 'Übung fortsetzen',
+        action: 'resume-practice', icon: study.mode === 'errors' ? 'repeat' : 'book', primary: true,
+        note: study.mode === 'errors' ? `${study.attempts.length} beantwortet` : `${titles[study.mode]} · ${study.attempts.length} beantwortet`,
       })
-      : button('Heute üben', 'start-practice', {
-        primary: true, value: 'daily', disabled: !todayCount, note: dailyNote,
-      });
+      : todayCount ? modeTile({
+        label: 'Heute üben', action: 'start-practice', icon: 'book', value: 'daily', primary: true,
+        note: `${todayCount} ${todayCount === 1 ? 'Frage' : 'Fragen'}${stats.due.length ? ' · Fällige zuerst' : ''}`,
+      }) : '<p class="lid-daily-done">Für heute sind keine Fragen fällig.</p>';
 
     return `
       <div class="lid-home">
@@ -80,66 +89,42 @@ const LiDView = (() => {
           <h1 id="lid-heading" tabindex="-1">Leben in Deutschland</h1>
           <p>${total} offizielle BAMF-Fragen für Baden-Württemberg</p>
         </header>
-        <div class="lid-home-actions">
-          ${practiceButton}
-          ${button(data.exam ? 'Probetest fortsetzen' : 'Probetest starten', data.exam ? 'resume-exam' : 'start-exam', {
-            note: '33 Fragen in 60 Minuten',
-          })}
-          ${button('Landesfragen üben', 'start-practice', {
-            value: 'state', disabled: !!study, note: '10 Fragen zu Baden-Württemberg',
-          })}
-          ${button('Fehler wiederholen', 'start-practice', {
-            value: 'errors', disabled: !!study || !errorCount, note: errorNote,
-          })}
-        </div>
-        ${study ? '<p class="lid-home-note">Beende deine laufende Übung, um den Übungsmodus zu wechseln.</p>' : ''}
-        <section class="lid-home-progress" aria-labelledby="lid-progress-heading">
-          <div class="lid-progress-heading">
-            <h2 id="lid-progress-heading">Fortschritt</h2>
-            <span>${attempted} von ${total} Fragen</span>
+        <div class="lid-home-grid">
+          <div class="lid-home-actions">
+            ${practiceButton}
+            ${modeTile({
+              label: exam ? 'Probetest fortsetzen' : 'Probetest starten',
+              action: exam ? 'resume-exam' : 'start-exam',
+              note: exam ? `${exam.selections.filter(choice => choice !== null).length} von 33 beantwortet` : '33 Fragen in 60 Minuten',
+              icon: 'clock',
+            })}
+            ${study?.mode === 'errors' ? '' : modeTile({
+              label: 'Fehlertraining', icon: 'repeat', value: 'errors', note: errorNote,
+              action: !study && errorCount ? 'start-practice' : undefined,
+            })}
+            ${study ? '' : `<div class="lid-focused-modes">
+              ${modeTile({
+                label: 'Landesfragen üben', action: 'start-practice', icon: 'landmark',
+                value: 'state', note: '10 Fragen zum Bundesland',
+              })}
+            </div>`}
           </div>
-          <progress class="lid-coverage" aria-label="Bearbeitete Fragen" value="${attempted}" max="${total}"></progress>
-          <details id="lid-fortschritt" class="lid-home-details">
-            <summary>Statistik und Fehlerverlauf</summary>
-            ${stats.attempts || stats.completed ? `<dl class="lid-metrics">
-              ${metric(numbers.format(stats.todayCount), 'Antworten heute')}
-              ${metric(numbers.format(stats.attempts), 'Antworten insgesamt')}
-              ${metric(numbers.format(stats.completed), 'Runden abgeschlossen')}
-              ${metric(numbers.format(stats.days), 'Aktive Lerntage')}
-              ${metric(percent(stats.firstPassCorrect, stats.firstPass), 'Ersttreffer in Übungen')}
-              ${metric(stats.due.length, 'Wiederholungen fällig')}
-            </dl>` : '<p class="lid-home-note">Deine Statistik erscheint hier, sobald du eine Frage beantwortet hast.</p>'}
+          <section class="lid-home-progress" aria-labelledby="lid-progress-heading">
+            <h2 id="lid-progress-heading">Fortschritt</h2>
+            <p class="lid-progress-count"><strong>${attempted}</strong> von ${total} Fragen bearbeitet</p>
+            <progress class="lid-coverage" aria-label="Bearbeitete Fragen" value="${attempted}" max="${total}"></progress>
+            ${stats.attempts ? `<dl class="lid-metrics lid-home-metrics">
+              ${metric(numbers.format(stats.todayCount), 'Heute beantwortet')}
+              ${stats.firstPass ? metric(percent(stats.firstPassCorrect, stats.firstPass), 'Beim ersten Versuch richtig') : ''}
+            </dl>` : ''}
             ${lastExam ? button(`Letzter Test (${LiDLearning.examResult(lastExam).correct}/33)`, 'show-result', { value: lastExam.id, variant: 'text' }) : ''}
-            ${stats.errors.length ? `<div class="lid-error-panel">
-              <h3>Fehler pro Aufgabe</h3>
-              <p>${stats.openErrors.filter(error => error.wrong >= 2).length} Aufgaben mit wiederholten, offenen Fehlern</p>
+            ${stats.errors.length ? `<details id="lid-fehlerverlauf" class="lid-home-details">
+              <summary>Fehlerverlauf</summary>
               ${errorRows(stats.errors.slice(0, 5))}
               ${stats.errors.length > 5 ? `<details><summary>Weitere Aufgaben anzeigen</summary>${errorRows(stats.errors.slice(5))}</details>` : ''}
-            </div>` : ''}
-          </details>
-        </section>
-        <footer class="lid-footer">
-          <details id="lid-quellen" class="lid-home-details">
-            <summary>Lernmethode und Quellen</summary>
-            <p>Überlege dir zuerst selbst eine Antwort. Bei richtigen Wiederholungen wächst der Abstand auf 1, 3, 7, 14 und 30 Tage. Nach einem Fehler ist die Aufgabe morgen wieder fällig.</p>
-            <p>BAMF-Katalogstand ${LID_SOURCE.edition}. Lösungen geprüft am ${checked}.</p>
-            <ul>
-              <li><a href="${escapeHtml(LID_SOURCE.pdf)}" target="_blank" rel="noopener">Offizieller BAMF-Fragenkatalog</a></li>
-              <li><a href="${escapeHtml(LID_SOURCE.testCenter)}" target="_blank" rel="noopener">BAMF Online-Testcenter mit Lösungen</a></li>
-              <li><a href="${escapeHtml(LID_SOURCE.regulation)}" target="_blank" rel="noopener">Amtliche Abbildungen</a></li>
-            </ul>
-          </details>
-          <details id="lid-sicherung" class="lid-home-details">
-            <summary>Sicherung</summary>
-            <p>Übertrage deinen Lernstand auf ein anderes Gerät.</p>
-            <div class="lid-footer-actions">
-              ${button('Sicherung herunterladen', 'export')}
-              ${button('Sicherung importieren', 'import')}
-              <input id="lid-backup-input" type="file" accept=".json,application/json" hidden>
-            </div>
-            <p id="import-err" role="alert" class="lid-import-error" style="display:none"></p>
-          </details>
-        </footer>
+            </details>` : ''}
+          </section>
+        </div>
       </div>`;
   }
 
@@ -165,7 +150,7 @@ const LiDView = (() => {
       return `<label class="lid-option${status}">
         <input type="radio" name="lid-choice" value="${index}"${index === choice ? ' checked' : ''}${disabled ? ' disabled' : ' required'}>
         <span>${escapeHtml(label)}</span>
-        ${correct ? `<span class="lid-choice-icon" title="Richtige Antwort">${ICO.check}</span>` : ''}
+        ${correct ? `<span class="lid-choice-icon">${ICO.check}<span class="sr-only">Richtige Antwort</span></span>` : ''}
       </label>`;
     }).join('')}</div>`;
   }
@@ -203,7 +188,7 @@ const LiDView = (() => {
           </div>` : ''}
           <div class="lid-quiz-actions">
             ${answer ? button(isLast ? 'Ergebnis ansehen' : 'Weiter', 'next-practice', { primary: true }) : '<button type="submit" class="lid-button lid-button-primary" disabled>Antwort prüfen</button>'}
-            ${button('Runde beenden', 'stop-practice')}
+            ${button('Runde beenden', 'stop-practice', { variant: 'text' })}
           </div>
         </form>
       </article>`;
@@ -228,10 +213,10 @@ const LiDView = (() => {
           <span id="lid-exam-count">${answered}/33 beantwortet</span>
         </header>
         ${questionContent(question, exam.selections[exam.index])}
-        <div class="lid-quiz-actions">
+        <div class="lid-quiz-actions lid-exam-actions">
           ${button('Zurück', 'move-exam', { value: exam.index - 1, disabled: exam.index === 0 })}
           ${exam.index < 32 ? button('Weiter', 'move-exam', { primary: true, value: exam.index + 1 }) : ''}
-          ${button('Test abgeben', 'ask-exam', { primary: exam.index === 32 })}
+          ${button('Test abgeben', 'ask-exam', { primary: exam.index === 32, variant: 'text' })}
         </div>
         <div class="lid-confirm" id="lid-confirm" hidden>
           <p id="lid-confirm-text" tabindex="-1"></p>
@@ -270,12 +255,13 @@ const LiDView = (() => {
     </section>`;
   }
 
-  function renderResult(round) {
+  function renderResult(round, practice) {
     const isExam = round.mode === 'exam';
     const first = round.attempts.filter(item => !item.retry);
     const firstCorrect = first.filter(item => item.correct).length;
     const retried = round.attempts.length - first.length;
     const report = isExam ? LiDLearning.examResult(round) : null;
+    const missedCount = LiDLearning.missedQuestionIds(round).length;
     return `
       <div class="lid-workbar">${button('Zur Übersicht', 'home')}</div>
       <section class="lid-quiz lid-results">
@@ -292,8 +278,11 @@ const LiDView = (() => {
             <li><strong>Kenntnisnachweis zur Einbürgerung ab 17/33</strong><span>${report.citizenship ? 'Schwelle erreicht' : 'Schwelle nicht erreicht'}</span></li>
           </ul>` : `
           <p>${firstCorrect} von ${first.length} Aufgaben beim ersten Versuch richtig.</p>
-          ${retried ? `<p>${retried} ${retried === 1 ? 'Aufgabe erneut geübt' : 'Aufgaben erneut geübt'}.</p>` : ''}
-          ${first.length - firstCorrect ? '<p>Offene Fehler findest du unter „Fehler wiederholen“.</p>' : ''}`}
+          ${retried ? `<p>${retried} ${retried === 1 ? 'Aufgabe erneut geübt' : 'Aufgaben erneut geübt'}.</p>` : ''}`}
+        ${missedCount ? `<div class="lid-result-review">
+          ${practice ? button('Laufende Übung fortsetzen', 'resume-practice')
+            : button(`Nur Fehler üben (${missedCount})`, 'review-result', { primary: true, value: round.id })}
+        </div>` : ''}
       </section>
       ${isExam ? corrections(round) : ''}`;
   }
@@ -308,7 +297,7 @@ const LiDView = (() => {
     else if (screen === 'exam' && data.exam) content = renderExam(data);
     else {
       const result = screen === 'result' && data.rounds.find(round => round.id === resultId && round.completion);
-      content = result ? renderResult(result) : renderHome(data);
+      content = result ? renderResult(result, data.practice) : renderHome(data);
     }
     const openDetails = root.querySelectorAll('.lid-home-details[open]');
     root.innerHTML = `<div class="lid">
@@ -387,6 +376,11 @@ const LiDView = (() => {
       else if (lidAction === 'start-practice') {
         const data = await LiDStore.update(current => LiDLearning.startPractice(current, value, newRoundId()));
         display(data.practice ? 'practice' : 'home');
+      } else if (lidAction === 'review-result') {
+        const reviewId = newRoundId();
+        const data = await LiDStore.update(current => LiDLearning.startMissedPractice(current, value, reviewId));
+        if (data.practice?.id === reviewId) display('practice');
+        else display('result', value);
       } else if (lidAction === 'resume-practice') display('practice');
       else if (lidAction === 'next-practice') {
         const data = await LiDStore.update(current => LiDLearning.nextPractice(current, id, index));
@@ -420,8 +414,6 @@ const LiDView = (() => {
         root.querySelector('[data-lid-action="ask-exam"]')?.focus();
       } else if (lidAction === 'finish-exam') await finishExam(id);
       else if (lidAction === 'show-result') display('result', value);
-      else if (lidAction === 'export') downloadBackupFile();
-      else if (lidAction === 'import') root.querySelector('#lid-backup-input')?.click();
     } catch (error) {
       showError('Die Aktion konnte nicht ausgeführt werden. Versuche es erneut.');
     } finally {
@@ -457,18 +449,6 @@ const LiDView = (() => {
   async function change(event) {
     if (!active) return;
     const target = event.target;
-    if (target.id === 'lid-backup-input') {
-      const file = target.files[0];
-      if (!file) return;
-      try {
-        await applyImport(await file.text());
-      } catch (error) {
-        showError('Die Sicherungsdatei konnte nicht gelesen werden.');
-      } finally {
-        target.value = '';
-      }
-      return;
-    }
     if (target.name !== 'lid-choice' || !target.checked) return;
     if (screen === 'practice') {
       const submitButton = target.form.querySelector('button[type="submit"]');
@@ -503,7 +483,7 @@ const LiDView = (() => {
     document.documentElement.lang = de ? 'de' : 'en';
     document.title = de ? 'Leben in Deutschland – DeutschDaily' : 'DeutschDaily';
     const theme = document.querySelector('meta[name="theme-color"]');
-    if (theme) theme.content = de ? '#f2f3ef' : '#4F46E5';
+    if (theme) theme.content = de ? '#f4f6f2' : '#4F46E5';
     document.querySelectorAll('[data-text-de]').forEach(element => {
       element.textContent = de ? element.dataset.textDe : element.dataset.textEn;
     });

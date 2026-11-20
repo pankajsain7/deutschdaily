@@ -1,6 +1,6 @@
 # DeutschDaily
 
-DeutschDaily opens to **Leben in Deutschland**, with BAMF practice for Baden-Württemberg and a timed mock test. The earlier vocabulary, sentence, and course tools are available under **Archiv**, along with their saved progress. The app runs directly from `DEDaily.html` without a build step or server.
+DeutschDaily opens to **Leben in Deutschland**, with BAMF practice for Baden-Württemberg and a timed mock test. The earlier vocabulary, sentence, and course tools are still available through the [archive URL](DEDaily.html?view=archiv), along with their saved progress. The app runs directly from `DEDaily.html` without a build step or server.
 
 ## Features
 
@@ -81,7 +81,7 @@ The Leben-in-Deutschland section saves progress in `dd_lid_v1`. The DeutschDaily
 
 ## Leben in Deutschland
 
-**Heute üben** beginnt mit fälligen Aufgaben und füllt die Runde mit neuen Aufgaben auf. Die Landesfragen und offene Fehler kannst du gezielt üben. Der Probetest enthält 30 allgemeine Aufgaben und drei Landesfragen in 60 Minuten.
+**Heute üben** beginnt mit fälligen Aufgaben und füllt die Runde mit neuen Aufgaben auf. **Fehlertraining** wiederholt bis zu zehn offene Fehler aus Übungen und Probetests. Auf der Ergebnisseite startet **Nur Fehler üben** eine Runde mit den falsch beantworteten Fragen aus diesem Ergebnis. Der Probetest enthält 30 allgemeine Aufgaben und drei Landesfragen in 60 Minuten.
 
 ### Quellen und Katalogpflege
 
