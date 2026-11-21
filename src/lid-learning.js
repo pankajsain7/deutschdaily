@@ -1,10 +1,11 @@
-/** @typedef {'daily' | 'state' | 'errors' | 'exam'} LiDMode */
+/** @typedef {'all' | 'daily' | 'state' | 'errors'} LiDPracticeMode */
+/** @typedef {LiDPracticeMode | 'exam'} LiDMode */
 /** @typedef {{ questionId: string, revision: string, choice: number, correct: boolean, at: number, day: string, retry: boolean }} LiDAttempt */
-/** @typedef {{ at: number, reason: 'finished' | 'submitted' | 'expired', unanswered: string[] }} LiDCompletion */
+/** @typedef {{ at: number, reason: 'finished' | 'submitted' | 'expired', unanswered: string[], questionIds?: string[], elapsedMs?: number }} LiDCompletion */
 /** @typedef {{ id: string, mode: LiDMode, attempts: LiDAttempt[], completion: LiDCompletion | null }} LiDRound */
 /** @typedef {{ id: string, edition: string, index: number, items: { questionId: string, retry: boolean }[] }} LiDPractice */
 /** @typedef {{ id: string, edition: string, index: number, questionIds: string[], selections: (number | null)[], deadline: number }} LiDExam */
-/** @typedef {{ version: number, rounds: LiDRound[], practice: LiDPractice | null, exam: LiDExam | null }} LiDData */
+/** @typedef {{ version: number, rounds: LiDRound[], practice: LiDPractice | null, parkedPractices: LiDPractice[], exam: LiDExam | null, savedQuestionIds: string[] }} LiDData */
 
 const LiDLearning = (() => {
   const questions = typeof LID_QUESTIONS === 'undefined' ? [] : LID_QUESTIONS;
@@ -13,16 +14,17 @@ const LiDLearning = (() => {
   const generalIds = questions.filter(question => question.id.startsWith('de-')).map(question => question.id);
   const edition = typeof LID_SOURCE === 'undefined' ? '' : LID_SOURCE.revision;
   const ready = !!edition && generalIds.length === 300 && stateIds.length === 10 && byId.size === 310;
-  const modes = ['daily', 'state', 'errors', 'exam'];
+  const modes = ['all', 'daily', 'state', 'errors', 'exam'];
   const intervals = [1, 3, 7, 14, 30];
   const batchSize = 10;
-  const examSize = 33;
-  const examTime = 60 * 60 * 1000;
-  const practiceLimit = mode => 2 * (mode === 'errors' ? examSize : batchSize);
+  const examRules = Object.freeze({ general: 30, state: 3, minutes: 60, orientation: 15, citizenship: 17 });
+  const examSize = examRules.general + examRules.state;
+  const examTime = examRules.minutes * 60_000;
+  const practiceLimits = { all: questions.length + batchSize, daily: batchSize * 2, state: stateIds.length * 2, errors: examSize * 2 };
 
   /** @returns {LiDData} */
   function blank() {
-    return { version: 1, rounds: [], practice: null, exam: null };
+    return { version: 1, rounds: [], practice: null, parkedPractices: [], exam: null, savedQuestionIds: [] };
   }
 
   const validActiveIndex = (index, size) => Number.isInteger(index) && index >= 0 && index < size;
@@ -34,7 +36,7 @@ const LiDLearning = (() => {
   function normalizeRound(raw) {
     if (!raw || !validRoundId(raw.id) || !modes.includes(raw.mode) || !Array.isArray(raw.attempts)) return null;
     const isExam = raw.mode === 'exam';
-    if (raw.attempts.length > (isExam ? examSize : practiceLimit(raw.mode))) return null;
+    if (raw.attempts.length > (isExam ? examSize : practiceLimits[raw.mode])) return null;
     const seen = new Set();
     const attempts = [];
     for (const item of raw.attempts) {
@@ -54,18 +56,23 @@ const LiDLearning = (() => {
     if (raw.completion != null) {
       const { at, reason, unanswered } = raw.completion;
       if (!validTimestamp(at) || !Array.isArray(unanswered)) return null;
+      completion = { at, reason, unanswered: [...unanswered] };
       if (isExam) {
         const examIds = [...attempts.map(item => item.questionId), ...unanswered];
         if (!['submitted', 'expired'].includes(reason) || !validExamIds(examIds)) return null;
+        const { questionIds, elapsedMs } = raw.completion;
+        if (Array.isArray(questionIds) && validExamIds(questionIds) && questionIds.every(id => examIds.includes(id))) {
+          completion.questionIds = [...questionIds];
+        }
+        if (Number.isSafeInteger(elapsedMs) && elapsedMs >= 0 && elapsedMs <= examTime) completion.elapsedMs = elapsedMs;
       } else if (reason !== 'finished' || !attempts.length || unanswered.length) return null;
-      completion = { at, reason, unanswered: [...unanswered] };
     } else if (isExam && attempts.length) return null;
     return { id: raw.id, mode: raw.mode, attempts, completion };
   }
 
   function validExamIds(ids) {
     return ids.length === examSize && ids.every(validQuestionId) && new Set(ids).size === examSize
-      && ids.filter(id => id.startsWith('bw-')).length === 3;
+      && ids.filter(id => id.startsWith('bw-')).length === examRules.state;
   }
 
   function mergeRounds(existing, incoming) {
@@ -85,11 +92,26 @@ const LiDLearning = (() => {
     return records.includes(null) ? null : mergeRounds([], records);
   }
 
+  /** @param {unknown} raw @returns {string[]} */
+  function readSavedQuestionIds(raw) {
+    return Array.isArray(raw) ? [...new Set(raw.filter(validQuestionId))] : [];
+  }
+
+  /** @param {LiDData} data @param {string} questionId */
+  function toggleSavedQuestion(data, questionId) {
+    if (!byId.has(questionId)) return data;
+    const saved = data.savedQuestionIds;
+    return {
+      ...data,
+      savedQuestionIds: saved.includes(questionId) ? saved.filter(id => id !== questionId) : [questionId, ...saved],
+    };
+  }
+
   function readPractice(raw, rounds) {
     if (!raw || raw.edition !== edition || !Array.isArray(raw.items)
       || !validActiveIndex(raw.index, raw.items.length)) return null;
     const round = rounds.find(item => item.id === raw.id && !item.completion && item.mode !== 'exam');
-    if (!round || raw.items.length > practiceLimit(round.mode)
+    if (!round || raw.items.length > practiceLimits[round.mode]
       || round.attempts.length < raw.index || round.attempts.length > raw.index + 1) return null;
     const seen = new Set();
     const items = [];
@@ -100,9 +122,10 @@ const LiDLearning = (() => {
       const attempt = round.attempts[index];
       if (attempt && (attempt.questionId !== item.questionId || attempt.retry !== item.retry)) return null;
       seen.add(key);
-      items.push({ questionId: item.questionId, retry: item.retry });
+      // Retain answered retries for history and remove pending retries from older rounds.
+      if (attempt || !item.retry) items.push({ questionId: item.questionId, retry: item.retry });
     }
-    return { id: raw.id, edition, index: raw.index, items };
+    return { id: raw.id, edition, index: Math.min(raw.index, items.length - 1), items };
   }
 
   function readExam(raw, rounds) {
@@ -118,16 +141,32 @@ const LiDLearning = (() => {
     };
   }
 
+  const practiceGroup = mode => mode === 'daily' ? 'all' : mode;
+
   function readData(raw) {
     const rounds = readRounds(raw);
     if (!rounds) return null;
-    const practice = readPractice(raw.practice, rounds);
+    const rawParked = Array.isArray(raw.parkedPractices) ? raw.parkedPractices : [raw.pausedPractice];
+    const practiceModes = new Set();
+    const practices = [];
+    for (const candidate of [raw.practice, ...rawParked]) {
+      const practice = readPractice(candidate, rounds);
+      if (!practice) continue;
+      const mode = practiceGroup(rounds.find(round => round.id === practice.id).mode);
+      if (practiceModes.has(mode)) continue;
+      practiceModes.add(mode);
+      practices.push(practice);
+    }
+    const [practice = null, ...parkedPractices] = practices;
     const exam = readExam(raw.exam, rounds);
+    const activeIds = new Set([...practices.map(item => item.id), exam?.id]);
     return {
       version: 1,
-      rounds: rounds.filter(round => round.attempts.length || round.completion || round.id === practice?.id || round.id === exam?.id),
+      rounds: rounds.filter(round => round.attempts.length || round.completion || activeIds.has(round.id)),
       practice,
+      parkedPractices,
       exam,
+      savedQuestionIds: readSavedQuestionIds(raw.savedQuestionIds),
     };
   }
 
@@ -220,8 +259,10 @@ const LiDLearning = (() => {
     return result;
   }
 
-  function exerciseIds(mode, stats, random = Math.random) {
+  function exerciseIds(mode, data, day, random) {
+    if (mode === 'all') return questions.map(question => question.id);
     if (mode === 'state') return [...stateIds];
+    const stats = progress(data, day);
     if (mode === 'errors') {
       return [...stats.openErrors].sort((a, b) => a.lastAttempt - b.lastAttempt)
         .slice(0, batchSize).map(item => item.question.id);
@@ -239,13 +280,39 @@ const LiDLearning = (() => {
     if (!ids.length) return data;
     return {
       ...data, practice: { id, edition, index: 0, items: ids.map(questionId => ({ questionId, retry: false })) },
+      parkedPractices: data.practice ? [...data.parkedPractices, data.practice] : data.parkedPractices,
       rounds: [...data.rounds, { id, mode, attempts: [], completion: null }],
     };
   }
 
+  /** @param {LiDData} data @param {string} id */
+  function resumePractice(data, id) {
+    const practice = data.parkedPractices.find(item => item.id === id);
+    if (!practice) return data;
+    const parkedPractices = data.parkedPractices.filter(item => item.id !== id);
+    if (data.practice) parkedPractices.push(data.practice);
+    return { ...data, practice, parkedPractices };
+  }
+
+  /** @param {LiDData} data @param {LiDPracticeMode} mode */
+  function findPractice(data, mode) {
+    return data.rounds.find(round => practiceGroup(round.mode) === practiceGroup(mode)
+      && (round.id === data.practice?.id || data.parkedPractices.some(item => item.id === round.id)));
+  }
+
+  /** @param {LiDData} data @param {LiDPracticeMode} mode @param {string} id */
   function startPractice(data, mode, id, now = Date.now(), random = Math.random) {
-    if (!ready || data.practice) return data;
-    return beginPractice(data, mode, id, exerciseIds(mode, progress(data, dateKey(now)), random));
+    if (!ready) return data;
+    const round = findPractice(data, mode);
+    if (!round) return beginPractice(data, mode, id, exerciseIds(mode, data, dateKey(now), random));
+    const next = resumePractice(data, round.id);
+    if (mode === 'all' && round.mode === 'daily') {
+      const seen = new Set(next.practice.items.map(item => item.questionId));
+      const remaining = questions.filter(question => !seen.has(question.id));
+      const items = [...next.practice.items, ...remaining.map(question => ({ questionId: question.id, retry: false }))];
+      return { ...next, practice: { ...next.practice, items }, rounds: replaceRound(next, { ...round, mode }) };
+    }
+    return next;
   }
 
   /** @param {LiDRound} round @returns {string[]} */
@@ -259,7 +326,7 @@ const LiDLearning = (() => {
 
   /** @param {LiDData} data @param {string} roundId @param {string} id */
   function startMissedPractice(data, roundId, id) {
-    if (!ready || data.practice) return data;
+    if (!ready || findPractice(data, 'errors')) return data;
     const round = data.rounds.find(item => item.id === roundId && item.completion);
     return round ? beginPractice(data, 'errors', id, missedQuestionIds(round)) : data;
   }
@@ -271,12 +338,8 @@ const LiDLearning = (() => {
     if (round.attempts[index]) return data;
     const item = practice.items[index];
     const attempt = makeAttempt(item.questionId, choice, item.retry, now);
-    const items = [...practice.items];
-    if (!attempt.correct && !item.retry && index + 1 < items.length) {
-      items.splice(Math.min(index + 4, items.length), 0, { ...item, retry: true });
-    }
     return {
-      ...data, practice: { ...practice, items },
+      ...data,
       rounds: replaceRound(data, { ...round, attempts: [...round.attempts, attempt] }),
     };
   }
@@ -288,19 +351,25 @@ const LiDLearning = (() => {
     if (!round.attempts[index]) return data;
     if (index + 1 < practice.items.length) return { ...data, practice: { ...practice, index: index + 1 } };
     return {
-      ...data, practice: null,
+      ...data, practice: data.parkedPractices.at(-1) ?? null, parkedPractices: data.parkedPractices.slice(0, -1),
       rounds: replaceRound(data, { ...round, completion: { at: now, reason: 'finished', unanswered: [] } }),
     };
   }
 
   function stopPractice(data, id) {
     if (data.practice?.id !== id) return data;
-    return { ...data, practice: null, rounds: data.rounds.filter(round => round.id !== id || round.attempts.length) };
+    return {
+      ...data, practice: data.parkedPractices.at(-1) ?? null, parkedPractices: data.parkedPractices.slice(0, -1),
+      rounds: data.rounds.filter(round => round.id !== id || round.attempts.length),
+    };
   }
 
   function startExam(data, id, now = Date.now(), random = Math.random) {
     if (!ready || data.exam) return data;
-    const questionIds = [...shuffled(generalIds, random).slice(0, 30), ...shuffled(stateIds, random).slice(0, 3)];
+    const questionIds = [
+      ...shuffled(generalIds, random).slice(0, examRules.general),
+      ...shuffled(stateIds, random).slice(0, examRules.state),
+    ];
     return {
       ...data,
       exam: { id, edition, index: 0, deadline: now + examTime, questionIds, selections: questionIds.map(() => null) },
@@ -319,7 +388,10 @@ const LiDLearning = (() => {
       if (choice === null) unanswered.push(questionId);
       else attempts.push(makeAttempt(questionId, choice, false, at));
     });
-    const completion = { at, reason: now >= exam.deadline ? 'expired' : 'submitted', unanswered };
+    const completion = {
+      at, reason: now >= exam.deadline ? 'expired' : 'submitted', unanswered,
+      questionIds: exam.questionIds, elapsedMs: Math.max(0, at - (exam.deadline - examTime)),
+    };
     return {
       ...data, exam: null, rounds: replaceRound(data, { id, mode: 'exam', attempts, completion }),
     };
@@ -329,7 +401,7 @@ const LiDLearning = (() => {
     const exam = data.exam;
     if (!exam || exam.id !== id) return data;
     if (now >= exam.deadline) return finishExam(data, id, now);
-    if (exam.index !== index || !validChoice(choice) || exam.selections[index] === choice) return data;
+    if (exam.index !== index || (choice !== null && !validChoice(choice)) || exam.selections[index] === choice) return data;
     const selections = [...exam.selections];
     selections[index] = choice;
     return { ...data, exam: { ...exam, selections } };
@@ -347,13 +419,14 @@ const LiDLearning = (() => {
     const correct = round.attempts.filter(item => item.correct).length;
     return {
       correct, wrong: round.attempts.length - correct, unanswered: round.completion.unanswered.length,
-      orientation: correct >= 15, citizenship: correct >= 17,
+      orientation: correct >= examRules.orientation, citizenship: correct >= examRules.citizenship,
     };
   }
 
   return {
-    questions, byId, ready, blank, batchSize, examSize, progress, readData, readRounds, mergeRounds,
-    startPractice, startMissedPractice, missedQuestionIds, checkPractice, nextPractice, stopPractice,
+    questions, byId, ready, blank, batchSize, examSize, examRules, progress, readData, readRounds, mergeRounds,
+    readSavedQuestionIds, toggleSavedQuestion,
+    startPractice, findPractice, startMissedPractice, missedQuestionIds, checkPractice, nextPractice, stopPractice,
     startExam, selectExam, moveExam, finishExam, examResult,
   };
 })();
@@ -419,17 +492,22 @@ const LiDStore = (() => {
   }
 
   function backup() {
-    return { version: 1, rounds: read().rounds.filter(round => round.attempts.length || round.completion) };
+    const { rounds, savedQuestionIds } = read();
+    return { version: 1, rounds: rounds.filter(round => round.attempts.length || round.completion), savedQuestionIds };
   }
 
   async function importBackup(raw) {
     const rounds = LiDLearning.readRounds(raw);
     if (!rounds) return false;
-    if (rounds.length) {
+    const savedQuestionIds = LiDLearning.readSavedQuestionIds(raw.savedQuestionIds);
+    if (rounds.length || savedQuestionIds.length) {
       await update(data => {
         // An imported copy of the current round can be newer than the local cursor.
-        const next = LiDLearning.readData({ ...data, rounds: LiDLearning.mergeRounds(data.rounds, rounds) });
-        return next;
+        return LiDLearning.readData({
+          ...data,
+          rounds: LiDLearning.mergeRounds(data.rounds, rounds),
+          savedQuestionIds: [...data.savedQuestionIds, ...savedQuestionIds],
+        });
       });
     }
     return true;

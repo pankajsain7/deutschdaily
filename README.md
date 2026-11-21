@@ -81,7 +81,12 @@ The Leben-in-Deutschland section saves progress in `dd_lid_v1`. The DeutschDaily
 
 ## Leben in Deutschland
 
-**Heute üben** beginnt mit fälligen Aufgaben und füllt die Runde mit neuen Aufgaben auf. **Fehlertraining** wiederholt bis zu zehn offene Fehler aus Übungen und Probetests. Auf der Ergebnisseite startet **Nur Fehler üben** eine Runde mit den falsch beantworteten Fragen aus diesem Ergebnis. Der Probetest enthält 30 allgemeine Aufgaben und drei Landesfragen in 60 Minuten.
+- **Alle Fragen üben** führt mit sofortiger Rückmeldung durch alle 310 Katalogfragen. **Baden-Württemberg üben** enthält alle zehn Landesfragen. Beim Wechsel bleibt die Position in jeder Runde gespeichert.
+- **Fehlertraining** wiederholt bis zu zehn offene Fehler aus Übungen und Probetests. In der Auswertung führt **Nur Fehler üben** zu den falschen Antworten des jeweiligen Tests, sofern keine Fehlerrunde läuft.
+- In jeder Übungsrunde erscheint jede Frage einmal. Falsche Antworten bleiben für spätere Fehlerrunden gespeichert.
+- **Probetest** zieht 30 allgemeine Aufgaben und drei Landesfragen. Für jede Aufgabe gibt es vier Optionen und eine richtige Antwort. Die Uhr läuft ab dem Start und der Test endet mit der Abgabe oder nach 60 Minuten. Die Auswertung zeigt falsche und offene Aufgaben mit Lösungen.
+- **Lernstand** zeigt Katalogabdeckung, Übungsgenauigkeit und bisherige Probetests mit Punktzahlen, Testergebnissen und Bearbeitungszeit, soweit sie gespeichert wurde.
+- Das Lesezeichen an einer Frage legt sie unter **Gespeichert** ab. Dort lassen sich die Antwortmöglichkeiten und die Lösung nachlesen.
 
 ### Quellen und Katalogpflege
 

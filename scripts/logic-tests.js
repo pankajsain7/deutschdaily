@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { randomUUID } = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -48,6 +49,7 @@ const source = [
     backupExportObj,
     LiDLearning,
     LiDStore,
+    LiDView,
     mergeAttempts,
     mergeSrsMaps,
     validFrequencyRankSet,
@@ -118,6 +120,9 @@ const sandbox = {
   console,
   setTimeout: () => 0,
   clearTimeout: () => {},
+  setInterval: () => 1,
+  clearInterval: () => {},
+  crypto: { randomUUID },
   window: {
     __DD_SKIP_AUTO_INIT: true,
     location: { href: 'http://localhost/DEDaily.html', pathname: '/DEDaily.html', search: '' },
@@ -152,6 +157,7 @@ const sandbox = {
   document: {
     activeElement: null,
     body: makeElement(),
+    documentElement: makeElement(),
     addEventListener: () => {},
     createElement: makeElement,
     execCommand: () => true,
@@ -786,30 +792,59 @@ async function testLiD() {
   assert.strictEqual(lid.nextPractice(data, roundId(1), 0), data, 'continue requires a checked answer');
   data = lid.checkPractice(data, roundId(1), 0, wrong, start);
   assert.strictEqual(lid.checkPractice(data, roundId(1), 0, wrong, start), data, 'double checks are idempotent');
-  assert.equal(data.practice.items[4].questionId, firstId, 'a missed answer returns after three intervening questions');
+  assert.equal(data.practice.items.length, 10, 'a wrong state answer does not extend the round');
   assert(lid.readData(JSON.parse(JSON.stringify(data))).practice, 'a checked question resumes after reload');
   assert.equal(lid.progress(data, days(0)).openErrors[0].due, days(1));
 
-  for (let index = 1; index <= 4; index++) {
+  for (let index = 1; index < 10; index++) {
     data = lid.nextPractice(data, roundId(1), index - 1, start);
     const question = lid.byId.get(data.practice.items[index].questionId);
-    data = lid.checkPractice(data, roundId(1), index, index === 4 ? wrong : question.answer, start);
+    data = lid.checkPractice(data, roundId(1), index, question.answer, start);
   }
+
+  const { practice, rounds: [stateRound] } = data;
+  const queuedItems = [...practice.items];
+  queuedItems.splice(4, 0, { questionId: firstId, retry: true });
+  const parked = lid.readData({
+    ...data, practice: null, parkedPractices: [{ ...practice, index: 4, items: queuedItems }],
+    rounds: [{ ...stateRound, attempts: stateRound.attempts.slice(0, 4) }],
+  });
+  assert.deepEqual(parked.practice.items, practice.items, 'a saved round drops pending retries');
+  assert.equal(parked.practice.index, 4, 'a cursor on a pending retry advances to the next unanswered question');
+
+  const lateAttempt = stateRound.attempts[8];
+  const tail = lid.readData({
+    ...data,
+    practice: { ...practice, index: 10, items: [...practice.items, { questionId: lateAttempt.questionId, retry: true }] },
+    rounds: [{ ...stateRound, attempts: stateRound.attempts.map((attempt, index) => index === 8
+      ? { ...attempt, choice: (attempt.choice + 1) % 4, correct: false } : attempt) }],
+  });
+  assert.equal(tail.practice.index, 9, 'a trailing retry returns to the final answered question');
+  assert.equal(lid.nextPractice(tail, roundId(1), 9, start).practice, null);
+
+  data = lid.nextPractice(data, roundId(1), 9, start);
+  assert.equal(data.practice, null, 'state practice completes after ten questions');
   let stats = lid.progress(data, days(0));
-  assert.equal(stats.firstPass, 4);
-  assert.equal(stats.firstPassCorrect, 3);
-  assert.equal(stats.openErrors[0].wrong, 2);
-  assert.deepEqual([...lid.missedQuestionIds(data.rounds[0])], [firstId], 'a wrong answer and its wrong retry count as one question');
-  assert.equal(stats.perQuestion.size, 4);
-  assert.equal(stats.attempts, 5);
-  data = lid.stopPractice(data, roundId(1));
+  assert.equal(stats.firstPass, 10);
+  assert.equal(stats.firstPassCorrect, 9);
+  assert.equal(stats.openErrors[0].wrong, 1);
+  assert.deepEqual([...lid.missedQuestionIds(data.rounds[0])], [firstId]);
+  assert.equal(stats.perQuestion.size, 10);
+  assert.equal(stats.attempts, 10);
+
+  const legacyHistory = lid.readData({
+    ...data, rounds: [{ ...stateRound, completion: data.rounds[0].completion,
+      attempts: [...stateRound.attempts, { ...stateRound.attempts[0], retry: true }] }],
+  });
+  assert.equal(lid.progress(legacyHistory, days(0)).openErrors[0].wrong, 2, 'answered retries stay in history');
+  assert.deepEqual([...lid.missedQuestionIds(legacyHistory.rounds[0])], [firstId], 'a past retry appears once in mistake practice');
 
   const answerError = (roundIndex, offset) => {
     const id = roundId(roundIndex);
     data = lid.startPractice(data, 'errors', id, timestamp(offset));
     assert.equal(data.practice.items[0].questionId, firstId);
     data = lid.checkPractice(data, id, 0, correct, timestamp(offset));
-    assert.equal(data.practice.items.length, 1, 'a single-question session does not append an immediate retry');
+    assert.equal(data.practice.items.length, 1);
     data = lid.nextPractice(data, id, 0, timestamp(offset));
   };
   answerError(2, 0);
@@ -825,6 +860,24 @@ async function testLiD() {
   const dueIds = lid.progress(data, days(11)).due.map(item => item.question.id);
   assert.deepEqual(daily.practice.items.slice(0, dueIds.length).map(item => item.questionId), dueIds, 'due tasks precede unseen questions');
   assert.equal(new Set(daily.practice.items.map(item => item.questionId)).size, 10);
+  const dailyAnswer = lid.byId.get(daily.practice.items[0].questionId).answer;
+  assert.equal(lid.checkPractice(daily, roundId(5), 0, (dailyAnswer + 1) % 4, timestamp(11)).practice.items.length, 10);
+  const legacyDay = lid.readData({ ...daily, parkedPractices: undefined });
+  const expanded = lid.startPractice(legacyDay, 'all', roundId(6), timestamp(11));
+  assert.equal(expanded.practice.id, daily.practice.id, 'opening all questions preserves a legacy round');
+  assert.deepEqual(expanded.practice.items.slice(0, 10), daily.practice.items);
+  assert.equal(new Set(expanded.practice.items.map(item => item.questionId)).size, 310);
+
+  const allId = roundId(7);
+  let all = lid.startPractice(lid.blank(), 'all', allId, start);
+  assert.deepEqual(all.practice.items.map(item => item.questionId), lid.questions.map(question => question.id));
+  for (const [index, question] of lid.questions.entries()) {
+    all = lid.checkPractice(all, allId, index, index ? question.answer : (question.answer + 1) % 4, start);
+    all = lid.nextPractice(all, allId, index, start);
+  }
+  assert.equal(all.practice, null);
+  assert.equal(lid.readData(JSON.parse(JSON.stringify(all))).rounds[0].attempts.length, 310);
+  assert.equal(lid.progress(all).openErrors.length, 1, 'a catalog miss carries over to mistake practice');
 
   const old = JSON.parse(JSON.stringify(data));
   old.rounds.forEach(round => round.attempts.forEach(item => {
@@ -832,7 +885,7 @@ async function testLiD() {
   }));
   const revision = lid.progress(lid.readData(old), days(5)).perQuestion.get(firstId);
   assert(revision.revised && revision.due === days(5));
-  assert.equal(revision.wrong, 2, 'revised questions retain prior statistics');
+  assert.equal(revision.wrong, 1, 'revised questions retain prior statistics');
   assert.equal(lid.missedQuestionIds(lid.readData(old).rounds[0]).length, 0, 'old revisions stay out of targeted review');
 
   for (const score of [14, 15, 16, 17]) {
@@ -840,6 +893,8 @@ async function testLiD() {
     let exam = lid.startExam(lid.blank(), id, start, () => 0.5);
     assert.equal(exam.exam.questionIds.filter(questionId => questionId.startsWith('bw-')).length, 3);
     assert.equal(new Set(exam.exam.questionIds).size, 33);
+    const otherExam = lid.startExam(lid.blank(), roundId(40), start, () => 0.6);
+    assert.notDeepEqual(exam.exam.questionIds, otherExam.exam.questionIds, 'a new exam draws a fresh sample');
     const deadline = exam.exam.deadline;
     assert.equal(deadline, start + 3600000);
     for (let index = 0; index <= score; index++) {
@@ -848,6 +903,7 @@ async function testLiD() {
       exam = lid.selectExam(exam, id, index, (answer + 1) % 4, start);
       if (index < score) exam = lid.selectExam(exam, id, index, answer, start);
     }
+    const examOrder = exam.exam.questionIds;
     exam = lid.readData(JSON.parse(JSON.stringify(exam)));
     assert.equal(exam.exam.deadline, deadline, 'resuming does not restart the timer');
     exam = lid.selectExam(exam, id, score + 1, 0, deadline + 1);
@@ -855,6 +911,8 @@ async function testLiD() {
     assert.strictEqual(lid.finishExam(exam, id, deadline), exam, 'double submission is idempotent');
     const [result] = exam.rounds;
     assert.equal(result.completion.reason, 'expired');
+    assert.equal(result.completion.elapsedMs, 3600000);
+    assert.deepEqual(lid.readData(JSON.parse(JSON.stringify(exam))).rounds[0].completion.questionIds, examOrder);
     const report = lid.examResult(result);
     assert.equal(report.correct, score);
     assert.equal(report.wrong, 1);
@@ -885,8 +943,8 @@ async function testLiD() {
     wideReview = lid.checkPractice(wideReview, wideReviewId, index, (correctChoice + 1) % 4, start);
     wideReview = lid.nextPractice(wideReview, wideReviewId, index, start);
   }
-  assert.equal(lid.readData(JSON.parse(JSON.stringify(wideReview))).rounds[1].attempts.length, 65,
-    'a full result review and its retries survive storage');
+  assert.equal(lid.readData(JSON.parse(JSON.stringify(wideReview))).rounds[1].attempts.length, 33,
+    'a full result review asks each missed question once');
 
   const batchId = roundId(32);
   let errorBatch = lid.startPractice(allWrong, 'errors', batchId, start + 1);
@@ -894,9 +952,11 @@ async function testLiD() {
   assert.equal(recentQuestions.size, 10);
   while (errorBatch.practice) {
     const { index, items } = errorBatch.practice;
-    errorBatch = lid.checkPractice(errorBatch, batchId, index, lid.byId.get(items[index].questionId).answer, start + 1);
+    const correctChoice = lid.byId.get(items[index].questionId).answer;
+    errorBatch = lid.checkPractice(errorBatch, batchId, index, index ? correctChoice : (correctChoice + 1) % 4, start + 1);
     errorBatch = lid.nextPractice(errorBatch, batchId, index, start + 1);
   }
+  assert.equal(errorBatch.rounds.find(round => round.id === batchId).attempts.length, 10, 'mistake practice does not repeat within a round');
   const nextBatch = lid.startPractice(errorBatch, 'errors', roundId(33), start + 2);
   assert(nextBatch.practice.items.every(item => !recentQuestions.has(item.questionId)),
     'the next home review prioritizes open mistakes not reached in the previous batch');
@@ -921,7 +981,164 @@ async function testLiD() {
   console.log('Leben in Deutschland logic-tests passed');
 }
 
-testLiD().catch(error => {
+function mountLiDForTest() {
+  const { LiDLearning, LiDStore, LiDView } = t;
+  store[LiDStore.key] = JSON.stringify(LiDLearning.blank());
+  const events = new Map();
+  const root = makeElement();
+  root.addEventListener = (type, listener) => events.set(type, listener);
+  const click = (lidAction, value = '', owner = null, row = null) => {
+    assert.match(root.innerHTML, new RegExp(`<button[^>]*data-lid-action="${lidAction}" data-value="${value}"[^>]*>`));
+    const trigger = { ...makeElement(), dataset: { lidAction, value }, closest: selector => selector === '.lid-bookmark-row' ? row : owner };
+    return events.get('click')({ target: { closest: () => trigger } });
+  };
+  const submit = (id, choice) => events.get('submit')({
+    target: { matches: selector => selector === '.lid-exercise-form', dataset: { lidRound: id, index: '0' } },
+    submitter: { name: 'lid-choice', value: String(choice) },
+    preventDefault: () => {},
+  });
+
+  LiDView.mount(root);
+  return { root, click, submit, events };
+}
+
+async function testLiDErrorTraining() {
+  const { LiDLearning, LiDStore, LiDView } = t;
+  const { root, click, submit } = mountLiDForTest();
+  assert.doesNotMatch(root.innerHTML, /Fehlerverlauf/);
+  await click('start-practice', 'all');
+  const catalog = LiDStore.read().practice;
+  assert.match(root.innerHTML, /Aufgabe 1 von 310/);
+  await click('home');
+  await click('start-practice', 'state');
+  const practice = LiDStore.read().practice;
+  assert.match(root.innerHTML, /Aufgabe 1 von 10/);
+  await click('home');
+  await click('start-practice', 'errors');
+  assert.match(root.innerHTML, /Du hast keine offenen Fehler/);
+  assert.strictEqual(LiDStore.read().practice, practice, 'an empty review leaves the round open');
+
+  await click('home');
+  await click('start-practice', 'state');
+  const correct = LiDLearning.byId.get(practice.items[0].questionId).answer;
+  await submit(practice.id, (correct + 1) % 4);
+  assert.match(root.innerHTML, /<strong>Falsch<\/strong>/);
+  await click('home');
+  await click('start-practice', 'errors');
+  const { practice: review, parkedPractices } = LiDStore.read();
+  assert.equal(review.items[0].questionId, practice.items[0].questionId);
+  assert.deepEqual([...parkedPractices.map(item => item.id)], [catalog.id, practice.id]);
+
+  const saved = LiDLearning.readData(JSON.parse(store[LiDStore.key]));
+  assert.deepEqual(saved.practice, review, 'an unanswered review resumes after reload');
+  assert.deepEqual(saved.parkedPractices, parkedPractices, 'both paused rounds resume after reload');
+  const legacy = LiDLearning.readData({ ...saved, parkedPractices: undefined, pausedPractice: parkedPractices[1] });
+  assert.equal(legacy.parkedPractices[0].id, practice.id, 'the previous single paused round is retained');
+
+  await click('home');
+  await click('start-practice', 'state');
+  assert.match(root.innerHTML, /<strong>Falsch<\/strong>/, 'the regular round keeps its answered question');
+  await click('home');
+  await click('start-practice', 'errors');
+  await submit(review.id, correct);
+  await click('next-practice', '', { dataset: { lidRound: review.id, index: '0' } });
+  assert.match(root.innerHTML, /Übungsrunde abgeschlossen/);
+  assert.deepEqual(LiDStore.read().practice, parkedPractices[1], 'finishing review restores the most recent round');
+  await click('home');
+  await click('start-practice', 'all');
+  assert.deepEqual(LiDStore.read().practice, catalog, 'the catalog round can still be resumed');
+  LiDView.unmount();
+  console.log('Fehlertraining navigation tests passed');
+}
+
+async function testLiDExamProfile() {
+  const { LiDLearning, LiDStore, LiDView } = t;
+  const { root, click, events } = mountLiDForTest();
+  const nodes = new Map();
+  root.querySelector = selector => {
+    if (!nodes.has(selector)) nodes.set(selector, makeElement());
+    return nodes.get(selector);
+  };
+  await click('profile');
+  assert.match(root.innerHTML, /Hier erscheinen deine abgeschlossenen Probetests/);
+  await click('home');
+  await click('exam-intro');
+  assert.match(root.innerHTML, /30 allgemeine Fragen und 3 Fragen zu Baden-Württemberg/);
+  assert.equal(LiDStore.read().exam, null, 'exam instructions do not start the timer');
+
+  await click('start-exam');
+  assert.equal([...root.innerHTML.matchAll(/class="lid-exam-number/g)].length, 33);
+  assert.match(root.innerHTML, /id="lid-timer"/);
+  const exam = LiDStore.read().exam;
+  const owner = { dataset: { lidRound: exam.id, index: '0' } };
+  await click('toggle-bookmark', exam.questionIds[0], owner);
+  assert.strictEqual(LiDStore.read().exam, exam, 'saving a question does not change the timer or answers');
+  const wrong = (LiDLearning.byId.get(exam.questionIds[0]).answer + 1) % 4;
+  const choose = () => events.get('change')({
+    target: { name: 'lid-choice', checked: true, value: String(wrong), closest: () => owner },
+  });
+  await choose();
+  assert.equal(LiDStore.read().exam.selections[0], wrong);
+  assert.doesNotMatch(root.innerHTML, /id="lid-feedback"/);
+  await click('clear-exam-answer', '', owner);
+  assert.equal(LiDStore.read().exam.selections[0], null);
+  await choose();
+  await click('ask-exam', '', owner);
+  assert.equal(root.querySelector('#lid-confirm').hidden, false);
+  assert.match(root.querySelector('#lid-confirm-text').textContent, /32 Aufgaben/);
+  await click('finish-exam', '', owner);
+  assert.equal(LiDStore.read().exam, null);
+  assert.match(root.innerHTML, /Falsche und offene Antworten/);
+  assert.match(root.innerHTML, /<strong>Deine Antwort<\/strong>/);
+  assert.match(root.innerHTML, /<strong>Richtige Antwort<\/strong>/);
+  assert.match(root.innerHTML, /class="lid-bookmark"[^>]+aria-pressed="true"/);
+  const { completion } = LiDStore.read().rounds[0];
+  assert.equal(completion.reason, 'submitted');
+  assert(completion.elapsedMs < 3600000);
+
+  await click('profile');
+  assert.match(root.innerHTML, /0\/33 · Ergebnis ansehen/);
+  assert.match(root.innerHTML, /Offene Fehler<\/dt><dd>1/);
+  await click('show-result', exam.id);
+  assert.match(root.innerHTML, /Falsche und offene Antworten/);
+  await click('review-result', exam.id);
+  assert.equal(LiDStore.read().practice.items[0].questionId, exam.questionIds[0]);
+  LiDView.unmount();
+  console.log('Mock exam and profile navigation tests passed');
+}
+
+async function testLiDBookmarks() {
+  const { LiDLearning, LiDStore, LiDView } = t;
+  const { root, click } = mountLiDForTest();
+  await click('saved');
+  assert.match(root.innerHTML, /auf das Lesezeichen/);
+  await click('home');
+  await click('start-practice', 'all');
+  const { questionId } = LiDStore.read().practice.items[0];
+  await click('toggle-bookmark', questionId);
+  assert.equal(JSON.parse(store[LiDStore.key]).savedQuestionIds[0], questionId);
+  assert.equal(LiDStore.read().rounds[0].attempts.length, 0, 'saving does not submit an answer');
+
+  const { lid: backup } = t.backupExportObj();
+  assert.equal(backup.rounds.length, 0);
+  delete store[LiDStore.key];
+  assert(await LiDStore.importBackup({ ...backup, savedQuestionIds: [questionId, questionId, 'invalid'] }));
+  assert(await LiDStore.importBackup({ version: 1, rounds: [] }));
+  assert.deepEqual([...LiDStore.read().savedQuestionIds], [questionId], 'bookmarks merge without duplicate or invalid IDs');
+
+  await click('home');
+  await click('saved');
+  assert(root.innerHTML.includes(LiDLearning.byId.get(questionId).prompt));
+  let removed = false;
+  await click('toggle-bookmark', questionId, null, { remove: () => { removed = true; } });
+  assert.equal(removed, true);
+  assert.equal(LiDStore.read().savedQuestionIds.length, 0);
+  assert.match(root.innerHTML, /auf das Lesezeichen/);
+  LiDView.unmount();
+  console.log('Bookmark storage and navigation tests passed');
+}
+
+testLiD().then(testLiDErrorTraining).then(testLiDExamProfile).then(testLiDBookmarks).catch(error => {
   console.error(error);
   process.exitCode = 1;
 });
