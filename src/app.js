@@ -1842,20 +1842,33 @@ function speak(text, id) {
     V.speaking = null; updateSpeakBtns(); _ttsAudio = null;
   };
 
-  function speakWithWebSpeech() {
+  function speakWithWebSpeech(offline = false) {
     if (!window.speechSynthesis) { done(); return; }
     waitForGermanVoice(() => {
       if (runId !== _ttsRunId) return;
+      const voice = offline
+        ? speechSynthesis.getVoices().find(item => item.localService && /^de\b/i.test(item.lang))
+        : _bestVoice;
+      if (offline && !voice) {
+        done();
+        showAppToast('Install a German system voice to listen offline.', false);
+        return;
+      }
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'de-DE';
       u.rate = 0.82;
       u.pitch = 1;
       u.volume = 1;
-      if (_bestVoice) u.voice = _bestVoice;
+      if (voice) u.voice = voice;
       u.onend = done;
       u.onerror = done;
       speechSynthesis.speak(u);
     });
+  }
+
+  if (navigator.onLine === false) {
+    speakWithWebSpeech(true);
+    return;
   }
 
   if (isLocalFilePage() && isMobile) {
@@ -2647,8 +2660,10 @@ function downloadBackupFile(json = backupExportJson()) {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   link.download = `deutschdaily-backup-${today()}.json`;
+  document.body.appendChild(link);
   link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 30_000);
 }
 
 function exportData() {
@@ -2801,9 +2816,8 @@ function mergeAttempts(currentAttempts = [], importedAttempts = []) {
     .map(([, attempt]) => attempt);
 }
 
-async function applyImport(text) {
+async function applyImport(text, errEl = document.getElementById('import-err')) {
   const german = V.view === LID_VIEW;
-  const errEl = document.getElementById('import-err');
   const show = (en, de) => {
     if (errEl) {
       errEl.textContent = german ? de : en;
@@ -2812,27 +2826,27 @@ async function applyImport(text) {
   };
   if (!text.trim()) {
     show('Nothing to import — paste or load a file first.', 'Die Sicherungsdatei ist leer.');
-    return;
+    return false;
   }
   let parsed;
   try { parsed = JSON.parse(text); } catch (error) {
     show('Invalid JSON. Make sure you copied the full text without changes.', 'Die Datei enthält ungültige JSON-Daten.');
-    return;
+    return false;
   }
   const legacyData = parsed && (Array.isArray(parsed.learned) || Array.isArray(parsed.freqLearned) || parsed.streak || parsed.srs || parsed.freqSrs || parsed.freqRatingState || parsed.attempts || parsed.freqAttempts);
   if (!legacyData && !parsed?.lid) {
     show('This doesn\'t look like a DeutschDaily backup file.', 'Wähle eine Sicherungsdatei aus DeutschDaily.');
-    return;
+    return false;
   }
   if (parsed.lid !== undefined) {
     try {
       if (!await LiDStore.importBackup(parsed.lid)) {
         show('The Leben in Deutschland backup data is invalid.', 'Die Sicherung enthält ungültige Daten für „Leben in Deutschland“.');
-        return;
+        return false;
       }
     } catch (error) {
       show('The backup could not be imported.', 'Die Sicherung konnte nicht importiert werden.');
-      return;
+      return false;
     }
   }
   const imported = normalizeDb(parsed);
@@ -2868,13 +2882,18 @@ async function applyImport(text) {
     settings: current.settings,
   };
   objToDB(merged);
-  save();
+  const saved = save();
   render();
+  if (!saved) {
+    show('The imported progress could not be saved on this device.', 'Der importierte Lernstand konnte nicht auf diesem Gerät gespeichert werden.');
+    return false;
+  }
   const ddModal = document.getElementById('dd-modal');
   if (ddModal) ddModal.remove();
   showAppToast(V.view === LID_VIEW
     ? 'Sicherung importiert.'
     : `Imported ${merged.freqLearned.length} vocab words · ${merged.learned.length} sentences`);
+  return true;
 }
 
 function escapeHtml(str) {

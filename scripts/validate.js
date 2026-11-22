@@ -14,7 +14,8 @@ const expectedScripts = [
   'src/lid-catalog.js',
   'src/lid-learning.js',
   'src/lid-view.js',
-  'src/app.js'
+  'src/app.js',
+  'src/pwa.js',
 ];
 
 const errors = [];
@@ -83,6 +84,48 @@ vm.createContext(sandbox);
 vm.runInContext(source, sandbox, { filename: 'validate-content.vm.js' });
 
 const { TOPICS, SENTENCE_SEEDS, SENTENCES, FREQUENCY_DICTIONARY, LID_QUESTIONS } = sandbox.__dd;
+
+try {
+  const manifest = JSON.parse(read('manifest.json'));
+  const cachedPaths = vm.runInNewContext(
+    [read('src/lid-catalog.js'), read('sw.js'), 'APP_SHELL;'].join('\n'),
+    { importScripts() {}, self: { addEventListener() {} } },
+  );
+  const origin = new URL('https://deutschdaily.test/DEDaily.html');
+  const required = [...html.matchAll(/(?:src|href)="((?:src\/|manifest\.json)[^"]*)"/g)].map(match => match[1]);
+  required.push(...Array.from(read('src/styles.css').matchAll(/@import url\("\.\/([^"]+)"\)/g), match => 'src/' + match[1]));
+  required.push('src/assets/fonts/source-sans-3.woff2', 'resources/deutsch-a1-b1-kursplan.html');
+  for (const question of LID_QUESTIONS) {
+    for (const figure of question.figures || []) required.push('src/assets/lid/' + figure.file);
+  }
+  record(manifest.display === 'standalone' && manifest.scope === '/' && manifest.id === '/DEDaily.html',
+    'manifest must keep the standalone app identity and scope');
+  required.push(manifest.start_url);
+  for (const size of [192, 512]) {
+    const icon = manifest.icons.find(item => item.sizes === `${size}x${size}` && item.type === 'image/png');
+    record(Boolean(icon), `manifest must declare a ${size}px PNG icon`);
+    if (icon) required.push(icon.src);
+  }
+  const appleIcon = html.match(/rel="apple-touch-icon" sizes="180x180" href="([^"]+)"/);
+  record(Boolean(appleIcon), 'missing 180px Apple touch icon');
+  for (const icon of [...manifest.icons, { src: appleIcon?.[1] || '', sizes: '180x180' }]) {
+    const pathname = new URL(icon.src, origin).pathname;
+    const png = fs.readFileSync(path.join(root, pathname));
+    record(png.length >= 24 && png.subarray(0, 8).toString('hex') === '89504e470d0a1a0a'
+      && `${png.readUInt32BE(16)}x${png.readUInt32BE(20)}` === icon.sizes,
+    `invalid icon file or dimensions for ${pathname}`);
+  }
+  for (const file of new Set(required)) {
+    const { pathname, search } = new URL(file, origin);
+    record(cachedPaths.includes(pathname + search), `offline cache is missing ${pathname + search}`);
+  }
+  for (const file of cachedPaths) {
+    record(fs.existsSync(path.join(root, new URL(file, origin).pathname)), `offline cache asset does not exist: ${file}`);
+  }
+} catch (error) {
+  errors.push(`PWA manifest or offline assets invalid: ${error.message}`);
+}
+
 const topicIds = new Set(TOPICS.map(t => t.id));
 const sentenceIds = new Set();
 const germanSentences = new Map();

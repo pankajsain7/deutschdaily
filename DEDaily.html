@@ -12,13 +12,10 @@
   <meta name="apple-mobile-web-app-title" content="DeutschDaily">
   <title>Leben in Deutschland – DeutschDaily</title>
   <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="src/assets/icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="src/assets/icon-180.png">
   <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="src/styles.css?v=lid-themen-20261122">
+  <link rel="stylesheet" href="src/styles/pwa.css?v=1">
 </head>
 
 <body>
@@ -28,6 +25,7 @@
       <div class="lid-masthead-inner">
         <img src="src/assets/logo.svg" width="26" height="26" alt="">
         <span>DeutschDaily</span>
+        <button type="button" class="lid-app-button" id="app-install" aria-haspopup="dialog" hidden>App installieren</button>
       </div>
     </header>
     <aside class="sidebar">
@@ -80,6 +78,29 @@
     </nav>
   </div>
 
+  <dialog id="app-install-dialog" class="lid-install-dialog" aria-labelledby="app-install-heading" lang="de">
+    <div class="lid-install-header">
+      <h2 id="app-install-heading">DeutschDaily als App</h2>
+      <form method="dialog"><button type="submit" class="lid-button lid-install-close" aria-label="Schließen" autofocus>×</button></form>
+    </div>
+    <p id="app-offline-status" class="lid-offline-status" role="status">Offline-Inhalte werden vorbereitet …</p>
+    <button id="app-offline-retry" class="lid-button" type="button" hidden>Offline-Inhalte erneut laden</button>
+    <div id="app-install-guide" class="lid-install-section">
+      <p id="app-install-steps"></p>
+      <button id="app-install-native" class="lid-button lid-button-primary" type="button" hidden>Installieren</button>
+    </div>
+    <section class="lid-install-section" aria-labelledby="app-backup-heading">
+      <h3 id="app-backup-heading">Lernstand sichern</h3>
+      <p id="app-backup-note">Dein Lernstand wird auf diesem Gerät gespeichert.</p>
+      <div class="lid-install-actions">
+        <button id="app-backup-export" class="lid-button" type="button">Sicherung speichern</button>
+        <button id="app-backup-import" class="lid-button" type="button">Sicherung importieren</button>
+        <input id="app-backup-file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <p id="app-backup-error" class="data-modal-err" role="alert"></p>
+    </section>
+  </dialog>
+
   <div class="modal-overlay" id="goal-modal" style="display:none" onclick="closeGoalModal(event)" role="dialog" aria-modal="true" aria-labelledby="goal-modal-title">
     <div class="modal-box">
       <div class="modal-title" id="goal-modal-title">Set Daily Goal</div>
@@ -93,18 +114,12 @@
   <script src="src/learning.js?v=history-20260523"></script>
   <script src="src/frequency-dictionary-data.js?v=freq-20260623"></script>
   <script src="src/backup-presets.js?v=20260816"></script>
-  <script src="src/storage.js?v=lid-20261120"></script>
+  <script src="src/storage.js?v=pwa-1"></script>
   <script src="src/lid-catalog.js?v=20261120"></script>
-  <script src="src/lid-learning.js?v=themen-20261122"></script>
+  <script src="src/lid-learning.js?v=pwa-1"></script>
   <script src="src/lid-view.js?v=themen-20261122"></script>
-  <script src="src/app.js?v=lid-home-20261120"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
-      });
-    }
-  </script>
+  <script src="src/app.js?v=pwa-1"></script>
+  <script src="src/pwa.js?v=1"></script>
 </body>
 
 </html>

@@ -968,7 +968,7 @@ async function testLiD() {
   assert.equal(store[`${t.LiDStore.key}_recovery`], 'corrupt local data');
   const backup = t.backupExportObj();
   assert.equal(backup.lid.rounds.length, data.rounds.length);
-  assert(!Object.hasOwn(backup.lid, 'practice'), 'transferred backups contain practice history');
+  assert.deepEqual(backup.lid.practice, data.practice, 'backups include the current practice position');
   const copy = JSON.stringify(backup);
   delete store[t.LiDStore.key];
   await t.applyImport(copy);
@@ -978,6 +978,33 @@ async function testLiD() {
   assert(t.DB().learned.has('un1'), 'legacy backup remains compatible');
   assert.equal(lid.progress(t.LiDStore.read()).attempts, stats.attempts, 'legacy backup preserves LiD progress');
   assert.equal(await t.LiDStore.importBackup({ version: 1, rounds: [{ mode: 'exam', attempts: [] }] }), false);
+
+  const practiceCopyId = roundId(100);
+  const topicCopyId = roundId(101);
+  const examCopyId = roundId(102);
+  let ongoing = lid.startPractice(lid.blank(), 'all', practiceCopyId, start);
+  ongoing = lid.checkPractice(ongoing, practiceCopyId, 0, 0, start);
+  ongoing = lid.nextPractice(ongoing, practiceCopyId, 0, start);
+  ongoing = lid.startPractice(ongoing, 'state', topicCopyId, start);
+  ongoing = lid.startExam(ongoing, examCopyId, start);
+  ongoing = lid.selectExam(ongoing, examCopyId, 0, 2, start);
+  await t.LiDStore.update(() => ongoing);
+  const transferred = JSON.stringify(t.backupExportObj());
+  delete store[t.LiDStore.key];
+  assert(await t.applyImport(transferred));
+  const restored = t.LiDStore.read();
+  assert.deepEqual(restored.practice, ongoing.practice, 'unanswered practice round transfers to a fresh installation');
+  assert.deepEqual(restored.parkedPractices, ongoing.parkedPractices, 'paused practice transfers with its cursor');
+  assert.deepEqual(restored.exam, ongoing.exam, 'test selections and original deadline transfer');
+  assert(await t.applyImport(transferred));
+  assert.deepEqual(t.LiDStore.read(), restored, 'reimporting the same file leaves the restored progress intact');
+
+  delete store[t.LiDStore.key];
+  failingStorageKey = t.LiDStore.key;
+  assert.equal(await t.applyImport(transferred), false, 'an unwritable LiD store cannot report a successful import');
+  assert.match(t.LiDStore.warning(), /nicht speichern/);
+  failingStorageKey = null;
+  assert(await t.applyImport(transferred), 'a failed import can be retried when storage recovers');
   console.log('Leben in Deutschland logic-tests passed');
 }
 
@@ -1173,7 +1200,8 @@ async function testLiDBookmarks() {
   assert.equal(LiDStore.read().rounds[0].attempts.length, 0, 'saving does not submit an answer');
 
   const { lid: backup } = t.backupExportObj();
-  assert.equal(backup.rounds.length, 0);
+  assert.equal(backup.rounds.length, 1, 'an unanswered active round is backed up alongside the bookmark');
+  assert.equal(backup.rounds[0].attempts.length, 0);
   delete store[LiDStore.key];
   assert(await LiDStore.importBackup({ ...backup, savedQuestionIds: [questionId, questionId, 'invalid'] }));
   assert(await LiDStore.importBackup({ version: 1, rounds: [] }));

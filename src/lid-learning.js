@@ -545,23 +545,27 @@ const LiDStore = (() => {
   }
 
   function backup() {
-    const { rounds, savedQuestionIds } = read();
-    return { version: 1, rounds: rounds.filter(round => round.attempts.length || round.completion), savedQuestionIds };
+    return read();
   }
 
   async function importBackup(raw) {
-    const rounds = LiDLearning.readRounds(raw);
-    if (!rounds) return false;
-    const savedQuestionIds = LiDLearning.readSavedQuestionIds(raw.savedQuestionIds);
-    if (rounds.length || savedQuestionIds.length) {
+    const imported = LiDLearning.readData(raw);
+    if (!imported) return false;
+    if (imported.rounds.length || imported.savedQuestionIds.length) {
       await update(data => {
-        // An imported copy of the current round can be newer than the local cursor.
+        const rounds = LiDLearning.mergeRounds(data.rounds, imported.rounds);
+        const localExam = data.exam && rounds.some(round => round.id === data.exam.id && !round.completion)
+          ? data.exam : null;
         return LiDLearning.readData({
-          ...data,
-          rounds: LiDLearning.mergeRounds(data.rounds, rounds),
-          savedQuestionIds: [...data.savedQuestionIds, ...savedQuestionIds],
+          version: data.version,
+          rounds,
+          practice: data.practice,
+          parkedPractices: [...data.parkedPractices, imported.practice, ...imported.parkedPractices],
+          exam: localExam || imported.exam,
+          savedQuestionIds: [...data.savedQuestionIds, ...imported.savedQuestionIds],
         });
       });
+      if (unsaved) throw new Error(warning);
     }
     return true;
   }

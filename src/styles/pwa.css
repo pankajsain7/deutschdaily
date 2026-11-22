@@ -1,0 +1,88 @@
+body {
+  font-family: "Source Sans 3", var(--font-sans);
+}
+
+.lid-app-button {
+  margin-inline-start: auto;
+  min-height: 44px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--accent);
+  font: 650 15px/1.2 var(--font-sans);
+  cursor: pointer;
+}
+
+.lid-app-button:hover {
+  background: var(--accent-soft);
+}
+
+.lid-install-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(480px, calc(100% - 32px));
+  max-height: calc(100% - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  padding: clamp(16px, 4vw, 26px);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+  color: var(--text);
+  font: 16px/1.5 "Source Sans 3", var(--font-sans);
+}
+
+.lid-install-dialog::backdrop {
+  background: rgb(22 36 27 / 55%);
+}
+
+.lid-install-header,
+.lid-install-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lid-install-header {
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.lid-install-close {
+  min-width: 44px;
+  padding: 0;
+  border-color: transparent;
+  font-size: 24px;
+}
+
+.lid-install-dialog h2 {
+  font-size: clamp(20px, 5vw, 23px);
+}
+
+.lid-install-dialog h3 {
+  font-size: 18px;
+}
+
+.lid-offline-status {
+  margin-block: 12px 0;
+  padding: 9px 12px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.lid-offline-status[data-ready] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.lid-install-section {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+#app-offline-retry {
+  margin-top: 8px;
+}

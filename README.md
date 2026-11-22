@@ -79,6 +79,15 @@ dd_clean_v1
 
 The Leben-in-Deutschland section saves progress in `dd_lid_v1`. The DeutschDaily JSON export includes its practice and test history. Active rounds resume in the same browser.
 
+## Installieren und offline üben
+
+- **iPhone und iPad**. In Safari **Teilen** und **Zu Home-Bildschirm hinzufügen** wählen. Falls angezeigt, **Als Web-App öffnen** aktivieren und **Hinzufügen** antippen.
+- **Android**. In Chrome **App installieren** auf der DeutschDaily-Startseite oder im Browsermenü wählen.
+- Die installierte App einmal mit Internet öffnen. Unter **Offline-App** zeigt **Offline bereit**, dass alle 310 Fragen, Abbildungen und Übungsmodi einschließlich Probetest heruntergeladen wurden. Für Audio im Archiv braucht das Gerät offline eine installierte deutsche Systemstimme.
+- Wer bereits im Browser geübt hat, kann vor der Installation unter **App installieren** eine Sicherungsdatei speichern. Dieselbe Datei lässt sich in der installierten App unter **Offline-App** importieren. Sie enthält auch pausierte Übungen und laufende Probetests mit ihrer ursprünglichen Frist.
+
+Zum Testen der Installation oder des Offline-Modus die App über HTTPS oder `http://localhost` öffnen, beispielsweise mit `python3 -m http.server 8000` und `http://localhost:8000/DEDaily.html`.
+
 ## Leben in Deutschland
 
 - **Alle Fragen üben** führt mit sofortiger Rückmeldung durch alle 310 Katalogfragen. Unter **Nach Themen üben** stehen die drei Bereiche des Orientierungskurses und die zehn Landesfragen für Baden-Württemberg zur Auswahl. Die Übersicht zeigt beantwortete Fragen und offene Fehler. Beim Wechsel bleibt die Position in jeder Runde gespeichert.

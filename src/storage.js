@@ -428,6 +428,7 @@ function save() {
   if (primarySaved && backupSaved) delete DB.storageError;
   try { if (window.storage) window.storage.set(SKEY, json); }
   catch (e) { }
+  return primarySaved;
 }
 
 function recordStudy() {

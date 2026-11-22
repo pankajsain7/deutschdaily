@@ -3,24 +3,26 @@
   "short_name": "DeutschDaily",
   "description": "Übungen zum Test Leben in Deutschland für Baden-Württemberg",
   "lang": "de",
+  "id": "/DEDaily.html",
   "start_url": "/DEDaily.html",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#f2f3ef",
-  "background_color": "#f2f3ef",
+  "theme_color": "#f4f6f2",
+  "background_color": "#f4f6f2",
   "categories": ["education"],
   "icons": [
     {
-      "src": "src/assets/logo.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "src/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "src/assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
