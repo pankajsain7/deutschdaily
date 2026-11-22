@@ -25,7 +25,7 @@
       <div class="lid-masthead-inner">
         <img src="src/assets/logo.svg" width="26" height="26" alt="">
         <span>DeutschDaily</span>
-        <button type="button" class="lid-app-button" id="app-install" aria-haspopup="dialog" hidden>App installieren</button>
+        <button type="button" class="lid-app-button" id="app-install" hidden>App installieren</button>
       </div>
     </header>
     <aside class="sidebar">
@@ -87,11 +87,11 @@
     <button id="app-offline-retry" class="lid-button" type="button" hidden>Offline-Inhalte erneut laden</button>
     <div id="app-install-guide" class="lid-install-section">
       <p id="app-install-steps"></p>
-      <button id="app-install-native" class="lid-button lid-button-primary" type="button" hidden>Installieren</button>
     </div>
+    <p id="app-sync-status" class="lid-offline-status" role="status" hidden></p>
     <section class="lid-install-section" aria-labelledby="app-backup-heading">
       <h3 id="app-backup-heading">Lernstand sichern</h3>
-      <p id="app-backup-note">Dein Lernstand wird auf diesem Gerät gespeichert.</p>
+      <p>Mit einer Sicherung kannst du deinen Lernstand wiederherstellen.</p>
       <div class="lid-install-actions">
         <button id="app-backup-export" class="lid-button" type="button">Sicherung speichern</button>
         <button id="app-backup-import" class="lid-button" type="button">Sicherung importieren</button>
@@ -116,10 +116,11 @@
   <script src="src/backup-presets.js?v=20260816"></script>
   <script src="src/storage.js?v=pwa-1"></script>
   <script src="src/lid-catalog.js?v=20261120"></script>
-  <script src="src/lid-learning.js?v=pwa-1"></script>
-  <script src="src/lid-view.js?v=themen-20261122"></script>
+  <script src="src/lid-learning.js?v=sync-1"></script>
+  <script src="src/lid-view.js?v=sync-1"></script>
   <script src="src/app.js?v=pwa-1"></script>
-  <script src="src/pwa.js?v=1"></script>
+  <script src="src/lid-sync.js?v=1"></script>
+  <script src="src/pwa.js?v=2"></script>
 </body>
 
 </html>

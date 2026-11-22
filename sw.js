@@ -1,7 +1,7 @@
 // Bump the cache version when any precached asset changes.
 importScripts('/src/lid-catalog.js?v=20261120');
 
-const CACHE_VERSION = 'dd-v15-offline-app';
+const CACHE_VERSION = 'dd-v16-progress-sync';
 const APP_PAGE = '/DEDaily.html';
 const COURSE_PAGE = '/resources/deutsch-a1-b1-kursplan.html';
 const LID_IMAGES = [...new Set(LID_QUESTIONS.flatMap(
@@ -28,10 +28,11 @@ const APP_SHELL = [
   '/src/backup-presets.js?v=20260816',
   '/src/storage.js?v=pwa-1',
   '/src/lid-catalog.js?v=20261120',
-  '/src/lid-learning.js?v=pwa-1',
-  '/src/lid-view.js?v=themen-20261122',
+  '/src/lid-learning.js?v=sync-1',
+  '/src/lid-view.js?v=sync-1',
   '/src/app.js?v=pwa-1',
-  '/src/pwa.js?v=1',
+  '/src/lid-sync.js?v=1',
+  '/src/pwa.js?v=2',
   COURSE_PAGE,
   '/src/assets/logo.svg',
   '/src/assets/fonts/source-sans-3.woff2',

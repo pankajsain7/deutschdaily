@@ -82,11 +82,14 @@ The Leben-in-Deutschland section saves progress in `dd_lid_v1`. The DeutschDaily
 ## Installieren und offline üben
 
 - **iPhone und iPad**. In Safari **Teilen** und **Zu Home-Bildschirm hinzufügen** wählen. Falls angezeigt, **Als Web-App öffnen** aktivieren und **Hinzufügen** antippen.
-- **Android**. In Chrome **App installieren** auf der DeutschDaily-Startseite oder im Browsermenü wählen.
+- **Android**. **App installieren** auf der Startseite öffnet die Installationsabfrage von Chrome, sobald sie verfügbar ist. Bestätige die Abfrage, um das Symbol zum Startbildschirm hinzuzufügen.
 - Die installierte App einmal mit Internet öffnen. Unter **Offline-App** zeigt **Offline bereit**, dass alle 310 Fragen, Abbildungen und Übungsmodi einschließlich Probetest heruntergeladen wurden. Für Audio im Archiv braucht das Gerät offline eine installierte deutsche Systemstimme.
-- Wer bereits im Browser geübt hat, kann vor der Installation unter **App installieren** eine Sicherungsdatei speichern. Dieselbe Datei lässt sich in der installierten App unter **Offline-App** importieren. Sie enthält auch pausierte Übungen und laufende Probetests mit ihrer ursprünglichen Frist.
+- Mit aktivierter Synchronisierung verbindet **Zum Home-Bildschirm** den Lernstand in Safari mit einer anschließend hinzugefügten Web-App auf iOS oder iPadOS ab Version 17.2. Übungen, Lesezeichen und Probetests werden beim Öffnen und bei wiederhergestellter Verbindung synchronisiert. Änderungen werden zuerst lokal gespeichert.
+- Unter **Offline-App** lässt sich jederzeit eine Sicherungsdatei speichern oder wiederherstellen. Sie enthält auch pausierte Übungen und laufende Probetests mit ihrer ursprünglichen Frist.
 
 Zum Testen der Installation oder des Offline-Modus die App über HTTPS oder `http://localhost` öffnen, beispielsweise mit `python3 -m http.server 8000` und `http://localhost:8000/DEDaily.html`.
+
+Die Synchronisierung von „Leben in Deutschland“ benötigt eine Upstash-kompatible Redis-Datenbank. Setze serverseitig `KV_REST_API_URL`, `KV_REST_API_TOKEN` und `DEUTSCHDAILY_PROGRESS_SYNC=1`. Safari kopiert beim Anlegen der Web-App das Cookie des anonymen Profils. Bereits installierte iOS-Web-Apps haben ihr eigenes Profil. Synchronisierte Lernstände werden nach einem Jahr ohne Änderung aus Redis entfernt. Die lokal gespeicherten Lernstände bleiben verfügbar.
 
 ## Leben in Deutschland
 

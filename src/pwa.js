@@ -8,8 +8,6 @@
   const retry = document.getElementById('app-offline-retry');
   const guide = document.getElementById('app-install-guide');
   const steps = document.getElementById('app-install-steps');
-  const install = document.getElementById('app-install-native');
-  const backupNote = document.getElementById('app-backup-note');
   const fileInput = document.getElementById('app-backup-file');
   const backupError = document.getElementById('app-backup-error');
   const standalone = window.matchMedia('(display-mode: standalone)');
@@ -22,25 +20,25 @@
   /** @type {(Event & { prompt(): Promise<unknown>, userChoice: Promise<{ outcome: string }> }) | null} */
   let installPrompt = null;
   let installed = false;
+  let prompting = false;
   let requestId = 0;
 
   const appMode = () => standalone.matches || navigator.standalone === true;
+  const canPrompt = () => !appleMobile && (typeof navigator.install === 'function' || Boolean(installPrompt));
 
   function updateInstallGuide() {
     const app = appMode();
     guide.hidden = app || installed;
-    install.hidden = !installPrompt || guide.hidden;
-    button.textContent = guide.hidden ? 'Offline-App' : 'App installieren';
-    steps.textContent = appleMobile
-      ? 'In Safari „Teilen“ und „Zu Home-Bildschirm hinzufügen“ wählen. Falls angezeigt, „Als Web-App öffnen“ aktivieren. Öffne die App einmal online und prüfe unter „Offline-App“, ob sie bereit ist.'
-      : installPrompt
-        ? 'Installiere DeutschDaily und öffne die App einmal online. Unter „Offline-App“ siehst du, wann du offline üben kannst.'
-        : android
-          ? 'Wähle im Chrome-Menü „App installieren“ oder „Zum Startbildschirm hinzufügen“. Öffne die App einmal online und prüfe den Download unter „Offline-App“.'
-          : 'Wähle im Browsermenü „App installieren“. In Safari auf dem Mac findest du „Zum Dock hinzufügen“ im Menü „Ablage“.';
-    backupNote.textContent = appleMobile && !app
-      ? 'Speichere deinen bisherigen Lernstand als Datei und importiere sie nach der Installation in der App.'
-      : 'Dein Lernstand wird auf diesem Gerät gespeichert. Mit einer Sicherung kannst du ihn übertragen oder wiederherstellen.';
+    if (guide.hidden || !canPrompt()) button.setAttribute('aria-haspopup', 'dialog');
+    else button.removeAttribute('aria-haspopup');
+    button.textContent = guide.hidden ? 'Offline-App' : appleMobile ? 'Zum Home-Bildschirm' : 'App installieren';
+    if (appleMobile) {
+      steps.textContent = 'In Safari „Teilen“ und „Zu Home-Bildschirm hinzufügen“ wählen. Falls angezeigt, „Als Web-App öffnen“ aktivieren. Öffne die App einmal online und prüfe unter „Offline-App“, ob sie bereit ist.';
+    } else if (android) {
+      steps.textContent = 'Wähle im Chrome-Menü „App installieren“ oder „Zum Startbildschirm hinzufügen“. Öffne die App einmal online und prüfe den Download unter „Offline-App“.';
+    } else {
+      steps.textContent = 'Wähle im Browsermenü „App installieren“. In Safari auf dem Mac findest du „Zum Dock hinzufügen“ im Menü „Ablage“.';
+    }
   }
 
   function offlineStatus(text, { ready = false, canRetry = false } = {}) {
@@ -142,25 +140,37 @@
   });
   workers.addEventListener('controllerchange', () => { void refreshOffline(); });
 
-  button.addEventListener('click', () => {
+  function openOptions() {
     dialog.showModal();
     if (status.hasAttribute('data-ready')) void refreshOffline();
-  });
-  retry.addEventListener('click', () => { void prepareOffline(true); });
-  install.addEventListener('click', async () => {
-    const prompt = installPrompt;
-    if (!prompt) return;
-    installPrompt = null;
+    if (appleMobile && !appMode()) void lidSync.connect();
+  }
+
+  button.addEventListener('click', async () => {
+    if (prompting) return;
+    if (appMode() || installed || !canPrompt()) {
+      openOptions();
+      return;
+    }
+    prompting = true;
     try {
-      await prompt.prompt();
-      const choice = await prompt.userChoice;
-      if (choice.outcome === 'accepted') installed = true;
-    } catch {
-      // Some browsers withdraw the prompt. Leave the browser-menu instructions available.
+      if (installPrompt) {
+        const prompt = installPrompt;
+        installPrompt = null;
+        await prompt.prompt();
+        installed = installed || (await prompt.userChoice).outcome === 'accepted';
+      } else {
+        await navigator.install();
+        installed = true;
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') openOptions();
     } finally {
+      prompting = false;
       updateInstallGuide();
     }
   });
+  retry.addEventListener('click', () => { void prepareOffline(true); });
 
   document.getElementById('app-backup-export').addEventListener('click', () => {
     backupError.style.display = 'none';
@@ -188,6 +198,7 @@
 
   updateInstallGuide();
   button.hidden = false;
+  if (appleMobile) lidSync.start();
   if (appMode()) requestPersistentStorage();
   void prepareOffline();
 })();

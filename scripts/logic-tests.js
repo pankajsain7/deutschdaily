@@ -17,6 +17,7 @@ const source = [
   read('src/lid-learning.js'),
   read('src/lid-view.js'),
   read('src/app.js'),
+  read('src/lid-sync.js'),
   'renderPractice = () => {}; updateHeader = () => {}; render = () => {};',
   `globalThis.__test = {
     SENTENCES,
@@ -50,6 +51,7 @@ const source = [
     LiDLearning,
     LiDStore,
     LiDView,
+    lidSync,
     mergeAttempts,
     mergeSrsMaps,
     validFrequencyRankSet,
@@ -1219,7 +1221,37 @@ async function testLiDBookmarks() {
   console.log('Bookmark storage and navigation tests passed');
 }
 
-testLiD().then(testLiDErrorTraining).then(testLiDTopics).then(testLiDExamProfile).then(testLiDBookmarks).catch(error => {
+async function testLiDSync() {
+  const { LiDLearning: lid, LiDStore: store, lidSync: sync } = t;
+  const examId = randomUUID();
+  const practiceId = randomUUID();
+  const now = Date.now();
+  let baseline = lid.startExam(lid.blank(), examId, now);
+  baseline = lid.toggleSavedQuestion(baseline, 'de-001');
+  const local = lid.toggleSavedQuestion(lid.selectExam(baseline, examId, 0, 1, now), 'de-001');
+  let remote = lid.moveExam(baseline, examId, 1, now);
+  remote = lid.toggleSavedQuestion(lid.selectExam(remote, examId, 1, 2, now), 'de-002');
+  remote = lid.startPractice(remote, 'all', practiceId, now);
+  remote = lid.checkPractice(remote, practiceId, 0, 2, now);
+  remote = lid.nextPractice(remote, practiceId, 0, now);
+  const merged = sync.mergeProgress(sync.baselineOf(baseline), local, remote);
+  assert.deepEqual([...merged.savedQuestionIds], ['de-002'], 'an unbookmark and a concurrent bookmark both sync');
+  assert.deepEqual([...merged.exam.selections.slice(0, 2)], [1, 2], 'different answers from the same exam merge');
+  assert.equal(merged.exam.deadline, baseline.exam.deadline);
+  assert.equal(merged.practice.index, 1);
+  assert.equal(merged.rounds.find(round => round.id === practiceId).attempts.length, 1);
+  assert.deepEqual(sync.mergeProgress(sync.baselineOf(lid.blank()), lid.blank(), merged), merged,
+    'a fresh installation restores the browser state');
+  const finished = lid.finishExam(merged, examId, now + 1000);
+  assert.equal(sync.mergeProgress(sync.baselineOf(merged), merged, finished).exam, null, 'remote submission closes a local exam');
+  const synced = { profile: 'test-profile', progress: sync.baselineOf(merged) };
+  await store.update(() => merged, { synced });
+  await store.update(data => lid.toggleSavedQuestion(data, 'de-003'));
+  assert.deepEqual(store.baseline(), synced, 'offline edits preserve the last synced baseline');
+  assert(!Object.hasOwn(store.backup(), 'syncBase'), 'manual backups exclude the sync baseline');
+}
+
+testLiD().then(testLiDErrorTraining).then(testLiDTopics).then(testLiDExamProfile).then(testLiDBookmarks).then(testLiDSync).catch(error => {
   console.error(error);
   process.exitCode = 1;
 });

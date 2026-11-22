@@ -681,15 +681,19 @@ const LiDView = (() => {
     syncTimer(null);
   }
 
-  window.addEventListener('storage', event => {
-    if (!active || event.key !== LiDStore.key) return;
+  function refreshProgress() {
+    if (!active) return;
     const state = LiDStore.read();
     if (screen === 'exam' && !state.exam) {
       const last = state.rounds.filter(round => round.mode === 'exam' && round.completion)
         .sort((a, b) => b.completion.at - a.completion.at)[0];
       display(last ? 'result' : 'home', last?.id);
     } else paint();
+  }
+  window.addEventListener('storage', event => {
+    if (event.key === LiDStore.key) refreshProgress();
   });
+  window.addEventListener('dd-lid-synced', refreshProgress);
   document.addEventListener('visibilitychange', () => {
     if (!active || document.hidden) return;
     tick();

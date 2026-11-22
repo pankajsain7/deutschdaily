@@ -15,6 +15,7 @@ const expectedScripts = [
   'src/lid-learning.js',
   'src/lid-view.js',
   'src/app.js',
+  'src/lid-sync.js',
   'src/pwa.js',
 ];
 

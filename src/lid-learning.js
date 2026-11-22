@@ -492,6 +492,7 @@ const LiDStore = (() => {
   let invalidValue = null;
   let unsaved = false;
   let warning = '';
+  let syncBase = null;
 
   function read() {
     if (unsaved) return current;
@@ -499,9 +500,11 @@ const LiDStore = (() => {
       const raw = localStorage.getItem(key);
       if (raw === storedValue) return current;
       invalidValue = raw;
-      const state = raw === null ? LiDLearning.blank() : LiDLearning.readData(JSON.parse(raw));
+      const parsed = raw === null ? LiDLearning.blank() : JSON.parse(raw);
+      const state = LiDLearning.readData(parsed);
       if (!state) throw new TypeError('Unbekanntes Speicherformat');
       current = state;
+      syncBase = parsed.syncBase ?? null;
       storedValue = raw;
       invalidValue = null;
       warning = '';
@@ -511,26 +514,29 @@ const LiDStore = (() => {
     return current;
   }
 
-  function update(change) {
+  function update(change, { synced } = {}) {
     const write = () => {
       const previous = read();
       const next = change(previous);
-      if (next === previous) return next;
+      const nextBase = synced ?? syncBase;
+      if (next === previous && nextBase === syncBase && !unsaved) return next;
       current = next;
       unsaved = true;
       try {
-        const json = JSON.stringify(next);
+        const json = JSON.stringify(nextBase ? { ...next, syncBase: nextBase } : next);
         if (invalidValue !== null) {
           localStorage.setItem(`${key}_recovery`, invalidValue);
           invalidValue = null;
         }
         localStorage.setItem(key, json);
+        syncBase = nextBase;
         storedValue = json;
         unsaved = false;
         warning = '';
       } catch (error) {
         warning = 'Der Browser konnte den Lernstand nicht speichern. Lass diese Seite geöffnet, um in dieser Sitzung weiterzuüben.';
       }
+      if (next !== previous) window.dispatchEvent?.(new Event(synced ? 'dd-lid-synced' : 'dd-lid-change'));
       return current;
     };
     if (!navigator.locks?.request) return Promise.resolve(write());
@@ -570,5 +576,10 @@ const LiDStore = (() => {
     return true;
   }
 
-  return { key, read, update, backup, importBackup, warning: () => warning };
+  function baseline() {
+    read();
+    return syncBase;
+  }
+
+  return { key, read, update, backup, importBackup, baseline, warning: () => warning };
 })();
