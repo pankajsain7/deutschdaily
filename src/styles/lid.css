@@ -245,6 +245,34 @@ button.lid-mode-primary:hover {
   background: rgb(255 255 255 / 12%);
 }
 
+.lid-topics {
+  max-width: 640px;
+}
+
+.lid-topic-list {
+  display: grid;
+  gap: 8px;
+  margin: clamp(20px, 4vw, 30px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lid-topic-button {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 64px;
+  padding-block: 11px;
+}
+
+.lid-topic-button strong {
+  font-size: 19px;
+}
+
+.lid-topic-button > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+}
+
 .lid-profile-card {
   padding: clamp(15px, 3vw, 26px);
   border: 1px solid var(--border);

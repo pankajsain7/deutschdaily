@@ -81,7 +81,7 @@ The Leben-in-Deutschland section saves progress in `dd_lid_v1`. The DeutschDaily
 
 ## Leben in Deutschland
 
-- **Alle Fragen üben** führt mit sofortiger Rückmeldung durch alle 310 Katalogfragen. **Baden-Württemberg üben** enthält alle zehn Landesfragen. Beim Wechsel bleibt die Position in jeder Runde gespeichert.
+- **Alle Fragen üben** führt mit sofortiger Rückmeldung durch alle 310 Katalogfragen. Unter **Nach Themen üben** stehen die drei Bereiche des Orientierungskurses und die zehn Landesfragen für Baden-Württemberg zur Auswahl. Die Übersicht zeigt beantwortete Fragen und offene Fehler. Beim Wechsel bleibt die Position in jeder Runde gespeichert.
 - **Fehlertraining** wiederholt bis zu zehn offene Fehler aus Übungen und Probetests. In der Auswertung führt **Nur Fehler üben** zu den falschen Antworten des jeweiligen Tests, sofern keine Fehlerrunde läuft.
 - In jeder Übungsrunde erscheint jede Frage einmal. Falsche Antworten bleiben für spätere Fehlerrunden gespeichert.
 - **Probetest** zieht 30 allgemeine Aufgaben und drei Landesfragen. Für jede Aufgabe gibt es vier Optionen und eine richtige Antwort. Die Uhr läuft ab dem Start und der Test endet mit der Abgabe oder nach 60 Minuten. Die Auswertung zeigt falsche und offene Aufgaben mit Lösungen.
@@ -91,6 +91,7 @@ The Leben-in-Deutschland section saves progress in `dd_lid_v1`. The DeutschDaily
 ### Quellen und Katalogpflege
 
 - Die Fragen und Antwortoptionen folgen dem [BAMF-Gesamtfragenkatalog](https://www.bamf.de/SharedDocs/Anlagen/DE/Integration/Einbuergerung/gesamtfragenkatalog-lebenindeutschland.pdf?__blob=publicationFile&v=22) vom 07.05.2025. Alle 310 Lösungen wurden am 20.11.2026 in der Antwortanzeige des [BAMF Online-Testcenters](https://oet.bamf.de/ords/oetut/f?p=534:1:0:::::) geprüft.
+- DeutschDaily ordnet jede allgemeine Frage für das Üben einem Themenbereich des [BAMF-Orientierungskurses](https://www.bamf.de/SharedDocs/Anlagen/DE/Integration/Integrationskurse/Kurstraeger/KonzepteLeitfaeden/curriculum-orientierungskurs-pdf.pdf?__blob=publicationFile) zu. Die Zuordnung in `src/lid-learning.js` bei einer Katalogänderung prüfen.
 - Die farbigen Schaubilder stammen aus dem BAMF-Katalog. Die fünf Fotoaufgaben (55, 70, 181, 216 und 235) verwenden die entsprechenden amtlichen Abbildungen aus [Anlage 1 der Einbürgerungstestverordnung](https://www.gesetze-im-internet.de/einbtestv/anlage_1.html). Die dort veröffentlichten Aufnahmen zeigen die Motive der jeweiligen Aufgaben.
 - Das Prüfungsformat folgt [§ 3 IntTestV](https://www.gesetze-im-internet.de/inttestv/__3.html) und [§ 1 EinbTestV](https://www.gesetze-im-internet.de/einbtestv/__1.html). Die zwei Punkteschwellen stehen in [§ 10 IntTestV](https://www.gesetze-im-internet.de/inttestv/__10.html).
 

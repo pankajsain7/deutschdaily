@@ -1010,19 +1010,23 @@ async function testLiDErrorTraining() {
   const catalog = LiDStore.read().practice;
   assert.match(root.innerHTML, /Aufgabe 1 von 310/);
   await click('home');
+  await click('topics');
   await click('start-practice', 'state');
   const practice = LiDStore.read().practice;
   assert.match(root.innerHTML, /Aufgabe 1 von 10/);
+  await click('topics');
   await click('home');
   await click('start-practice', 'errors');
   assert.match(root.innerHTML, /Du hast keine offenen Fehler/);
   assert.strictEqual(LiDStore.read().practice, practice, 'an empty review leaves the round open');
 
   await click('home');
+  await click('topics');
   await click('start-practice', 'state');
   const correct = LiDLearning.byId.get(practice.items[0].questionId).answer;
   await submit(practice.id, (correct + 1) % 4);
   assert.match(root.innerHTML, /<strong>Falsch<\/strong>/);
+  await click('topics');
   await click('home');
   await click('start-practice', 'errors');
   const { practice: review, parkedPractices } = LiDStore.read();
@@ -1036,8 +1040,10 @@ async function testLiDErrorTraining() {
   assert.equal(legacy.parkedPractices[0].id, practice.id, 'the previous single paused round is retained');
 
   await click('home');
+  await click('topics');
   await click('start-practice', 'state');
   assert.match(root.innerHTML, /<strong>Falsch<\/strong>/, 'the regular round keeps its answered question');
+  await click('topics');
   await click('home');
   await click('start-practice', 'errors');
   await submit(review.id, correct);
@@ -1049,6 +1055,53 @@ async function testLiDErrorTraining() {
   assert.deepEqual(LiDStore.read().practice, catalog, 'the catalog round can still be resumed');
   LiDView.unmount();
   console.log('Fehlertraining navigation tests passed');
+}
+
+async function testLiDTopics() {
+  const { LiDLearning: lid, LiDStore, LiDView } = t;
+  const { root, click, submit } = mountLiDForTest();
+  const topics = lid.topicProgress(lid.blank());
+  const topicIds = new Map(topics.map(({ mode }, index) => {
+    const data = lid.startPractice(lid.blank(), mode, String(index + 1).padStart(32, '0'));
+    return [mode, data.practice.items.map(item => item.questionId)];
+  }));
+  const allIds = [...topicIds.values()].flat();
+  assert.equal(allIds.length, 310);
+  assert.equal(new Set(allIds).size, 310, 'every catalog question belongs to exactly one practice topic');
+  assert(topicIds.get('politics').includes('de-243'), 'the assembly question is grouped with political participation');
+  assert(topicIds.get('history').includes('de-288'), 'the historical responsibility question is grouped with history');
+  assert(topicIds.get('society').includes('de-182'), 'the synagogue question is grouped with religious diversity');
+  assert(topicIds.get('state').every(id => id.startsWith('bw-')));
+
+  await click('topics');
+  await click('start-practice', 'politics');
+  const politics = LiDStore.read().practice;
+  const question = lid.byId.get(politics.items[0].questionId);
+  await submit(politics.id, (question.answer + 1) % 4);
+  await click('topics');
+  assert.match(root.innerHTML, /Fortsetzen · 1 von \d+ beantwortet · 1 offener Fehler/);
+  await click('start-practice', 'history');
+  const switched = lid.readData(JSON.parse(store[LiDStore.key]));
+  assert.equal(switched.parkedPractices[0].id, politics.id, 'each topic retains its own saved position');
+  await click('stop-practice', '', { dataset: { lidRound: switched.practice.id, index: '0' } });
+  assert.match(root.innerHTML, /id="lid-heading" tabindex="-1">Nach Themen üben/);
+  await click('start-practice', 'politics');
+  assert.match(root.innerHTML, /<strong>Falsch<\/strong>/, 'resuming the topic restores the checked answer');
+  const { lid: backup } = t.backupExportObj();
+  assert.equal(lid.topicProgress({ ...lid.blank(), rounds: lid.readRounds(backup) })[0].errors, 1);
+  LiDView.unmount();
+
+  const id = '1'.repeat(32);
+  let completed = lid.startPractice(lid.blank(), 'politics', id);
+  for (const [index, item] of completed.practice.items.entries()) {
+    const answer = lid.byId.get(item.questionId).answer;
+    completed = lid.checkPractice(completed, id, index, (answer + 1) % 4);
+    completed = lid.nextPractice(completed, id, index);
+  }
+  const review = lid.startMissedPractice(completed, id, '2'.repeat(32));
+  const restored = lid.readData(JSON.parse(JSON.stringify(review)));
+  assert.equal(restored.practice.items.length, topicIds.get('politics').length, 'review of a full topic survives reload');
+  console.log('Topic practice and progress tests passed');
 }
 
 async function testLiDExamProfile() {
@@ -1138,7 +1191,7 @@ async function testLiDBookmarks() {
   console.log('Bookmark storage and navigation tests passed');
 }
 
-testLiD().then(testLiDErrorTraining).then(testLiDExamProfile).then(testLiDBookmarks).catch(error => {
+testLiD().then(testLiDErrorTraining).then(testLiDTopics).then(testLiDExamProfile).then(testLiDBookmarks).catch(error => {
   console.error(error);
   process.exitCode = 1;
 });

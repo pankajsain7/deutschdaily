@@ -1,4 +1,6 @@
-/** @typedef {'all' | 'daily' | 'state' | 'errors'} LiDPracticeMode */
+/** @typedef {'politics' | 'history' | 'society'} LiDGeneralTopic */
+/** @typedef {LiDGeneralTopic | 'state'} LiDTopic */
+/** @typedef {'all' | 'daily' | 'errors' | LiDTopic} LiDPracticeMode */
 /** @typedef {LiDPracticeMode | 'exam'} LiDMode */
 /** @typedef {{ questionId: string, revision: string, choice: number, correct: boolean, at: number, day: string, retry: boolean }} LiDAttempt */
 /** @typedef {{ at: number, reason: 'finished' | 'submitted' | 'expired', unanswered: string[], questionIds?: string[], elapsedMs?: number }} LiDCompletion */
@@ -14,13 +16,46 @@ const LiDLearning = (() => {
   const generalIds = questions.filter(question => question.id.startsWith('de-')).map(question => question.id);
   const edition = typeof LID_SOURCE === 'undefined' ? '' : LID_SOURCE.revision;
   const ready = !!edition && generalIds.length === 300 && stateIds.length === 10 && byId.size === 310;
-  const modes = ['all', 'daily', 'state', 'errors', 'exam'];
+  const topics = /** @type {const} */ ([
+    { mode: 'politics', label: 'Politik in der Demokratie' },
+    { mode: 'history', label: 'Geschichte und Verantwortung' },
+    { mode: 'society', label: 'Mensch und Gesellschaft' },
+    { mode: 'state', label: 'Baden-Württemberg' },
+  ]);
+  // The catalog groups most questions by subject. These questions fit a different course theme.
+  /** @type {Partial<Record<number, LiDGeneralTopic>>} */
+  const topicExceptions = {
+    2: 'society', 59: 'history', 66: 'society', 95: 'society', 118: 'society', 149: 'society',
+    171: 'politics', 182: 'society', 212: 'politics', 213: 'politics', 214: 'politics', 216: 'politics',
+    243: 'politics', 274: 'politics', 282: 'politics', 288: 'history',
+  };
+
+  /** @param {string} questionId @returns {LiDTopic} */
+  function topicForQuestion(questionId) {
+    if (questionId.startsWith('bw-')) return 'state';
+    const number = Number(questionId.slice(3));
+    const exception = topicExceptions[number];
+    if (exception) return exception;
+    if (number <= 150) return 'politics';
+    if (number <= 240) return 'history';
+    return 'society';
+  }
+
+  const topicById = new Map(questions.map(({ id }) => [id, topicForQuestion(id)]));
+  /** @type {ReadonlyMap<LiDMode, string[]>} */
+  const idsByTopic = new Map(topics.map(({ mode }) => [
+    mode, questions.filter(({ id }) => topicById.get(id) === mode).map(({ id }) => id),
+  ]));
+  const modes = ['all', 'daily', 'errors', 'exam', ...idsByTopic.keys()];
   const intervals = [1, 3, 7, 14, 30];
   const batchSize = 10;
   const examRules = Object.freeze({ general: 30, state: 3, minutes: 60, orientation: 15, citizenship: 17 });
   const examSize = examRules.general + examRules.state;
   const examTime = examRules.minutes * 60_000;
-  const practiceLimits = { all: questions.length + batchSize, daily: batchSize * 2, state: stateIds.length * 2, errors: examSize * 2 };
+  const practiceLimits = {
+    all: questions.length + batchSize, daily: batchSize * 2, errors: questions.length,
+    state: stateIds.length * 2, politics: generalIds.length, history: generalIds.length, society: generalIds.length,
+  };
 
   /** @returns {LiDData} */
   function blank() {
@@ -115,8 +150,10 @@ const LiDLearning = (() => {
       || round.attempts.length < raw.index || round.attempts.length > raw.index + 1) return null;
     const seen = new Set();
     const items = [];
+    const isTopicRound = idsByTopic.has(round.mode);
     for (const [index, item] of raw.items.entries()) {
       if (!item || !byId.has(item.questionId) || typeof item.retry !== 'boolean') return null;
+      if (isTopicRound && topicById.get(item.questionId) !== round.mode) return null;
       const key = item.questionId + (item.retry ? '/retry' : '');
       if (seen.has(key) || (item.retry && !seen.has(item.questionId))) return null;
       const attempt = round.attempts[index];
@@ -250,6 +287,20 @@ const LiDLearning = (() => {
     };
   }
 
+  /** @param {LiDData} data */
+  function topicProgress(data) {
+    const { perQuestion } = progress(data);
+    return topics.map(topic => {
+      const ids = idsByTopic.get(topic.mode);
+      return {
+        ...topic,
+        total: ids.length,
+        answered: ids.filter(id => perQuestion.has(id)).length,
+        errors: ids.filter(id => perQuestion.get(id)?.open).length,
+      };
+    });
+  }
+
   function shuffled(ids, random) {
     const result = [...ids];
     for (let index = result.length - 1; index > 0; index--) {
@@ -261,7 +312,8 @@ const LiDLearning = (() => {
 
   function exerciseIds(mode, data, day, random) {
     if (mode === 'all') return questions.map(question => question.id);
-    if (mode === 'state') return [...stateIds];
+    const topicIds = idsByTopic.get(mode);
+    if (topicIds) return topicIds;
     const stats = progress(data, day);
     if (mode === 'errors') {
       return [...stats.openErrors].sort((a, b) => a.lastAttempt - b.lastAttempt)
@@ -424,7 +476,8 @@ const LiDLearning = (() => {
   }
 
   return {
-    questions, byId, ready, blank, batchSize, examSize, examRules, progress, readData, readRounds, mergeRounds,
+    questions, byId, ready, blank, batchSize, examSize, examRules, progress, topics, topicProgress,
+    readData, readRounds, mergeRounds,
     readSavedQuestionIds, toggleSavedQuestion,
     startPractice, findPractice, startMissedPractice, missedQuestionIds, checkPractice, nextPractice, stopPractice,
     startExam, selectExam, moveExam, finishExam, examResult,

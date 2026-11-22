@@ -5,9 +5,10 @@ const LiDView = (() => {
   const titles = {
     all: 'Alle Fragen üben',
     daily: 'Alle Fragen üben',
-    state: 'Baden-Württemberg üben',
     errors: 'Fehlertraining',
   };
+  /** @type {ReadonlyMap<LiDMode, string>} */
+  const topicLabels = new Map(LiDLearning.topics.map(({ mode, label }) => [mode, label]));
   const testDate = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
   const numbers = new Intl.NumberFormat('de-DE');
   const scores = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 1 });
@@ -50,7 +51,7 @@ const LiDView = (() => {
       aria-label="${escapeHtml(label)}" aria-describedby="${noteId}">${content}</button>`;
   }
 
-  /** @param {LiDData} data @param {LiDPracticeMode} mode */
+  /** @param {LiDData} data @param {'all' | 'errors'} mode */
   function practiceTile(data, mode, note, icon, primary = false) {
     const round = LiDLearning.findPractice(data, mode);
     const answered = round?.attempts.filter(item => !item.retry).length;
@@ -86,7 +87,7 @@ const LiDView = (() => {
         </header>
         <div class="lid-home-grid">
           ${practiceTile(data, 'all', `${total} Fragen mit sofortiger Rückmeldung`, 'book', true)}
-          ${practiceTile(data, 'state', 'Alle 10 Landesfragen', 'landmark')}
+          ${modeTile({ label: 'Nach Themen üben', note: 'Politik, Geschichte, Gesellschaft und Landesfragen', icon: 'layers', action: 'topics' })}
           ${modeTile({
             label: exam ? 'Probetest fortsetzen' : 'Probetest',
             action: exam ? 'resume-exam' : 'exam-intro',
@@ -96,6 +97,37 @@ const LiDView = (() => {
           ${practiceTile(data, 'errors', errorCount ? `${errorCount} ${errorCount === 1 ? 'offene Frage' : 'offene Fragen'}` : 'Keine offenen Fehler', 'repeat')}
         </div>
       </div>`;
+  }
+
+  /** @param {LiDData} data */
+  function renderTopics(data) {
+    return `
+      <div class="lid-topics">
+        <div class="lid-workbar">${button('Zur Übersicht', 'home')}</div>
+        <header class="lid-intro"><h1 id="lid-heading" tabindex="-1">Nach Themen üben</h1></header>
+        <ul class="lid-topic-list">
+          ${LiDLearning.topicProgress(data).map(({ mode, label, total, answered, errors }) => {
+            const attempts = answered ? `${answered} von ${total} beantwortet` : `${total} Fragen`;
+            const resume = LiDLearning.findPractice(data, mode) ? 'Fortsetzen · ' : '';
+            const mistakes = errors ? ` · ${errors} ${errors === 1 ? 'offener Fehler' : 'offene Fehler'}` : '';
+            return `<li>
+              <button type="button" class="lid-mode lid-topic-button" data-lid-action="start-practice" data-value="${mode}"
+                aria-labelledby="lid-topic-${mode}" aria-describedby="lid-note-${mode}">
+                <span>
+                  <strong id="lid-topic-${mode}">${escapeHtml(label)}</strong>
+                  <span id="lid-note-${mode}" class="lid-mode-note">${resume}${attempts}${mistakes}</span>
+                </span>
+                ${svg('<path d="m9 6 6 6-6 6" stroke-linejoin="round"/>')}
+              </button>
+            </li>`;
+          }).join('')}
+        </ul>
+      </div>`;
+  }
+
+  /** @param {LiDMode} mode */
+  function practiceBack(mode) {
+    return topicLabels.has(mode) ? button('Zu den Themen', 'topics') : button('Zur Übersicht', 'home');
   }
 
   function renderProfile(data) {
@@ -219,8 +251,8 @@ const LiDView = (() => {
     const position = items.slice(0, index + 1).filter(entry => !entry.retry).length;
     return `
       <div class="lid-workbar">
-        ${button('Zur Übersicht', 'home')}
-        <span>${titles[round.mode]}</span>
+        ${practiceBack(round.mode)}
+        <span>${escapeHtml(topicLabels.get(round.mode) || titles[round.mode])}</span>
       </div>
       <article class="lid-quiz">
         <header class="lid-quiz-meta">
@@ -355,7 +387,7 @@ const LiDView = (() => {
     const review = LiDLearning.findPractice(data, 'errors');
     const { elapsedMs } = round.completion;
     return `
-      <div class="lid-workbar">${button('Zur Übersicht', 'home')}${button('Lernstand', 'profile', { variant: 'text' })}</div>
+      <div class="lid-workbar">${practiceBack(round.mode)}${button('Lernstand', 'profile', { variant: 'text' })}</div>
       <section class="lid-quiz lid-results">
         <h1 id="lid-heading" tabindex="-1">${isExam ? 'Ergebnis des Probetests' : 'Übungsrunde abgeschlossen'}</h1>
         ${report ? `
@@ -386,6 +418,7 @@ const LiDView = (() => {
     let content;
     if (!LiDLearning.ready) content = '<h1 id="lid-heading" tabindex="-1">Leben in Deutschland</h1><p>Der Fragenkatalog konnte nicht geladen werden.</p>';
     else if (screen === 'practice' && data.practice) content = renderPractice(data);
+    else if (screen === 'topics') content = renderTopics(data);
     else if (screen === 'exam' && data.exam) content = renderExam(data);
     else if (screen === 'exam-intro') content = renderExamIntro();
     else if (screen === 'profile') content = renderProfile(data);
@@ -431,7 +464,7 @@ const LiDView = (() => {
       const data = await LiDStore.update(current => LiDLearning.finishExam(current, id));
       if (data.rounds.some(round => round.id === id && round.completion)) {
         if (screen === 'exam' || (timed && screen === 'home')) display('result', id);
-        else if (screen === 'profile') paint();
+        else if (screen === 'profile' || screen === 'topics') paint();
       }
     } finally {
       finishing = false;
@@ -503,6 +536,7 @@ const LiDView = (() => {
     pending = true;
     try {
       if (lidAction === 'home') display('home');
+      else if (lidAction === 'topics') display('topics');
       else if (lidAction === 'profile') display('profile');
       else if (lidAction === 'saved') display('saved');
       else if (lidAction === 'toggle-bookmark') {
@@ -535,8 +569,9 @@ const LiDView = (() => {
         else if (data.rounds.some(round => round.id === id && round.completion)) display('result', id);
         else display('home');
       } else if (lidAction === 'stop-practice') {
+        const mode = LiDStore.read().rounds.find(round => round.id === id)?.mode;
         await LiDStore.update(current => LiDLearning.stopPractice(current, id));
-        display('home');
+        display(mode && topicLabels.has(mode) ? 'topics' : 'home');
       } else if (lidAction === 'exam-intro') display('exam-intro');
       else if (lidAction === 'start-exam') {
         const data = await LiDStore.update(current => LiDLearning.startExam(current, newRoundId()));
